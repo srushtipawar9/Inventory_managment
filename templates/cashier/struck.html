@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+{% load humanize %}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Sales Invoice</h1>
+        <div>
+            <button onclick="printInvoice()" class="btn btn-secondary btn-sm shadow-sm mr-2">
+                <i class="fas fa-print"></i> Print Invoice
+            </button>
+            <a href="{% url 'DaftarPembelian' %}" class="btn btn-outline-primary btn-sm shadow-sm">
+                <i class="fas fa-arrow-left"></i> Back to Invoices
+            </a>
+        </div>
+    </div>
+
+    <p style="color:red;"><b>Please ensure your printer is connected before printing the invoice.</b></p>
+
+    <!-- Invoice Card -->
+    <div class="card shadow mb-4" id="invoicePrintArea">
+        <div class="card-header py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">Invoice Details</h6>
+                <span class="badge badge-primary">Invoice #{{ dataStruck.nomor }}</span>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <!-- Company & Cashier Info -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded">
+                        <h5 class="font-weight-bold text-primary mb-1">
+                            <i class="fas fa-industry"></i> JCB & Hydraulic Parts
+                        </h5>
+                        <small class="text-muted">Industrial Inventory Pro</small>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <div class="p-3">
+                        <p class="mb-1">
+                            <strong>Invoice Number:</strong>
+                            <span class="text-primary">#{{ dataStruck.nomor }}</span>
+                        </p>
+                        <p class="mb-1">
+                            <strong>Cashier Name:</strong>
+                            {% if dataUser.nama_depan or dataUser.nama_belakang %}
+                                <b>{{ dataUser.nama_depan }} {{ dataUser.nama_belakang }}</b>
+                            {% else %}
+                                <b>{{ dataUser.user.username|title }}</b>
+                            {% endif %}
+                        </p>
+                        <p class="mb-1">
+                            <strong>E-mail:</strong>
+                            {% if dataUser.email %}
+                                <i>{{ dataUser.email }}</i>
+                            {% else %}
+                                <i>{{ dataUser.user.email|default:"N/A" }}</i>
+                            {% endif %}
+                        </p>
+                        <p class="mb-1">
+                            <strong>Date & Time:</strong>
+                            <b>{{ dataStruck.created|date:"d M Y" }}</b>
+                            at {{ dataStruck.created|time:"h:i A" }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- Parts Table -->
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="table-success">
+                            <th>#</th>
+                            <th>Part Name</th>
+                            <th class="text-center">Quantity</th>
+                            <th class="text-right">Total Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for produk in dataStruckListProduk %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ produk.nama_barang }}</td>
+                            <td class="text-center">{{ produk.quantity }}</td>
+                            <td class="text-right"><b>₹ {{ produk.subtotal|intcomma }}</b></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-light">
+                            <td colspan="3" class="text-right font-weight-bold">
+                                <strong>GRAND TOTAL</strong>
+                            </td>
+                            <td class="text-right">
+                                <b style="color:red; font-size:1.2em;">₹ {{ dataStruck.total|intcomma }}</b>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Footer note -->
+            <div class="mt-3 p-3 bg-light rounded text-center">
+                <small class="text-muted">
+                    Thank you for your purchase! | JCB & Hydraulic Parts Inventory Pro
+                </small>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Print Button at bottom too -->
+    <div class="text-center mt-2 mb-4">
+        <button onclick="printInvoice()" class="btn btn-primary btn-lg">
+            <i class="fas fa-print"></i> &nbsp; Print Invoice
+        </button>
+    </div>
+
+</div>
+
+<!-- Print CSS -->
+<style>
+    @media print {
+        /* Hide everything except invoice */
+        body * { visibility: hidden; }
+        #invoicePrintArea, #invoicePrintArea * { visibility: visible; }
+        #invoicePrintArea {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        /* Hide nav, sidebar, buttons when printing */
+        .sidebar, .topbar, .scroll-to-top, button, a.btn { display: none !important; }
+    }
+</style>
+
+<script>
+    function printInvoice() {
+        // Trigger browser print dialog
+        window.print();
+    }
+</script>
+
+{% endblock %}

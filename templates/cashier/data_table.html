@@ -1,0 +1,70 @@
+{% load static %}
+{% block content %}
+{% load humanize %}
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+          <!-- Page Heading -->
+          <h1 class="h3 mb-2 text-gray-800">JCB Parts Inventory</h1>
+           <p>This data displays the current available inventory of JCB parts.</p>
+
+          <!-- DataTales Example -->
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Total JCB Parts Inventory</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Part Name</th>
+                      <th>Quantity</th>
+<!--                      <th>Unit</th>-->
+                      <th>Cost Price / unit</th>
+                      <th>Total Cost</th>
+                      <th>Profit Margin</th>
+                      <th>Selling Price / unit</th>
+                      <th>Total Selling Price</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                      <th>ID</th>
+                      <th>Part Name</th>
+                      <th>Quantity</th>
+<!--                      <th>Unit</th>-->
+                      <th>Cost Price / unit</th>
+                      <th>Total Cost</th>
+                      <th>Profit Margin</th>
+                      <th>Selling Price / unit</th>
+                      <th>Total Selling Price</th>
+                      <th>Date</th>
+                    </tr>
+                  </tfoot>
+                  <tbody>
+                  {% for data in data %}
+                    <tr>
+                      <td>{{data.nomor}}</td>
+                      <td>{{data.nama_product}}</td>
+                      <td>{{data.jumlah_produk}}</td>
+<!--                      <td>{{data.unit_produk}}</td>-->
+                      <td>₹ {{data.harga_beli_satuan|intcomma}}</td>
+                      <td>₹ {{data.subtotal_harga_beli|intcomma}}</td>
+                      <td>{{data.laba_persen}} %</td>
+                      <td>₹ {{data.harga_jual_satuan|intcomma}}</td>
+                      <td>₹ {{data.subtotal_harga_jual|intcomma}}</td>
+                      <td>{{data.created|date}}</td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- End of Main Content -->
+{% endblock %}

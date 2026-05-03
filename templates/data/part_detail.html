@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">{{ part.name }}</h1>
+        <a href="{% url 'GlobalSearch' %}?q={{ part.name }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-search fa-sm text-white-50"></i> Related Parts
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- 360 Degree Viewer Simulation -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Product Preview (JCB Spare Part)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <div id="viewer-container">
+                            {% if part.image_360_base %}
+                            <img id="jcb-part-image" src="{{ part.image_360_base.url }}" 
+                                 class="img-fluid rounded shadow" style="max-height: 400px; border: 1px solid #ddd;">
+                            {% else %}
+                            <img id="jcb-part-image" src="https://via.placeholder.com/600x400?text=JCB+Part+{{ part.part_number }}" 
+                                 class="img-fluid rounded shadow" style="max-height: 400px; border: 1px solid #ddd;">
+                            {% endif %}
+                            <p class="mt-3 text-muted">
+                                <i class="fas fa-image"></i> High-quality product preview
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part Details -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Specifications</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Part Number:</strong> {{ part.part_number }}</li>
+                        <li class="list-group-item"><strong>Price:</strong> ₹{{ part.price }}</li>
+                        <li class="list-group-item"><strong>Stock:</strong> {{ part.stock_quantity }} units</li>
+                        <li class="list-group-item"><strong>Status:</strong> 
+                            {% if part.stock_quantity > 0 %}
+                            <span class="badge badge-success">In Stock</span>
+                            {% else %}
+                            <span class="badge badge-danger">Out of Stock</span>
+                            {% endif %}
+                        </li>
+                    </ul>
+                    <div class="mt-4">
+                        <p class="small text-gray-600">{{ part.description|default:"No description available for this JCB spare part." }}</p>
+                    </div>
+                    <button id="order-btn" class="btn btn-success btn-block mt-3 py-2 font-weight-bold transition-all">
+                        <i class="fas fa-shopping-cart"></i> Add to Order
+                    </button>
+                    <div id="order-status" class="mt-2 text-center small font-weight-bold text-success" style="display:none;">
+                        <i class="fas fa-check-circle"></i> Item added to your inventory list.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('order-btn').addEventListener('click', function() {
+        const btn = this;
+        const status = document.getElementById('order-status');
+        
+        // Step 1: Processing
+        btn.disabled = true;
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-warning');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Payment...';
+        
+        setTimeout(() => {
+            // Step 2: Confirmed
+            btn.classList.remove('btn-warning');
+            btn.classList.add('btn-info');
+            btn.innerHTML = '<i class="fas fa-check"></i> Payment Confirmed ✅';
+            
+            setTimeout(() => {
+                // Step 3: Complete
+                btn.classList.remove('btn-info');
+                btn.classList.add('btn-primary');
+                btn.innerHTML = '<i class="fas fa-box"></i> Order Complete! 📦';
+                status.style.display = 'block';
+                
+                // Optional: Confetti or animation could go here
+            }, 1500);
+        }, 1500);
+    });
+</script>
+
+{% endblock %}

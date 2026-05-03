@@ -1,0 +1,22 @@
+.idea
+staticfiles
+__pycache__
+env
+
+# Python environment
+venv/
+env/
+__pycache__/
+*.py[cod]
+
+# Django sensitive files
+db.sqlite3
+.env
+local_settings.py
+
+# Static and Media
+
+/media/
+
+# Logs
+*.log
