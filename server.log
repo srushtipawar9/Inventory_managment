@@ -1463,3 +1463,4 @@ Not Found: /favicon.ico
 "GET /crm/customers/delete/7/ HTTP/1.1" 302 0
 "GET /crm/customers/ HTTP/1.1" 200 4448
 "GET /data/search/?q=JCB HTTP/1.1" 200 6075
+Watching for file changes with StatReloader
