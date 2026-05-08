@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Customer, PaymentReminder
 from import_export.admin import ImportExportModelAdmin
-from rangefilter.filter import DateRangeFilter
+from rangefilter.filters import DateRangeFilter
 
 @admin.register(Customer)
 class CustomerAdmin(ImportExportModelAdmin):

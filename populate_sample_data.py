@@ -5,7 +5,22 @@ import sys
 # Add the project directory to sys.path
 sys.path.append('d:/inventort-managment')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
+import django.utils.encoding
+if not hasattr(django.utils.encoding, 'python_2_unicode_compatible'):
+    django.utils.encoding.python_2_unicode_compatible = lambda x: x
+
+import collections
+if not hasattr(collections, 'MutableSet'):
+    import collections.abc
+    collections.MutableSet = collections.abc.MutableSet
+    collections.MutableMapping = collections.abc.MutableMapping
+    collections.Mapping = collections.abc.Mapping
+    collections.Sequence = collections.abc.Sequence
+    collections.Iterable = collections.abc.Iterable
+    collections.Callable = collections.abc.Callable
+
 django.setup()
+
 
 from crm.models import Customer
 from data.models import JCBPart

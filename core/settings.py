@@ -15,6 +15,7 @@ import logging.config
 # import django_heroku
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+import dj_database_url
 
 # sentry_sdk.init(
 #     dsn="your_sentry_token",
@@ -138,24 +139,14 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-"Production"
-# DATABASES = {
-#     'default': {
-#         'ENGINE' : 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'your_db_name',
-#         'USER': 'your_username',
-#         'PASSWORD': 'your_password',
-#         'HOST': '*',
-#         'PORT' : '5432'
-#     }
-# }
-
-"Demo"
+# Database Configuration
+# Uses DATABASE_URL environment variable for production (PostgreSQL)
+# Defaults to SQLite for local development
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'cashier.db'),
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{os.path.join(BASE_DIR, 'cashier.db')}",
+        conn_max_age=600
+    )
 }
 
 # Password validation

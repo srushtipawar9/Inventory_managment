@@ -6,4 +6,5 @@ urlpatterns = [
     path('part/<int:part_id>/', views.PartDetail, name='PartDetail'),
     path('upload/', views.StockUpload, name='StockUpload'),
     path('import-amazon/', views.ImportAmazonPart, name='ImportAmazonPart'),
+    path('catalog/', views.MasterCatalog, name='MasterCatalog'),
 ]

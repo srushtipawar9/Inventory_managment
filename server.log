@@ -1546,3 +1546,366 @@ Not Found: /favicon.ico
 "GET /media/parts/360/tooth.png HTTP/1.1" 200 455208
 "GET /media/parts/360/pump.png HTTP/1.1" 200 581797
 "GET /data/search/?q=jcbmedia/parts/360/ HTTP/1.1" 200 5077
+Watching for file changes with StatReloader
+Session data corrupted
+Internal Server Error: /data/search/
+Traceback (most recent call last):
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\defaulttags.py", line 1037, in find_library
+    return parser.libraries[name]
+           ~~~~~~~~~~~~~~~~^^^^^^
+KeyError: 'staticfiles'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\inventort-managment\data\views.py", line 56, in GlobalSearch
+    return render(request, 'data/search_results.html', results)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\shortcuts.py", line 19, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 170, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 162, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 938, in render
+    bit = node.render_annotated(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 905, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\loader_tags.py", line 127, in render
+    compiled_parent = self.get_parent(context)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\loader_tags.py", line 124, in get_parent
+    return self.find_template(parent, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\loader_tags.py", line 103, in find_template
+    template, origin = context.template.engine.find_template(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\engine.py", line 125, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\loaders\base.py", line 29, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 155, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 193, in compile_nodelist
+    return parser.parse()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 478, in parse
+    raise self.error(token, e)
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 476, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\defaulttags.py", line 1088, in load
+    lib = find_library(parser, name)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\defaulttags.py", line 1039, in find_library
+    raise TemplateSyntaxError(
+django.template.exceptions.TemplateSyntaxError: 'staticfiles' is not a registered tag library. Must be one of:
+admin_list
+admin_modify
+admin_urls
+bootstrap4
+cache
+crispy_forms_field
+crispy_forms_filters
+crispy_forms_tags
+crispy_forms_utils
+humanize
+i18n
+import_export_tags
+jet_dashboard_tags
+jet_tags
+l10n
+log
+rangefilter_compat
+rest_framework
+static
+tz
+"GET /data/search/?q=Hydraulic HTTP/1.1" 500 21919
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 1243
+Session data corrupted
+"GET /data/search/?q=Hydraulic HTTP/1.1" 200 4953
+"GET /static/vendor/fontawesome-free/css/all.min.css HTTP/1.1" 304 0
+"GET /static/css/sb-admin-2.min.css HTTP/1.1" 304 0
+"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+"GET /static/vendor/jquery/jquery.min.js HTTP/1.1" 304 0
+"GET /static/vendor/bootstrap/js/bootstrap.bundle.min.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.css HTTP/1.1" 304 0
+"GET /media/parts/360/pump.png HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/jquery.dataTables.min.js HTTP/1.1" 304 0
+"GET /static/js/datatables-demo.js HTTP/1.1" 304 0
+"GET /static/vendor/jquery-easing/jquery.easing.min.js HTTP/1.1" 304 0
+"GET /static/js/extends.js HTTP/1.1" 304 0
+"GET /static/js/sb-admin-2.min.js HTTP/1.1" 304 0
+"GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 304 0
+Session data corrupted
+"GET / HTTP/1.1" 302 0
+Session data corrupted
+Internal Server Error: /login/
+Traceback (most recent call last):
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\defaulttags.py", line 1037, in find_library
+    return parser.libraries[name]
+           ~~~~~~~~~~~~~~~~^^^^^^
+KeyError: 'staticfiles'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\handlers\base.py", line 204, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\response.py", line 105, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\response.py", line 81, in rendered_content
+    template = self.resolve_template(self.template_name)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\response.py", line 63, in resolve_template
+    return select_template(template, using=self.using)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\loader.py", line 42, in select_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\backends\django.py", line 34, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\engine.py", line 143, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\engine.py", line 125, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\loaders\base.py", line 29, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 155, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 193, in compile_nodelist
+    return parser.parse()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 478, in parse
+    raise self.error(token, e)
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 476, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\defaulttags.py", line 1088, in load
+    lib = find_library(parser, name)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\defaulttags.py", line 1039, in find_library
+    raise TemplateSyntaxError(
+django.template.exceptions.TemplateSyntaxError: 'staticfiles' is not a registered tag library. Must be one of:
+admin_list
+admin_modify
+admin_urls
+bootstrap4
+cache
+crispy_forms_field
+crispy_forms_filters
+crispy_forms_tags
+crispy_forms_utils
+humanize
+i18n
+import_export_tags
+jet_dashboard_tags
+jet_tags
+l10n
+log
+rangefilter_compat
+rest_framework
+static
+tz
+"GET /login/?next=/ HTTP/1.1" 500 18049
+Session data corrupted
+"GET / HTTP/1.1" 302 0
+Session data corrupted
+Internal Server Error: /login/
+Traceback (most recent call last):
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\defaulttags.py", line 1037, in find_library
+    return parser.libraries[name]
+           ~~~~~~~~~~~~~~~~^^^^^^
+KeyError: 'staticfiles'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\core\handlers\base.py", line 204, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\response.py", line 105, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\response.py", line 81, in rendered_content
+    template = self.resolve_template(self.template_name)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\response.py", line 63, in resolve_template
+    return select_template(template, using=self.using)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\loader.py", line 42, in select_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\backends\django.py", line 34, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\engine.py", line 143, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\engine.py", line 125, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\loaders\base.py", line 29, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 155, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 193, in compile_nodelist
+    return parser.parse()
+           ^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 478, in parse
+    raise self.error(token, e)
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\base.py", line 476, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\defaulttags.py", line 1088, in load
+    lib = find_library(parser, name)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\template\defaulttags.py", line 1039, in find_library
+    raise TemplateSyntaxError(
+django.template.exceptions.TemplateSyntaxError: 'staticfiles' is not a registered tag library. Must be one of:
+admin_list
+admin_modify
+admin_urls
+bootstrap4
+cache
+crispy_forms_field
+crispy_forms_filters
+crispy_forms_tags
+crispy_forms_utils
+humanize
+i18n
+import_export_tags
+jet_dashboard_tags
+jet_tags
+l10n
+log
+rangefilter_compat
+rest_framework
+static
+tz
+"GET /login/?next=/ HTTP/1.1" 500 18069
+C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\site-packages\django\apps\__init__.py changed, reloading.
+Watching for file changes with StatReloader
+Session data corrupted
+"GET / HTTP/1.1" 302 0
+"GET /login/?next=/ HTTP/1.1" 200 875
+"GET /static/css/sb-admin-2.min.css HTTP/1.1" 304 0
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 1243
+Session data corrupted
+"POST /login/?next=/ HTTP/1.1" 302 0
+"GET / HTTP/1.1" 200 4603
+"GET /static/vendor/fontawesome-free/css/all.min.css HTTP/1.1" 304 0
+"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+"GET /media/profile_picture.png HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.css HTTP/1.1" 304 0
+"GET /static/vendor/jquery/jquery.min.js HTTP/1.1" 304 0
+"GET /static/vendor/bootstrap/js/bootstrap.bundle.min.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/jquery.dataTables.min.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.js HTTP/1.1" 304 0
+"GET /static/js/datatables-demo.js HTTP/1.1" 304 0
+"GET /static/js/sb-admin-2.min.js HTTP/1.1" 304 0
+"GET /static/vendor/jquery-easing/jquery.easing.min.js HTTP/1.1" 304 0
+"GET /static/js/extends.js HTTP/1.1" 304 0
+"GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 304 0
+"GET /crm/customers/ HTTP/1.1" 200 4391
+"GET /crm/customers/add/ HTTP/1.1" 200 3963
+"GET /report/ HTTP/1.1" 200 4242
+"GET /purchase/ HTTP/1.1" 200 3634
+"GET /struck/2/ HTTP/1.1" 200 4352
+"GET /data/upload/ HTTP/1.1" 200 4651
+"GET /stock/ HTTP/1.1" 200 4285
+"GET /data/search/?q=JCB HTTP/1.1" 200 6180
+"GET /media/parts/360/pump.png HTTP/1.1" 304 0
+"GET /media/parts/360/tooth.png HTTP/1.1" 304 0
+"GET /admin/data/jcbpart/add/ HTTP/1.1" 200 3444
+"GET /admin/jsi18n/ HTTP/1.1" 200 933
+"GET /jet/jsi18n/ HTTP/1.1" 200 933
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 200 347
+"GET /static/admin/js/urlify.js HTTP/1.1" 200 7902
+"GET /static/admin/js/core.js HTTP/1.1" 200 5698
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 200 1531
+"GET /static/admin/js/actions.js HTTP/1.1" 200 7867
+"GET /static/admin/js/prepopulate_init.js HTTP/1.1" 200 492
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 200 287630
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 200 232381
+"GET /static/admin/js/change_form.js HTTP/1.1" 200 606
+"GET /input/ HTTP/1.1" 200 4569
+D:\inventort-managment\data\views.py changed, reloading.
+Watching for file changes with StatReloader
+D:\inventort-managment\data\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Session data corrupted
+"GET /data/catalog/ HTTP/1.1" 200 3892
+"GET / HTTP/1.1" 200 4624
+"GET /report/ HTTP/1.1" 200 4262
+"GET /report/ HTTP/1.1" 200 4262
+"GET /report/ HTTP/1.1" 200 4262
+"GET /crm/customers/ HTTP/1.1" 200 4415
+"GET / HTTP/1.1" 200 4624
+"GET /data/catalog/ HTTP/1.1" 200 4477
+"GET /input/ HTTP/1.1" 200 4592
+"GET /data/upload/ HTTP/1.1" 200 4665
+"GET /data/search/?q=jcb+ HTTP/1.1" 200 6005
+"GET /admin/data/jcbpart/add/ HTTP/1.1" 200 3444
+"GET /jet/jsi18n/ HTTP/1.1" 200 933
+"GET /admin/jsi18n/ HTTP/1.1" 200 933
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+"GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+"GET /static/admin/js/core.js HTTP/1.1" 304 0
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+"GET /static/admin/js/prepopulate_init.js HTTP/1.1" 304 0
+"GET /static/admin/js/actions.js HTTP/1.1" 304 0
+"GET /static/admin/js/change_form.js HTTP/1.1" 304 0
+"POST /admin/data/jcbpart/add/ HTTP/1.1" 200 3518
+"GET /jet/jsi18n/ HTTP/1.1" 200 933
+"GET /admin/jsi18n/ HTTP/1.1" 200 933
+"GET /input/ HTTP/1.1" 200 4593
+- Broken pipe from ('127.0.0.1', 65105)
+
+"GET /data/search/?q=JCB HTTP/1.1" 200 6202
+D:\inventort-managment\cashier\views.py changed, reloading.
+Watching for file changes with StatReloader
+D:\inventort-managment\core\settings.py changed, reloading.
+Watching for file changes with StatReloader
+D:\inventort-managment\core\settings.py changed, reloading.
+Watching for file changes with StatReloader

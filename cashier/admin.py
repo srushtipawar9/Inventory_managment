@@ -1,7 +1,7 @@
 from django.contrib import admin
 from cashier.models import DaftarBarang, DaftarTransaksi, ListProductTransaksi
 from import_export.admin import ImportExportModelAdmin
-from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
+from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 
 admin.site.site_header = "JCB & Hydraulic Parts - Inventory Management"
 admin.site.site_title = "JCB Parts Admin"

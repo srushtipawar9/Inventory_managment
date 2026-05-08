@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, reverse, render_to_response
+from django.shortcuts import render, redirect, reverse
 from decimal import Decimal
 from django.http import HttpResponse, HttpResponseRedirect
 from django.forms import formset_factory, modelformset_factory
@@ -69,6 +69,7 @@ def InputStock(request):
             'stocks': stocks,
             'forms': formset,
             'request_user': request.user.id,
+            'prefill': request.GET.get('prefill', '')
         }
         return render(request, 'cashier/input_data.html', context)
 
@@ -79,7 +80,7 @@ def TotalStock(request):
     context = {
         'data':data
     }
-    return render_to_response('cashier/stock.html', context)
+    return render(request, 'cashier/stock.html', context)
 
 
 @login_required()

@@ -46,7 +46,7 @@
                                      <td>
                                         <select name="form-0-{{form.nama_product.name}}"  id="id_form-0-nama_product">
                                            {% for stock in stocks %}
-                                              <option value="{{ stock.name }}">{{ stock.part_number }} - {{ stock.name }}</option>
+                                              <option value="{{ stock.name }}" {% if prefill and prefill|lower in stock.name|lower or prefill|lower in stock.part_number|lower %}selected{% endif %}>{{ stock.part_number }} - {{ stock.name }}</option>
                                            {% endfor %}
                                         </select>
                                      </td>
@@ -63,7 +63,7 @@
                                         <td>
                                         <select name="form-__prefix__-nama_product" id="id_form-__prefix__-nama_product">
                                            {% for stock in stocks %}
-                                              <option value="{{ stock.name }}">{{ stock.part_number }} - {{ stock.name }}</option>
+                                              <option value="{{ stock.name }}" {% if prefill and prefill|lower in stock.name|lower or prefill|lower in stock.part_number|lower %}selected{% endif %}>{{ stock.part_number }} - {{ stock.name }}</option>
                                            {% endfor %}
                                         </select>
                                         </td>

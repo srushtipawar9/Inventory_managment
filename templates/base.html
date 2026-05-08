@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-   {% load static from staticfiles %}
+   {% load static %}
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -75,6 +75,7 @@
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">JCB Parts Management:</h6>
+            <a class="collapse-item" href="{% url 'MasterCatalog' %}">JCB Master Catalog</a>
             <a class="collapse-item" href="{% url 'TotalStock' %}">View JCB Parts Inventory</a>
             <a class="collapse-item" href="{% url 'StockUpload' %}">Bulk Upload Parts (Excel)</a>
           </div>
@@ -179,6 +180,7 @@
                 </form>
               </div>
             </li>
+            {% if user.is_authenticated %}
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -199,6 +201,7 @@
                 </a>
               </div>
             </li>
+            {% endif %}
 
           </ul>
         </nav>
@@ -267,6 +270,10 @@
   <!-- Bootstrap core JavaScript-->
   <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
   <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <!-- Date Range Picker Dependencies -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
   <!-- Page level plugins -->
   <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
   <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>

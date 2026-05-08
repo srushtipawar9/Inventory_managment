@@ -152,3 +152,7 @@ def ImportAmazonPart(request):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+def MasterCatalog(request):
+    parts = JCBPart.objects.all().order_by('category', 'name')
+    return render(request, 'data/master_catalog.html', {'parts': parts})
