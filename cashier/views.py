@@ -51,24 +51,39 @@ def InputStock(request):
     formset = DaftarBarangFormset()
     stocks = JCBPart.objects.all()
     if request.method == 'POST':
-        # return HttpResponse('tes')
         formset_post = DaftarBarangFormset(request.POST)
         if formset_post.is_valid():
             for form in formset_post:
-                if form.cleaned_data['jumlah_produk'] < 1 or form.cleaned_data['harga_beli_satuan'] < 1 or form.cleaned_data['laba_persen'] < 1:
-                    messages.warning(request, 'Anda belum memasukkan data dengan lengkap!.')
+                # If form is empty (no data), skip it
+                if not form.cleaned_data.get('nama_product'):
+                    continue
+                    
+                # Basic validation
+                jumlah = form.cleaned_data.get('jumlah_produk', 0)
+                harga = form.cleaned_data.get('harga_beli_satuan', 0)
+                laba = form.cleaned_data.get('laba_persen', 0)
+                
+                if jumlah < 1 or harga < 1 or laba < 1:
+                    messages.warning(request, f'Please fill all fields for {form.cleaned_data.get("nama_product")}')
                     return redirect('/input/')
+                
                 form.save()
-            messages.success(request, 'Barang berhasil disimpan ke dalam stock!')
+            messages.success(request, 'Inventory saved successfully!')
             return HttpResponseRedirect('/input/')
         else:
-            messages.warning(request, 'Anda belum memasukkan data dengan benar!')
+            # Show specific errors
+            error_msg = ""
+            print("FORMSET ERRORS:", formset_post.errors)
+            print("POST DATA:", request.POST)
+            for error in formset_post.errors:
+                error_msg += str(error)
+            messages.warning(request, f'Form Validation Error: {error_msg}')
             return redirect('/input/')
     else:
         context = {
             'stocks': stocks,
             'forms': formset,
-            'request_user': request.user.id,
+            'request_user': request.user.profile.id,
             'prefill': request.GET.get('prefill', '')
         }
         return render(request, 'cashier/input_data.html', context)
@@ -76,7 +91,7 @@ def InputStock(request):
 
 @login_required()
 def TotalStock(request):
-    data = DaftarBarang.objects.filter(user_id=request.user.id)
+    data = DaftarBarang.objects.filter(user_id=request.user.profile.id)
     context = {
         'data':data
     }

@@ -147,7 +147,7 @@
           </button>
 
           <!-- Topbar Search -->
-          <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" action="{% url 'GlobalSearch' %}" method="GET">
+          <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" action="/data/search/" method="GET">
             <div class="input-group">
               <input type="text" name="q" class="form-control bg-light border-0 small" placeholder="Search JCB Parts..." aria-label="Search" aria-describedby="basic-addon2">
               <div class="input-group-append">
@@ -284,6 +284,8 @@
   <!-- Custom scripts for all pages-->
   <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
   <script src="{% static 'js/extends.js' %}"></script>
+  
+  {% block scripts %}{% endblock %}
 
 </body>
 

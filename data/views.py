@@ -1,8 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .resources import StockResource
 from tablib import Dataset
 from .models import JCBPart, Stock
 from django.db.models import Q
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def GlobalSearch(request):
     query = request.GET.get('q')
@@ -156,3 +158,42 @@ def ImportAmazonPart(request):
 def MasterCatalog(request):
     parts = JCBPart.objects.all().order_by('category', 'name')
     return render(request, 'data/master_catalog.html', {'parts': parts})
+
+@login_required
+def RemovePartImage(request, part_id):
+    part = get_object_or_404(JCBPart, id=part_id)
+    if part.image_360_base:
+        # Delete the actual file if you want, or just clear the field
+        part.image_360_base.delete(save=False)
+        part.image_360_base = None
+        part.save()
+        messages.success(request, f"Image removed for {part.part_number}")
+    return redirect(request.META.get('HTTP_REFERER', '/data/search/'))
+
+@login_required
+def QuickAddProduct(request):
+    if request.method == 'POST':
+        part_number = request.POST.get('part_number')
+        name = request.POST.get('name')
+        price = request.POST.get('price', 0)
+        category = request.POST.get('category', 'OTHER')
+        description = request.POST.get('description', '')
+        image = request.FILES.get('image')
+
+        try:
+            new_part = JCBPart.objects.create(
+                part_number=part_number,
+                name=name,
+                price=price,
+                category=category,
+                description=description,
+                stock_quantity=0
+            )
+            if image:
+                new_part.image_360_base = image
+                new_part.save()
+            messages.success(request, f"Product '{name}' added successfully!")
+        except Exception as e:
+            messages.error(request, f"Error adding product: {str(e)}")
+            
+    return redirect(request.META.get('HTTP_REFERER', '/data/search/'))

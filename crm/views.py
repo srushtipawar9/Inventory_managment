@@ -65,14 +65,48 @@ def CustomerDelete(request, customer_id):
     messages.success(request, f'Customer "{name}" deleted successfully!')
     return redirect('CustomerList')
 
+import urllib.parse
+# TIP: For automatic SMS, you can integrate services like Twilio or Fast2SMS here.
+# from your_sms_provider import send_sms 
+
 @login_required
 def SendReminder(request, customer_id):
+    """
+    Developer Note: This view handles payment reminders. 
+    Currently using WhatsApp redirection (Free & No Setup).
+    To switch to Automatic SMS, integrate an API like Twilio/Fast2SMS.
+    """
     customer = get_object_or_404(Customer, id=customer_id)
-    # In a real app, this would send an SMS or Email
-    # For now, we just create a record and show a success message
+    
+    # 1. Prepare Message
+    message = (
+        f"Dear {customer.name}, this is a reminder from JCB Parts Inventory. "
+        f"You have a pending balance of ₹{customer.outstanding_balance}. "
+        "Please clear it at your convenience. Thank you!"
+    )
+    
+    # 2. Log the reminder in Database
     PaymentReminder.objects.create(
         customer=customer,
-        message=f"Reminder: Dear {customer.name}, you have a pending balance of ₹{customer.outstanding_balance}."
+        message=message
     )
-    messages.success(request, f"Reminder sent to {customer.name}!")
-    return redirect('CustomerList')
+    
+    # 3. Handle Delivery (WhatsApp Method)
+    # Format phone: remove non-digits and add India code if missing
+    phone = "".join(filter(str.isdigit, customer.phone))
+    if len(phone) == 10:
+        phone = "91" + phone
+        
+    # --- AUTOMATIC SMS GATEWAY (PLACEHOLDER) ---
+    # if API_KEY_AVAILABLE:
+    #     send_sms(phone, message)
+    #     messages.success(request, f"Automatic SMS sent to {customer.name}!")
+    #     return redirect('CustomerList')
+    # --------------------------------------------
+
+    # Fallback to WhatsApp Redirection
+    encoded_msg = urllib.parse.quote(message)
+    whatsapp_url = f"https://api.whatsapp.com/send?phone={phone}&text={encoded_msg}"
+    
+    messages.success(request, f"Opening WhatsApp to send reminder to {customer.name}...")
+    return redirect(whatsapp_url)
