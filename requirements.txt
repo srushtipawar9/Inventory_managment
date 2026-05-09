@@ -5,3 +5,4 @@ tzdata==2024.1
 dnspython==2.8.0
 gunicorn
 sentry-sdk== 2.0.1
+dj_database_url
