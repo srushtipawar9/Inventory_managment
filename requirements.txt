@@ -4,4 +4,4 @@ sqlparse==0.5.0
 tzdata==2024.1
 dnspython==2.8.0
 gunicorn
-sentry-sdk
+sentry-sdk== 2.0.1
