@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Building project packages..."
-python3.9 -m pip install -r requirements.txt
+pip3 install -r requirements.txt --break-system-packages
 
 echo "Collecting static files..."
-python3.9 manage.py collectstatic --noinput --clear
+python3 manage.py collectstatic --noinput --clear

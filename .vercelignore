@@ -1,0 +1,12 @@
+.git
+.gitignore
+server.log
+cashier.db
+env/
+venv/
+__pycache__/
+staticfiles/
+media/
+scratch/
+.circleci
+.travis.yml

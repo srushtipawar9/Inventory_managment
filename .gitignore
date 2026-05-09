@@ -20,3 +20,4 @@ local_settings.py
 
 # Logs
 *.log
+.vercel
