@@ -41,7 +41,7 @@ DEBUG = 1
 DEBUG_TAMPLATES = DEBUG
 
 # BASE_URL = "localhost:8000"
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 # Session, cache, ssl secure
 
 "Do not forget to uncoment this section below when you deploy to production"
