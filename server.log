@@ -2523,3 +2523,31 @@ Watching for file changes with StatReloader
 "GET / HTTP/1.1" 200 4840
 "GET / HTTP/1.1" 200 4840
 "GET /stock/ HTTP/1.1" 200 4607
+Watching for file changes with StatReloader
+Session data corrupted
+"GET / HTTP/1.1" 302 0
+"GET /login/?next=/ HTTP/1.1" 200 878
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 1243
+Session data corrupted
+"POST /login/?next=/ HTTP/1.1" 302 0
+"GET / HTTP/1.1" 200 4836
+"GET /data/search/?q=JCB HTTP/1.1" 200 7220
+"GET /media/parts/360/JCB-C601_oySBdHi.jpg HTTP/1.1" 304 0
+"GET /media/parts/360/JCB-C602_ub80W4W.jpg HTTP/1.1" 304 0
+"GET /media/parts/360/JCB-L702_BdNuUbk.jpg HTTP/1.1" 304 0
+"GET /media/parts/360/JCB-H303_gav3tSh.jpg HTTP/1.1" 304 0
+"GET /media/parts/360/JCB-E401_Z6Z7eyt.jpg HTTP/1.1" 304 0
+"GET /media/parts/360/JCB-L701_EircsNb.jpg HTTP/1.1" 304 0
+"GET /media/parts/360/JCB-G501_xpYkb94.jpg HTTP/1.1" 304 0
+"GET /media/parts/360/JCB-G502_lVu8Ued.jpg HTTP/1.1" 304 0
+"GET /media/parts/360/pump.png HTTP/1.1" 304 0
+"GET /media/parts/360/JCB-E402_cdTM2sR.jpg HTTP/1.1" 304 0
+"GET /media/parts/360/JCB-H301_YwX5ojd.jpg HTTP/1.1" 304 0
+"GET /media/parts/360/JCB-E403_jcspZqy.jpg HTTP/1.1" 304 0
+"GET /media/parts/360/tooth.png HTTP/1.1" 304 0
+"GET /input/?prefill=JCB HTTP/1.1" 200 5405
+"GET / HTTP/1.1" 200 4836
+"GET /data/search/?q=JCB HTTP/1.1" 200 7217
+"GET /input/?prefill=JCB HTTP/1.1" 200 5409
+"GET /stock/ HTTP/1.1" 200 4607
