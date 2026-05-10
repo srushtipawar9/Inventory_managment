@@ -13,10 +13,11 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import logging.config
 # import django_heroku
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 import dj_database_url
 
+# Sentry SDK (uncomment and configure when needed)
+# import sentry_sdk
+# from sentry_sdk.integrations.django import DjangoIntegration
 # sentry_sdk.init(
 #     dsn="your_sentry_token",
 #     integrations=[DjangoIntegration()]
