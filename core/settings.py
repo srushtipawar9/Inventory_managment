@@ -187,10 +187,8 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-"Satic Files Handling"
-# STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
-# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+"Static Files Handling"
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
