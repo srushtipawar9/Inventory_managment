@@ -8,6 +8,13 @@ https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 """
 
 import os
+import collections
+import collections.abc
+
+# Compatibility patch for Python 3.10+ (django-3-jet uses deprecated collections classes)
+for attr in ('MutableSet', 'MutableMapping', 'MutableSequence', 'Mapping', 'Callable'):
+    if not hasattr(collections, attr):
+        setattr(collections, attr, getattr(collections.abc, attr))
 
 from django.core.wsgi import get_wsgi_application
 
