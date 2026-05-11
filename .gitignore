@@ -13,6 +13,7 @@ __pycache__/
 db.sqlite3
 .env
 local_settings.py
+cashier.db
 
 # Static and Media
 
@@ -21,3 +22,4 @@ local_settings.py
 # Logs
 *.log
 .vercel
+.vscode/
