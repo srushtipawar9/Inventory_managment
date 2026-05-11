@@ -43,3 +43,36 @@ class JCBPart(models.Model):
 
     def __str__(self):
         return f"{self.part_number} - {self.name}"
+
+
+class Vendor(models.Model):
+    name = models.CharField(max_length=120)
+    city = models.CharField(max_length=80)
+    contact_phone = models.CharField(max_length=30, blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('name', 'city')
+        ordering = ('city', 'name')
+
+    def __str__(self):
+        return f"{self.name} ({self.city})"
+
+
+class VendorPartPrice(models.Model):
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='part_prices')
+    part = models.ForeignKey(JCBPart, on_delete=models.CASCADE, related_name='vendor_prices')
+    price = models.DecimalField(max_digits=12, decimal_places=2)
+    notes = models.CharField(max_length=200, blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('vendor', 'part')
+        ordering = ('part__category', 'part__name', 'vendor__city', 'vendor__name')
+
+    def __str__(self):
+        return f"{self.vendor} - {self.part.part_number}: {self.price}"

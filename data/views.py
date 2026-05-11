@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .resources import StockResource
 from tablib import Dataset
-from .models import JCBPart, Stock
+from .models import JCBPart, Stock, VendorPartPrice
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -158,6 +158,51 @@ def ImportAmazonPart(request):
 def MasterCatalog(request):
     parts = JCBPart.objects.all().order_by('category', 'name')
     return render(request, 'data/master_catalog.html', {'parts': parts})
+
+
+@login_required
+def VendorComparison(request):
+    """
+    Compare vendor prices across cities and highlight cheapest/most-expensive.
+    """
+    category = (request.GET.get("category") or "HYDRAULICS").upper()
+    if category not in ("HYDRAULICS", "ALL"):
+        category = "HYDRAULICS"
+
+    prices_qs = (
+        VendorPartPrice.objects.select_related("vendor", "part")
+        .all()
+        .order_by("part__category", "part__name", "vendor__city", "vendor__name")
+    )
+    if category != "ALL":
+        prices_qs = prices_qs.filter(part__category=category)
+
+    # Group by part
+    parts_map = {}
+    for vp in prices_qs:
+        p = vp.part
+        entry = parts_map.get(p.id)
+        if not entry:
+            entry = {
+                "part": p,
+                "rows": [],
+                "min_price": None,
+                "max_price": None,
+            }
+            parts_map[p.id] = entry
+        entry["rows"].append(vp)
+
+    # Precompute min/max per part
+    for entry in parts_map.values():
+        prices = [r.price for r in entry["rows"]]
+        entry["min_price"] = min(prices) if prices else None
+        entry["max_price"] = max(prices) if prices else None
+
+    context = {
+        "category": category,
+        "parts_entries": list(parts_map.values()),
+    }
+    return render(request, "data/vendors.html", context)
 
 @login_required
 def RemovePartImage(request, part_id):
