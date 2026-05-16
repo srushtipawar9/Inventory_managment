@@ -12,18 +12,18 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 def GlobalSearch(request):
-    query = request.GET.get('q')
-    results = {
+    query = request.GET.get('q', '').strip()
+    
+    context = {
         'categorized_parts': {},
         'stocks': [],
         'inventory_results': [],
         'amazon_results': [],
         'extra_parts': [],
         'jcb_products': [],
-        'query': query or '',
+        'query': query,
         'has_parts': False
     }
-
     
     if query:
         # Search in JCBPart
@@ -31,7 +31,7 @@ def GlobalSearch(request):
             Q(name__icontains=query) | Q(part_number__icontains=query) | Q(description__icontains=query)
         ).order_by('category')
         
-        # Group parts by category for better UI
+        # Group parts by category
         categorized_parts = {}
         for part in parts_list:
             cat_name = part.get_category_display()
@@ -39,7 +39,7 @@ def GlobalSearch(request):
                 categorized_parts[cat_name] = []
             categorized_parts[cat_name].append(part)
             
-        # Search in Stock
+        # Search in Stock (Legacy)
         stocks = Stock.objects.filter(name__icontains=query)
         
         # Search in Inventory (DaftarBarang)
@@ -48,33 +48,30 @@ def GlobalSearch(request):
         ).order_by('-created')
 
         # --- Amazon Marketplace Integration ---
-        import requests
         amazon_results = []
-        headers = {
-            "x-rapidapi-key": "a536bdbeafmshfc70cd8bb5336c9p146880jsnc8af7367cb7a",
-            "x-rapidapi-host": "real-time-amazon-data.p.rapidapi.com"
-        }
-        
         try:
+            headers = {
+                "x-rapidapi-key": "a536bdbeafmshfc70cd8bb5336c9p146880jsnc8af7367cb7a",
+                "x-rapidapi-host": "real-time-amazon-data.p.rapidapi.com"
+            }
             url = "https://real-time-amazon-data.p.rapidapi.com/search"
             querystring = {"query": query, "page": "1", "country": "IN", "sort_by": "RELEVANCE"}
-            response = requests.get(url, headers=headers, params=querystring, timeout=10)
+            response = requests.get(url, headers=headers, params=querystring, timeout=5)
             if response.status_code == 200:
                 amazon_results = response.json().get('data', {}).get('products', [])[:8]
-                
         except Exception as e:
             print(f"Amazon API Error: {e}")
         
-        results.update({
+        context.update({
             'categorized_parts': categorized_parts,
             'stocks': stocks,
             'inventory_results': inventory_results,
             'amazon_results': amazon_results,
             'has_parts': len(parts_list) > 0 or inventory_results.exists()
         })
-
         
-    return render(request, 'data/search_results.html', results)
+    return render(request, 'data/search_results.html', context)
+
 
 
 def PartDetail(request, part_id):
