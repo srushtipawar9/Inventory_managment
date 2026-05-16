@@ -12,8 +12,26 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import logging.config
-# import django_heroku
 import dj_database_url
+import collections
+
+# Shim for Python 3.10+ compatibility with older packages (like django-3-jet)
+if not hasattr(collections, 'MutableSet'):
+    import collections.abc
+    collections.MutableSet = collections.abc.MutableSet
+if not hasattr(collections, 'Mapping'):
+    import collections.abc
+    collections.Mapping = collections.abc.Mapping
+if not hasattr(collections, 'Sequence'):
+    import collections.abc
+    collections.Sequence = collections.abc.Sequence
+if not hasattr(collections, 'Callable'):
+    import collections.abc
+    collections.Callable = collections.abc.Callable
+if not hasattr(collections, 'Iterable'):
+    import collections.abc
+    collections.Iterable = collections.abc.Iterable
+
 
 # Sentry SDK (uncomment and configure when needed)
 # import sentry_sdk

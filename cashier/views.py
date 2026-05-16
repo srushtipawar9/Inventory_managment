@@ -200,7 +200,8 @@ def ReportView(request):
                                                    created__date__gte=startDateConverter,
                                                    created__date__lte = endDateConverter)
         daftar_barang = ListProductTransaksi.objects.filter(transaksi_id__in=from_user)
-        return render(request, 'report_details.html', {'daftar_barang': daftar_barang, 'num': startDateConverter})
+        return render(request, 'cashier/report_details.html', {'daftar_barang': daftar_barang, 'num': startDateConverter})
+
     from_user = DaftarTransaksi.objects.filter(user_id=request.user.id)
     daftar_barang = ListProductTransaksi.objects.filter(transaksi_id__in=from_user)
 

@@ -8,7 +8,16 @@ from django.contrib.auth.decorators import login_required
 
 def GlobalSearch(request):
     query = request.GET.get('q')
-    results = []
+    results = {
+        'categorized_parts': {},
+        'stocks': [],
+        'amazon_results': [],
+        'extra_parts': [],
+        'jcb_products': [],
+        'query': query or '',
+        'has_parts': False
+    }
+    
     if query:
         # Search in JCBPart
         parts_list = JCBPart.objects.filter(
@@ -29,14 +38,12 @@ def GlobalSearch(request):
         # --- Amazon Marketplace Integration ---
         import requests
         amazon_results = []
-        extra_parts = []
         headers = {
             "x-rapidapi-key": "a536bdbeafmshfc70cd8bb5336c9p146880jsnc8af7367cb7a",
             "x-rapidapi-host": "real-time-amazon-data.p.rapidapi.com"
         }
         
         try:
-            # Reverting to simpler query for better reliability
             url = "https://real-time-amazon-data.p.rapidapi.com/search"
             querystring = {"query": query, "page": "1", "country": "IN", "sort_by": "RELEVANCE"}
             response = requests.get(url, headers=headers, params=querystring, timeout=10)
@@ -46,16 +53,15 @@ def GlobalSearch(request):
         except Exception as e:
             print(f"Amazon API Error: {e}")
         
-        results = {
+        results.update({
             'categorized_parts': categorized_parts,
             'stocks': stocks,
             'amazon_results': amazon_results,
-            'extra_parts': [],
-            'jcb_products': [],
-            'query': query,
             'has_parts': len(parts_list) > 0
-        }
+        })
+        
     return render(request, 'data/search_results.html', results)
+
 
 def PartDetail(request, part_id):
     part = get_object_or_404(JCBPart, id=part_id)
