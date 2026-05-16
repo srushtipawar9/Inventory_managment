@@ -1,136 +1,219 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
-
 {% load static %}
 {% block content %}
 
-<!--Total Stock-->
-<!-- Begin Page Content -->
 <div class="container-fluid">
-  <!-- Begin Page Content -->
-  <div class="container-fluid">
-    <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">JCB Part Inventory Input</h1>
-     <h6><strong style="color:red;">Please ensure you verify the parts matching your delivery note</strong></h6>
-
-    <!-- DataTales Example -->
-    <div class="card shadow mb-4">
-      <div class="card-header md-3">
-        <h6 class="m-0 font-weight-bold text-primary">Input JCB Parts</h6>
-      </div>
-      <div class="card-body md-4">
-        <div class="table-responsive">
-
-             <form method="post" enctype="application/x-www-form-urlencoded">
-
-                <!--Removing Search Field-->
-                     <table class="table table-hover table-bordered shadow-sm" id="inputDataTable">
-                     {% csrf_token %}
-                     {{forms.management_form}}
-                          <thead class="bg-primary text-white">
-                            <tr>
-                              <th scope="col" style="width: 40%;">Part Name</th>
-                              <th scope="col" style="width: 15%;">Quantity</th>
-                              <th scope="col" style="width: 20%;">Unit Price (₹)</th>
-                              <th scope="col" style="width: 20%;">Profit Margin (%)</th>
-                              <th scope="col" style="width: 5%;">Action</th>
-                            </tr>
-                          </thead>
-                          <tbody id="table-stock">
-                            {% for form in forms %}
-                            <tr class="stock-row">
-                               <td>
-                                  <select name="form-0-nama_product" id="id_form-0-nama_product" class="form-control select2">
-                                     {% for stock in stocks %}
-                                        <option value="{{ stock.name }}" {% if prefill and prefill|lower in stock.name|lower or prefill|lower in stock.part_number|lower %}selected{% endif %}>{{ stock.part_number }} - {{ stock.name }}</option>
-                                     {% endfor %}
-                                  </select>
-                               </td>
-                               <td><input type="number" name="form-0-jumlah_produk" class="form-control" placeholder="Qty" required></td>
-                               <td><input type="number" step="0.01" name="form-0-harga_beli_satuan" class="form-control" placeholder="Price" required></td>
-                               <td><input type="number" step="0.01" name="form-0-laba_persen" class="form-control" placeholder="%" value="10"></td>
-                               <td><button class="btn btn-sm btn-outline-danger disabled"><i class="fas fa-times"></i></button></td>
-                               <input value="{{request_user}}" type="hidden" name="form-0-user">
-                            </tr>
-                            {% endfor %}
-                          </tbody>
-                          <tfoot id="copiedForm">
-                             <tr id="EmptyForm" style="display:none">
-                                <td>
-                                   <select name="form-__prefix__-nama_product" id="id_form-__prefix__-nama_product" class="form-control">
-                                      {% for stock in stocks %}
-                                         <option value="{{ stock.name }}">{{ stock.part_number }} - {{ stock.name }}</option>
-                                      {% endfor %}
-                                   </select>
-                                </td>
-                                <td><input type="number" name="form-__prefix__-jumlah_produk" class="form-control" placeholder="Qty"></td>
-                                <td><input type="number" step="0.01" name="form-__prefix__-harga_beli_satuan" class="form-control" placeholder="Price"></td>
-                                <td><input type="number" step="0.01" name="form-__prefix__-laba_persen" class="form-control" placeholder="%" value="10"></td>
-                                <input value="{{request_user}}" type="hidden" name="form-__prefix__-user">
-                                <td> <button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
-                             </tr>
-                          </tfoot>
-                     </table>
-                     <div class="mt-3">
-                        <button type="button" class="btn btn-info shadow-sm" id="inputStockAdder">
-                            <i class="fas fa-plus-circle"></i> Add More Parts
-                        </button>
-                     </div>
-                <div class="mt-4 pt-3 border-top">
-                   <button class="btn btn-success px-4 shadow" type="submit"><i class="fas fa-save"></i> Save Inventory</button>
-                   <a href="{% url 'HomeIndex' %}" class="btn btn-outline-secondary px-4"><i class="fas fa-home"></i> Back to Dashboard</a>
-                   <a href="{% url 'TotalStock' %}" class="btn btn-outline-info px-4"><i class="fas fa-eye"></i> View Total Stock</a>
-                </div>
-                <!--Adding form-->
-
-             </form>
-        </div>
-      </div>
-    </div>
-
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">JCB Part Inventory Input</h1>
+    <button type="button" id="toggleAdvanceBtn" class="btn btn-sm btn-outline-primary shadow-sm">
+      <i class="fas fa-sliders-h"></i> Show Advanced Fields
+    </button>
   </div>
-  <!-- /.container-fluid -->
+  <p class="text-danger small mb-3"><strong>Please verify parts match your delivery note before saving.</strong></p>
 
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 font-weight-bold text-primary">Input JCB Parts</h6>
+      <a href="{% url 'MasterCatalog' %}" class="btn btn-sm btn-info"><i class="fas fa-book"></i> JCB Master Catalog</a>
+    </div>
+    <div class="card-body">
+      <form method="post" id="inventoryForm">
+        {% csrf_token %}
+        {{ forms.management_form }}
+
+        <datalist id="vendor-list">
+          {% for v in vendor_names %}
+          <option value="{{ v }}"></option>
+          {% endfor %}
+        </datalist>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm" id="inputDataTable">
+            <thead class="bg-primary text-white text-center">
+              <tr>
+                <th style="width:4%">SR</th>
+                <th style="width:16%">Item Name</th>
+                <th style="width:10%">No. / For What</th>
+                <th style="width:8%">HSN / SAC</th>
+                <th style="width:6%">Qty</th>
+                <th class="advance-col d-none" style="width:10%">Vendor</th>
+                <th class="advance-col d-none" style="width:8%">Purchase Price</th>
+                <th class="advance-col d-none" style="width:6%">GST %</th>
+                <th class="advance-col d-none" style="width:8%">GST Amt</th>
+                <th class="advance-col d-none" style="width:9%">Amt Incl Tax</th>
+                <th class="advance-col d-none" style="width:6%">Profit %</th>
+                <th style="width:8%">Sales Price</th>
+                <th style="width:7%">MRP</th>
+                <th style="width:4%">Del</th>
+              </tr>
+            </thead>
+            <tbody id="table-stock">
+              {% for form in forms %}
+              <tr class="stock-row">
+                <td class="text-center sr-cell align-middle">{{ forloop.counter }}</td>
+                <td>{{ form.nama_product }}{% if form.nama_product.errors %}<div class="text-danger small">{{ form.nama_product.errors }}</div>{% endif %}</td>
+                <td>{{ form.part_for_what }}</td>
+                <td>{{ form.hsn_sac }}</td>
+                <td>{{ form.jumlah_produk }}</td>
+                <td class="advance-col d-none">{{ form.vendor }}</td>
+                <td class="advance-col d-none">{{ form.harga_beli_satuan }}</td>
+                <td class="advance-col d-none">{{ form.gst_percent }}</td>
+                <td class="advance-col d-none">{{ form.gst_amount }}</td>
+                <td class="advance-col d-none">{{ form.amt_incl_tax }}</td>
+                <td class="advance-col d-none">{{ form.laba_persen }}</td>
+                <td>{{ form.harga_jual_satuan }}</td>
+                <td>{{ form.mrp }}</td>
+                <td class="text-center align-middle">
+                  {% if not forloop.first %}
+                  <button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button>
+                  {% endif %}
+                </td>
+                {{ form.user }}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <button type="button" class="btn btn-info btn-sm shadow-sm" id="inputStockAdder">
+          <i class="fas fa-plus-circle"></i> Add More Parts
+        </button>
+
+        <div class="mt-4 pt-3 border-top">
+          <button class="btn btn-success px-4 shadow" type="submit"><i class="fas fa-save"></i> Save Inventory</button>
+          <a href="{% url 'HomeIndex' %}" class="btn btn-outline-secondary px-4"><i class="fas fa-home"></i> Back to Dashboard</a>
+          <a href="{% url 'TotalStock' %}" class="btn btn-outline-info px-4"><i class="fas fa-eye"></i> View Total Stock</a>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
-<!-- End of Main Content -->
+
+<!-- Empty row template -->
+<table class="d-none">
+  <tbody>
+    <tr id="EmptyForm">
+      <td class="text-center sr-cell align-middle">__sr__</td>
+      <td><select name="form-__prefix__-nama_product" class="form-control part-select"><option value="">-- Select Item --</option>{% for stock in stocks %}<option value="{{ stock.part_number }} - {{ stock.name }}">{{ stock.part_number }} - {{ stock.name }}</option>{% endfor %}</select></td>
+      <td><input type="text" name="form-__prefix__-part_for_what" class="form-control" placeholder="No. / For What"></td>
+      <td><input type="text" name="form-__prefix__-hsn_sac" class="form-control" placeholder="HSN / SAC"></td>
+      <td><input type="number" name="form-__prefix__-jumlah_produk" class="form-control calc-field" placeholder="Qty" min="1"></td>
+      <td class="advance-col d-none"><input type="text" name="form-__prefix__-vendor" class="form-control" placeholder="Vendor" list="vendor-list"></td>
+      <td class="advance-col d-none"><input type="number" name="form-__prefix__-harga_beli_satuan" class="form-control calc-field" placeholder="Purchase" step="0.01" min="0"></td>
+      <td class="advance-col d-none"><input type="number" name="form-__prefix__-gst_percent" class="form-control calc-field" placeholder="GST %" step="0.01" min="0" value="0"></td>
+      <td class="advance-col d-none"><input type="number" name="form-__prefix__-gst_amount" class="form-control calc-field" placeholder="GST Amt" step="0.01" readonly></td>
+      <td class="advance-col d-none"><input type="number" name="form-__prefix__-amt_incl_tax" class="form-control calc-field" placeholder="Incl Tax" step="0.01" readonly></td>
+      <td class="advance-col d-none"><input type="number" name="form-__prefix__-laba_persen" class="form-control calc-field" placeholder="%" min="0" value="10"></td>
+      <td><input type="number" name="form-__prefix__-harga_jual_satuan" class="form-control calc-field" placeholder="Sales" step="0.01" min="0"></td>
+      <td><input type="number" name="form-__prefix__-mrp" class="form-control" placeholder="MRP" step="0.01" min="0"></td>
+      <td class="text-center align-middle"><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
+      <input type="hidden" name="form-__prefix__-user" value="{{ request_user }}">
+    </tr>
+  </tbody>
+</table>
 
 {% endblock %}
 
 {% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const adder = document.getElementById('inputStockAdder');
-        const tableBody = document.getElementById('table-stock');
-        const emptyForm = document.getElementById('EmptyForm');
-        const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+(function() {
+  const advanceVisible = localStorage.getItem('inventoryAdvance') === '1';
 
-        if (adder) {
-            adder.addEventListener('click', function() {
-                const currentFormCount = parseInt(totalForms.value);
-                const newForm = emptyForm.cloneNode(true);
-                
-                newForm.id = `form-${currentFormCount}`;
-                newForm.style.display = '';
-                newForm.classList.add('stock-row');
-                
-                // Update names and IDs
-                const regex = new RegExp('__prefix__', 'g');
-                newForm.innerHTML = newForm.innerHTML.replace(regex, currentFormCount);
-                
-                tableBody.appendChild(newForm);
-                totalForms.value = currentFormCount + 1;
-            });
-        }
+  function recalcRow(row) {
+    const qty = parseFloat(row.querySelector('[name$="-jumlah_produk"]')?.value) || 0;
+    const purchase = parseFloat(row.querySelector('[name$="-harga_beli_satuan"]')?.value) || 0;
+    const gstPct = parseFloat(row.querySelector('[name$="-gst_percent"]')?.value) || 0;
+    const profitPct = parseFloat(row.querySelector('[name$="-laba_persen"]')?.value) || 0;
+    const base = purchase * qty;
+    const gstAmt = base * gstPct / 100;
+    const incl = base + gstAmt;
+    const gstField = row.querySelector('[name$="-gst_amount"]');
+    const inclField = row.querySelector('[name$="-amt_incl_tax"]');
+    const salesField = row.querySelector('[name$="-harga_jual_satuan"]');
+    if (gstField) gstField.value = gstAmt ? gstAmt.toFixed(2) : '';
+    if (inclField) inclField.value = incl ? incl.toFixed(2) : '';
+    if (salesField && purchase > 0) {
+      const sales = purchase + (purchase * profitPct / 100);
+      if (!salesField.dataset.manual) salesField.value = sales.toFixed(2);
+    }
+  }
 
-        // Handle delete using delegation
-        document.addEventListener('click', function(e) {
-            const removeBtn = e.target.closest('.remove-row');
-            if (removeBtn) {
-                e.preventDefault();
-                removeBtn.closest('tr').remove();
-                // Optional: We could update TOTAL_FORMS, but Django is usually okay if we don't
-            }
-        });
+  function refreshSrNumbers() {
+    document.querySelectorAll('#table-stock .stock-row').forEach((row, idx) => {
+      const cell = row.querySelector('.sr-cell');
+      if (cell) cell.textContent = idx + 1;
     });
+  }
+
+  function setAdvanceVisible(show) {
+    document.querySelectorAll('.advance-col').forEach(el => {
+      el.classList.toggle('d-none', !show);
+    });
+    const btn = document.getElementById('toggleAdvanceBtn');
+    if (btn) {
+      btn.innerHTML = show
+        ? '<i class="fas fa-sliders-h"></i> Hide Advanced Fields'
+        : '<i class="fas fa-sliders-h"></i> Show Advanced Fields';
+    }
+    localStorage.setItem('inventoryAdvance', show ? '1' : '0');
+  }
+
+  document.getElementById('toggleAdvanceBtn')?.addEventListener('click', function() {
+    const currentlyHidden = document.querySelector('.advance-col')?.classList.contains('d-none');
+    setAdvanceVisible(currentlyHidden);
+  });
+
+  setAdvanceVisible(advanceVisible);
+
+  document.getElementById('inputStockAdder')?.addEventListener('click', function() {
+    const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+    const emptyForm = document.getElementById('EmptyForm');
+    const tableBody = document.getElementById('table-stock');
+    const idx = parseInt(totalForms.value, 10);
+    const newRow = emptyForm.cloneNode(true);
+    newRow.id = '';
+    newRow.classList.add('stock-row');
+    newRow.innerHTML = newRow.innerHTML.replace(/__prefix__/g, idx).replace('__sr__', idx + 1);
+    if (!advanceVisible) {
+      newRow.querySelectorAll('.advance-col').forEach(el => el.classList.add('d-none'));
+    }
+    tableBody.appendChild(newRow);
+    totalForms.value = idx + 1;
+    refreshSrNumbers();
+  });
+
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.remove-row')) {
+      e.preventDefault();
+      e.target.closest('tr').remove();
+      refreshSrNumbers();
+    }
+  });
+
+  document.addEventListener('input', function(e) {
+    if (e.target.matches('[name$="-harga_jual_satuan"]')) {
+      e.target.dataset.manual = '1';
+    }
+    if (e.target.classList.contains('calc-field')) {
+      const row = e.target.closest('tr');
+      if (row) recalcRow(row);
+    }
+  });
+
+  document.querySelectorAll('#table-stock .stock-row').forEach(recalcRow);
+
+  // Prefill selection
+  const prefill = "{{ prefill|escapejs }}";
+  if (prefill) {
+    document.querySelectorAll('.part-select').forEach(sel => {
+      for (const opt of sel.options) {
+        if (opt.value.toLowerCase().includes(prefill.toLowerCase())) {
+          opt.selected = true;
+          break;
+        }
+      }
+    });
+  }
+})();
 </script>
 {% endblock %}

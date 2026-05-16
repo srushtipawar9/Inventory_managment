@@ -8,9 +8,13 @@
 
 
 
-You can also see the live demo [here](https://kasir.herokuapp.com). <br>
-with user: `admin` <br>
-password: `demoadmin` (**The demo can take a time to load**)
+Live app (Render / Vercel): [Inventory Management](https://inventort-managment-rust.vercel.app)  
+GitHub repo: [srushtipawar9/Inventory_managment](https://github.com/srushtipawar9/Inventory_managment)
+
+Key pages after login:
+- Inventory Input: `/input/`
+- Vendors Price Compare: `/data/vendors/`
+- JCB Master Catalog: `/data/catalog/`
 
 
 Read more the flowchart and the pattern models [here](/cashierModel.md)

@@ -26,15 +26,19 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Nomor</th>
-                      <th>Part Name</th>
-                      <th>Quantity</th>
-<!--                      <th>Unit</th>-->
-                      <th>Cost Price / unit</th>
-                      <th>Total Cost</th>
-                      <th>Profit Margin</th>
-                      <th>Selling Price / unit</th>
-                      <th>Total Selling Price</th>
+                      <th>SR</th>
+                      <th>Item Name</th>
+                      <th>No. / For What</th>
+                      <th>HSN / SAC</th>
+                      <th>Qty</th>
+                      <th>Vendor</th>
+                      <th>Purchase Price</th>
+                      <th>GST %</th>
+                      <th>GST Amt</th>
+                      <th>Amt Incl Tax</th>
+                      <th>Profit %</th>
+                      <th>Sales Price</th>
+                      <th>MRP</th>
                       <th>Date</th>
                     </tr>
                   </thead>
@@ -43,13 +47,17 @@
                     <tr>
                       <td>{{data.nomor}}</td>
                       <td>{{data.nama_product}}</td>
+                      <td>{{data.part_for_what|default:"—"}}</td>
+                      <td>{{data.hsn_sac|default:"—"}}</td>
                       <td>{{data.jumlah_produk}}</td>
-<!--                      <td>{{data.unit_produk}}</td>-->
-                      <td>Rp. {{data.harga_beli_satuan|intcomma}}</td>
-                      <td>Rp. {{data.subtotal_harga_beli|intcomma}}</td>
-                      <td>{{data.laba_persen}} %</td>
-                      <td>Rp. {{data.harga_jual_satuan|intcomma}}</td>
-                      <td>Rp. {{data.subtotal_harga_jual|intcomma}}</td>
+                      <td>{{data.vendor|default:"—"}}</td>
+                      <td>₹{{data.harga_beli_satuan|intcomma}}</td>
+                      <td>{{data.gst_percent|default:"0"}}%</td>
+                      <td>₹{{data.gst_amount|default:"0"|intcomma}}</td>
+                      <td>₹{{data.amt_incl_tax|default:"0"|intcomma}}</td>
+                      <td>{{data.laba_persen}}%</td>
+                      <td>₹{{data.harga_jual_satuan|intcomma}}</td>
+                      <td>₹{{data.mrp|default:"0"|intcomma}}</td>
                       <td>{{data.created}}</td>
                     </tr>
                   {% endfor %}

@@ -18,7 +18,7 @@ from cashier.forms import (
     DaftarTransaksiForm,
 )
 from django.utils.timezone import datetime
-from data.models import Stock, JCBPart
+from data.models import JCBPart, Vendor
 
 
 def handler404(request):
@@ -43,50 +43,69 @@ def HomeIndex(request):
     }
     return render(request, 'cashier/home.html', context)
 
+def _part_choices(stocks, prefill=''):
+    choices = [('', '-- Select Item --')]
+    for stock in stocks:
+        label = f"{stock.part_number} - {stock.name}"
+        choices.append((label, label))
+    return choices
+
+
 @login_required()
 def InputStock(request):
-    # if request.is_ajax():
-    #     return render(request, 'input.html', { 'num': 2})
-    DaftarBarangFormset = formset_factory(DaftarBarangForm , extra=1)
-    formset = DaftarBarangFormset()
-    stocks = JCBPart.objects.all()
+    DaftarBarangFormset = formset_factory(DaftarBarangForm, extra=1)
+    stocks = JCBPart.objects.all().order_by('category', 'name')
+    prefill = request.GET.get('prefill', '')
+    part_choices = _part_choices(stocks, prefill)
+    vendor_names = list(
+        Vendor.objects.order_by('city', 'name').values_list('name', flat=True).distinct()
+    )
+
     if request.method == 'POST':
-        formset_post = DaftarBarangFormset(request.POST)
+        formset_post = DaftarBarangFormset(
+            request.POST,
+            form_kwargs={'part_choices': part_choices},
+        )
         if formset_post.is_valid():
+            saved = 0
             for form in formset_post:
-                # If form is empty (no data), skip it
                 if not form.cleaned_data.get('nama_product'):
                     continue
-                    
-                # Basic validation
-                jumlah = form.cleaned_data.get('jumlah_produk', 0)
-                harga = form.cleaned_data.get('harga_beli_satuan', 0)
-                laba = form.cleaned_data.get('laba_persen', 0)
-                
-                if jumlah < 1 or harga < 1 or laba < 1:
-                    messages.warning(request, f'Please fill all fields for {form.cleaned_data.get("nama_product")}')
-                    return redirect('/input/')
-                
+                jumlah = form.cleaned_data.get('jumlah_produk', 0) or 0
+                harga = form.cleaned_data.get('harga_beli_satuan', 0) or 0
+                if jumlah < 1 or harga < 1:
+                    messages.warning(
+                        request,
+                        f'Qty and Purchase Price required for {form.cleaned_data.get("nama_product")}',
+                    )
+                    continue
                 form.save()
-            messages.success(request, 'Inventory saved successfully!')
-            return HttpResponseRedirect('/input/')
+                saved += 1
+            if saved:
+                messages.success(request, f'Inventory saved successfully! ({saved} item(s))')
+                return HttpResponseRedirect('/input/')
+            messages.warning(request, 'No valid rows to save. Please fill Item Name, Qty and Purchase Price.')
         else:
-            # Show specific errors
-            error_msg = ""
-            print("FORMSET ERRORS:", formset_post.errors)
-            print("POST DATA:", request.POST)
-            for error in formset_post.errors:
-                error_msg += str(error)
-            messages.warning(request, f'Form Validation Error: {error_msg}')
-            return redirect('/input/')
-    else:
+            messages.warning(request, 'Please correct the highlighted fields and try again.')
+
         context = {
             'stocks': stocks,
-            'forms': formset,
+            'forms': formset_post,
             'request_user': request.user.profile.id,
-            'prefill': request.GET.get('prefill', '')
+            'prefill': prefill,
+            'vendor_names': vendor_names,
         }
         return render(request, 'cashier/input_data.html', context)
+
+    formset = DaftarBarangFormset(form_kwargs={'part_choices': part_choices})
+    context = {
+        'stocks': stocks,
+        'forms': formset,
+        'request_user': request.user.profile.id,
+        'prefill': prefill,
+        'vendor_names': vendor_names,
+    }
+    return render(request, 'cashier/input_data.html', context)
 
 
 @login_required()
