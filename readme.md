@@ -8,13 +8,20 @@
 
 
 
-Live app (Render / Vercel): [Inventory Management](https://inventort-managment-rust.vercel.app)  
 GitHub repo: [srushtipawar9/Inventory_managment](https://github.com/srushtipawar9/Inventory_managment)
 
-Key pages after login:
-- Inventory Input: `/input/`
-- Vendors Price Compare: `/data/vendors/`
-- JCB Master Catalog: `/data/catalog/`
+**Live app (Render – recommended):** use your Render dashboard URL, e.g. `https://<your-service>.onrender.com`  
+After each `git push`, Render auto-deploys. In Render Shell run once if needed: `python manage.py migrate`
+
+**Pages (after login):**
+| Page | URL |
+|------|-----|
+| JCB Inventory Input | `/input/` |
+| Vendors Price Compare | `/data/vendors/` |
+| JCB Master Catalog | `/data/catalog/` |
+| View Stock | `/stock/` |
+
+> Note: The old Vercel URL may show **500 error** — use **Render** for this Django app.
 
 
 Read more the flowchart and the pattern models [here](/cashierModel.md)

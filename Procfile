@@ -1,1 +1,1 @@
-web: gunicorn cashier.wsgi --log-file -
+web: gunicorn core.wsgi:application --log-file -
