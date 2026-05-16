@@ -34,9 +34,8 @@
                 <th style="width:3%">SR No.</th>
                 <th style="width:15%">Item Name</th>
                 <th class="advance-col d-none" style="width:8%">Image</th>
-                <th style="width:10%">No. / For What</th>
-                <th style="width:8%">HSN / SAC Code</th>
-
+                <th class="advance-col d-none" style="width:10%">No. / For What</th>
+                <th class="advance-col d-none" style="width:8%">HSN / SAC Code</th>
                 <th style="width:6%">Qty</th>
                 <th class="advance-col d-none" style="width:10%">Vendor</th>
                 <th class="advance-col d-none" style="width:8%">Purchase Price</th>
@@ -53,10 +52,13 @@
               {% for form in forms %}
               <tr class="stock-row">
                 <td class="text-center sr-cell align-middle">{{ forloop.counter }}</td>
-                <td>{{ form.nama_product }}{% if form.nama_product.errors %}<div class="text-danger small">{{ form.nama_product.errors }}</div>{% endif %}</td>
+                <td>
+                  <input type="text" name="{{ form.nama_product.html_name }}" class="form-control part-select" list="part-list" value="{{ form.nama_product.value|default:'' }}">
+                  {% if form.nama_product.errors %}<div class="text-danger small">{{ form.nama_product.errors }}</div>{% endif %}
+                </td>
                 <td class="advance-col d-none">{{ form.image }}</td>
-                <td>{{ form.part_for_what }}</td>
-                <td>{{ form.hsn_sac }}</td>
+                <td class="advance-col d-none">{{ form.part_for_what }}</td>
+                <td class="advance-col d-none">{{ form.hsn_sac }}</td>
                 <td>{{ form.jumlah_produk }}</td>
                 <td class="advance-col d-none">{{ form.vendor }}</td>
                 <td class="advance-col d-none">{{ form.harga_beli_satuan }}</td>
@@ -66,7 +68,6 @@
                 <td class="advance-col d-none">{{ form.laba_persen }}</td>
                 <td>{{ form.harga_jual_satuan }}</td>
                 <td>{{ form.mrp }}</td>
-
                 <td class="text-center align-middle">
                   {% if not forloop.first %}
                   <button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button>
@@ -78,6 +79,12 @@
             </tbody>
           </table>
         </div>
+
+        <datalist id="part-list">
+          {% for stock in stocks %}
+          <option value="{{ stock.part_number }} - {{ stock.name }}"></option>
+          {% endfor %}
+        </datalist>
 
         <button type="button" class="btn btn-info btn-sm shadow-sm" id="inputStockAdder">
           <i class="fas fa-plus-circle"></i> Add More Parts
@@ -98,10 +105,10 @@
   <tbody>
     <tr id="EmptyForm">
       <td class="text-center sr-cell align-middle">__sr__</td>
-      <td><select name="form-__prefix__-nama_product" class="form-control part-select"><option value="">-- Select Item --</option>{% for stock in stocks %}<option value="{{ stock.part_number }} - {{ stock.name }}">{{ stock.part_number }} - {{ stock.name }}</option>{% endfor %}</select></td>
+      <td><input type="text" name="form-__prefix__-nama_product" class="form-control part-select" list="part-list"></td>
       <td class="advance-col d-none"><input type="file" name="form-__prefix__-image" class="form-control-file"></td>
-      <td><input type="text" name="form-__prefix__-part_for_what" class="form-control" placeholder="No. / For What"></td>
-      <td><input type="text" name="form-__prefix__-hsn_sac" class="form-control" placeholder="HSN / SAC"></td>
+      <td class="advance-col d-none"><input type="text" name="form-__prefix__-part_for_what" class="form-control" placeholder="No. / For What"></td>
+      <td class="advance-col d-none"><input type="text" name="form-__prefix__-hsn_sac" class="form-control" placeholder="HSN / SAC"></td>
       <td><input type="number" name="form-__prefix__-jumlah_produk" class="form-control calc-field" placeholder="Qty" min="1"></td>
       <td class="advance-col d-none"><input type="text" name="form-__prefix__-vendor" class="form-control" placeholder="Vendor" list="vendor-list"></td>
       <td class="advance-col d-none"><input type="number" name="form-__prefix__-harga_beli_satuan" class="form-control calc-field" placeholder="Purchase" step="0.01" min="0"></td>
@@ -111,6 +118,7 @@
       <td class="advance-col d-none"><input type="number" name="form-__prefix__-laba_persen" class="form-control calc-field" placeholder="%" min="0" value="10"></td>
       <td><input type="number" name="form-__prefix__-harga_jual_satuan" class="form-control calc-field" placeholder="Sales" step="0.01" min="0"></td>
       <td><input type="number" name="form-__prefix__-mrp" class="form-control" placeholder="MRP" step="0.01" min="0"></td>
+
 
       <td class="text-center align-middle"><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
       <input type="hidden" name="form-__prefix__-user" value="{{ request_user }}">
