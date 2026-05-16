@@ -10,6 +10,7 @@ class DaftarBarangForm(forms.ModelForm):
         fields = [
             'user',
             'nama_product',
+            'image',
             'part_for_what',
             'hsn_sac',
             'jumlah_produk',
@@ -24,7 +25,9 @@ class DaftarBarangForm(forms.ModelForm):
         ]
         widgets = {
             'nama_product': forms.Select(attrs={'class': 'form-control part-select'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
             'part_for_what': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'No. / For What'}),
+
             'hsn_sac': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'HSN / SAC'}),
             'jumlah_produk': forms.NumberInput(attrs={'class': 'form-control calc-field', 'placeholder': 'Qty', 'min': '1'}),
             'vendor': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Vendor', 'list': 'vendor-list'}),
@@ -50,6 +53,8 @@ class DaftarBarangForm(forms.ModelForm):
         self.fields['amt_incl_tax'].required = False
         self.fields['mrp'].required = False
         self.fields['harga_jual_satuan'].required = False
+        self.fields['image'].required = False
+
         if part_choices is not None:
             self.fields['nama_product'] = forms.ChoiceField(
                 choices=part_choices,

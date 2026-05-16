@@ -17,7 +17,7 @@
       <a href="{% url 'MasterCatalog' %}" class="btn btn-sm btn-info"><i class="fas fa-book"></i> JCB Master Catalog</a>
     </div>
     <div class="card-body">
-      <form method="post" id="inventoryForm">
+      <form method="post" id="inventoryForm" enctype="multipart/form-data">
         {% csrf_token %}
         {{ forms.management_form }}
 
@@ -33,8 +33,10 @@
               <tr>
                 <th style="width:3%">SR No.</th>
                 <th style="width:15%">Item Name</th>
+                <th class="advance-col d-none" style="width:8%">Image</th>
                 <th style="width:10%">No. / For What</th>
                 <th style="width:8%">HSN / SAC Code</th>
+
                 <th style="width:6%">Qty</th>
                 <th class="advance-col d-none" style="width:10%">Vendor</th>
                 <th class="advance-col d-none" style="width:8%">Purchase Price</th>
@@ -52,6 +54,7 @@
               <tr class="stock-row">
                 <td class="text-center sr-cell align-middle">{{ forloop.counter }}</td>
                 <td>{{ form.nama_product }}{% if form.nama_product.errors %}<div class="text-danger small">{{ form.nama_product.errors }}</div>{% endif %}</td>
+                <td class="advance-col d-none">{{ form.image }}</td>
                 <td>{{ form.part_for_what }}</td>
                 <td>{{ form.hsn_sac }}</td>
                 <td>{{ form.jumlah_produk }}</td>
@@ -96,6 +99,7 @@
     <tr id="EmptyForm">
       <td class="text-center sr-cell align-middle">__sr__</td>
       <td><select name="form-__prefix__-nama_product" class="form-control part-select"><option value="">-- Select Item --</option>{% for stock in stocks %}<option value="{{ stock.part_number }} - {{ stock.name }}">{{ stock.part_number }} - {{ stock.name }}</option>{% endfor %}</select></td>
+      <td class="advance-col d-none"><input type="file" name="form-__prefix__-image" class="form-control-file"></td>
       <td><input type="text" name="form-__prefix__-part_for_what" class="form-control" placeholder="No. / For What"></td>
       <td><input type="text" name="form-__prefix__-hsn_sac" class="form-control" placeholder="HSN / SAC"></td>
       <td><input type="number" name="form-__prefix__-jumlah_produk" class="form-control calc-field" placeholder="Qty" min="1"></td>
