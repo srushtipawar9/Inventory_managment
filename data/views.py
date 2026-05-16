@@ -280,6 +280,7 @@ def SaveAIInventory(request):
                 vendor=data.get('vendor', ''),
                 harga_beli_satuan=float(data.get('purchase_price', 0)),
                 laba_persen=int(data.get('profit_margin', 10)),
+                gst_percent=float(data.get('gst_percent', 0)),
                 mrp=float(data.get('mrp', 0))
             )
             

@@ -505,6 +505,10 @@
                                     <label>Profit %</label>
                                     <input type="number" id="ai-save-profit" class="form-control mb-2" value="10">
                                 </div>
+                                <div class="col-md-4">
+                                    <label>GST %</label>
+                                    <input type="number" id="ai-save-gst" class="form-control mb-2" value="0">
+                                </div>
                                 <div class="col-md-6">
                                     <label>Vendor</label>
                                     <input type="text" id="ai-save-vendor" class="form-control mb-2">
@@ -544,6 +548,7 @@
                 qty: document.getElementById('ai-save-qty').value,
                 purchase_price: document.getElementById('ai-save-purchase').value,
                 profit_margin: document.getElementById('ai-save-profit').value,
+                gst_percent: document.getElementById('ai-save-gst').value,
                 vendor: document.getElementById('ai-save-vendor').value,
                 mrp: document.getElementById('ai-save-mrp').value,
             };

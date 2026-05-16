@@ -56,40 +56,13 @@ class DaftarBarangForm(forms.ModelForm):
         self.fields['image'].required = False
 
         if part_choices is not None:
-            self.fields['nama_product'] = forms.ChoiceField(
-                choices=part_choices,
-                widget=forms.Select(attrs={'class': 'form-control part-select'}),
+            self.fields['nama_product'] = forms.CharField(
+                widget=forms.TextInput(attrs={'class': 'form-control part-select', 'list': 'part-list', 'placeholder': 'Item Name'}),
                 required=False,
             )
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        qty = Decimal(instance.jumlah_produk or 0)
-        purchase = Decimal(instance.harga_beli_satuan or 0)
-        gst_pct = Decimal(instance.gst_percent or 0)
-        profit_pct = Decimal(instance.laba_persen or 0)
-
-        instance.product_price = purchase
-        base = purchase * qty
-        if not instance.gst_amount:
-            instance.gst_amount = (base * gst_pct / Decimal('100')).quantize(Decimal('0.01'))
-        if not instance.amt_incl_tax:
-            instance.amt_incl_tax = (base + Decimal(instance.gst_amount)).quantize(Decimal('0.01'))
-
-        instance.subtotal_harga_beli = base.quantize(Decimal('0.01'))
-        if not instance.harga_jual_satuan:
-            instance.harga_jual_satuan = (
-                purchase + (purchase * profit_pct / Decimal('100'))
-            ).quantize(Decimal('0.01'))
-
-        sell_unit = Decimal(instance.harga_jual_satuan)
-        instance.marp = Decimal(instance.mrp or 0)
-        instance.marp_sell_val = sell_unit
-        instance.marp_last_amount = Decimal(instance.amt_incl_tax)
-        laba = profit_pct * instance.subtotal_harga_beli / Decimal('100')
-        instance.subtotal_harga_jual = (laba + instance.subtotal_harga_beli).quantize(Decimal('0.01'))
-        instance.marp_last_amount_total = instance.subtotal_harga_jual
-
         if commit:
             instance.save()
         return instance

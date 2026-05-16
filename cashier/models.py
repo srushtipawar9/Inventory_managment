@@ -47,6 +47,36 @@ class DaftarBarang(models.Model):
     def __str__(self):
         return self.nama_product
 
+    def save(self, *args, **kwargs):
+        from decimal import Decimal
+        qty = Decimal(self.jumlah_produk or 0)
+        purchase = Decimal(self.harga_beli_satuan or 0)
+        gst_pct = Decimal(self.gst_percent or 0)
+        profit_pct = Decimal(self.laba_persen or 10)
+
+        self.product_price = purchase
+        base = purchase * qty
+        if not self.gst_amount:
+            self.gst_amount = (base * gst_pct / Decimal('100')).quantize(Decimal('0.01'))
+        if not self.amt_incl_tax:
+            self.amt_incl_tax = (base + Decimal(self.gst_amount)).quantize(Decimal('0.01'))
+
+        self.subtotal_harga_beli = base.quantize(Decimal('0.01'))
+        if not self.harga_jual_satuan:
+            self.harga_jual_satuan = (
+                purchase + (purchase * profit_pct / Decimal('100'))
+            ).quantize(Decimal('0.01'))
+
+        sell_unit = Decimal(self.harga_jual_satuan)
+        self.marp = Decimal(self.mrp or 0)
+        self.marp_sell_val = sell_unit
+        self.marp_last_amount = Decimal(self.amt_incl_tax)
+        laba = (Decimal(profit_pct) * self.subtotal_harga_beli) / Decimal('100')
+        self.subtotal_harga_jual = (laba + self.subtotal_harga_beli).quantize(Decimal('0.01'))
+        self.marp_last_amount_total = self.subtotal_harga_jual
+        
+        super().save(*args, **kwargs)
+
 
 "Daftar Transaksi"
 class DaftarTransaksi(models.Model):

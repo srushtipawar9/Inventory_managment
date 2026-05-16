@@ -5,9 +5,6 @@
 <div class="container-fluid">
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">JCB Part Inventory Input</h1>
-    <button type="button" id="toggleAdvanceBtn" class="btn btn-sm btn-outline-primary shadow-sm">
-      <i class="fas fa-sliders-h"></i> Show Advanced Fields
-    </button>
   </div>
   <p class="text-danger small mb-3"><strong>Please verify parts match your delivery note before saving.</strong></p>
 
@@ -32,20 +29,19 @@
             <thead class="bg-primary text-white text-center">
               <tr>
                 <th style="width:3%">SR No.</th>
-                <th style="width:15%">Item Name</th>
-                <th class="advance-col d-none" style="width:8%">Image</th>
-                <th class="advance-col d-none" style="width:10%">No. / For What</th>
-                <th class="advance-col d-none" style="width:8%">HSN / SAC Code</th>
-                <th style="width:6%">Qty</th>
-                <th class="advance-col d-none" style="width:10%">Vendor</th>
-                <th class="advance-col d-none" style="width:8%">Purchase Price</th>
-                <th class="advance-col d-none" style="width:6%">GST %</th>
-                <th class="advance-col d-none" style="width:8%">GST Amt</th>
-                <th class="advance-col d-none" style="width:9%">Amt Incl Tax</th>
-                <th class="advance-col d-none" style="width:6%">Profit %</th>
-                <th style="width:8%">Sales Price</th>
+                <th style="width:14%">Item Name</th>
+                <th style="width:10%">No. / For What</th>
+                <th style="width:7%">HSN / SAC</th>
+                <th style="width:5%">Qty</th>
+                <th style="width:10%">Vendor</th>
+                <th style="width:7%">Purchase</th>
+                <th style="width:5%">GST %</th>
+                <th style="width:7%">GST Amt</th>
+                <th style="width:8%">Incl Tax</th>
+                <th style="width:5%">Profit %</th>
+                <th style="width:7%">Sales</th>
                 <th style="width:7%">MRP</th>
-                <th style="width:4%">Action</th>
+                <th style="width:5%">Action</th>
               </tr>
             </thead>
             <tbody id="table-stock">
@@ -53,19 +49,17 @@
               <tr class="stock-row">
                 <td class="text-center sr-cell align-middle">{{ forloop.counter }}</td>
                 <td>
-                  <input type="text" name="{{ form.nama_product.html_name }}" class="form-control part-select" list="part-list" value="{{ form.nama_product.value|default:'' }}">
-                  {% if form.nama_product.errors %}<div class="text-danger small">{{ form.nama_product.errors }}</div>{% endif %}
+                  <input type="text" name="{{ form.nama_product.html_name }}" class="form-control part-select" list="part-list" value="{{ form.nama_product.value|default:'' }}" placeholder="Item Name">
                 </td>
-                <td class="advance-col d-none">{{ form.image }}</td>
-                <td class="advance-col d-none">{{ form.part_for_what }}</td>
-                <td class="advance-col d-none">{{ form.hsn_sac }}</td>
+                <td>{{ form.part_for_what }}</td>
+                <td>{{ form.hsn_sac }}</td>
                 <td>{{ form.jumlah_produk }}</td>
-                <td class="advance-col d-none">{{ form.vendor }}</td>
-                <td class="advance-col d-none">{{ form.harga_beli_satuan }}</td>
-                <td class="advance-col d-none">{{ form.gst_percent }}</td>
-                <td class="advance-col d-none">{{ form.gst_amount }}</td>
-                <td class="advance-col d-none">{{ form.amt_incl_tax }}</td>
-                <td class="advance-col d-none">{{ form.laba_persen }}</td>
+                <td>{{ form.vendor }}</td>
+                <td>{{ form.harga_beli_satuan }}</td>
+                <td>{{ form.gst_percent }}</td>
+                <td>{{ form.gst_amount }}</td>
+                <td>{{ form.amt_incl_tax }}</td>
+                <td>{{ form.laba_persen }}</td>
                 <td>{{ form.harga_jual_satuan }}</td>
                 <td>{{ form.mrp }}</td>
                 <td class="text-center align-middle">
@@ -74,6 +68,7 @@
                   {% endif %}
                 </td>
                 {{ form.user }}
+                <div class="d-none">{{ form.image }}</div>
               </tr>
               {% endfor %}
             </tbody>
@@ -105,34 +100,30 @@
   <tbody>
     <tr id="EmptyForm">
       <td class="text-center sr-cell align-middle">__sr__</td>
-      <td><input type="text" name="form-__prefix__-nama_product" class="form-control part-select" list="part-list"></td>
-      <td class="advance-col d-none"><input type="file" name="form-__prefix__-image" class="form-control-file"></td>
-      <td class="advance-col d-none"><input type="text" name="form-__prefix__-part_for_what" class="form-control" placeholder="No. / For What"></td>
-      <td class="advance-col d-none"><input type="text" name="form-__prefix__-hsn_sac" class="form-control" placeholder="HSN / SAC"></td>
+      <td><input type="text" name="form-__prefix__-nama_product" class="form-control part-select" list="part-list" placeholder="Item Name"></td>
+      <td><input type="text" name="form-__prefix__-part_for_what" class="form-control" placeholder="No./For What"></td>
+      <td><input type="text" name="form-__prefix__-hsn_sac" class="form-control" placeholder="HSN/SAC"></td>
       <td><input type="number" name="form-__prefix__-jumlah_produk" class="form-control calc-field" placeholder="Qty" min="1"></td>
-      <td class="advance-col d-none"><input type="text" name="form-__prefix__-vendor" class="form-control" placeholder="Vendor" list="vendor-list"></td>
-      <td class="advance-col d-none"><input type="number" name="form-__prefix__-harga_beli_satuan" class="form-control calc-field" placeholder="Purchase" step="0.01" min="0"></td>
-      <td class="advance-col d-none"><input type="number" name="form-__prefix__-gst_percent" class="form-control calc-field" placeholder="GST %" step="0.01" min="0" value="0"></td>
-      <td class="advance-col d-none"><input type="number" name="form-__prefix__-gst_amount" class="form-control calc-field" placeholder="GST Amt" step="0.01" readonly></td>
-      <td class="advance-col d-none"><input type="number" name="form-__prefix__-amt_incl_tax" class="form-control calc-field" placeholder="Incl Tax" step="0.01" readonly></td>
-      <td class="advance-col d-none"><input type="number" name="form-__prefix__-laba_persen" class="form-control calc-field" placeholder="%" min="0" value="10"></td>
+      <td><input type="text" name="form-__prefix__-vendor" class="form-control" placeholder="Vendor" list="vendor-list"></td>
+      <td><input type="number" name="form-__prefix__-harga_beli_satuan" class="form-control calc-field" placeholder="Purchase" step="0.01" min="0"></td>
+      <td><input type="number" name="form-__prefix__-gst_percent" class="form-control calc-field" placeholder="GST %" step="0.01" min="0" value="0"></td>
+      <td><input type="number" name="form-__prefix__-gst_amount" class="form-control calc-field" placeholder="GST Amt" step="0.01" readonly></td>
+      <td><input type="number" name="form-__prefix__-amt_incl_tax" class="form-control calc-field" placeholder="Incl Tax" step="0.01" readonly></td>
+      <td><input type="number" name="form-__prefix__-laba_persen" class="form-control calc-field" placeholder="%" min="0" value="10"></td>
       <td><input type="number" name="form-__prefix__-harga_jual_satuan" class="form-control calc-field" placeholder="Sales" step="0.01" min="0"></td>
       <td><input type="number" name="form-__prefix__-mrp" class="form-control" placeholder="MRP" step="0.01" min="0"></td>
-
-
       <td class="text-center align-middle"><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
       <input type="hidden" name="form-__prefix__-user" value="{{ request_user }}">
+      <div class="d-none"><input type="file" name="form-__prefix__-image"></div>
     </tr>
   </tbody>
 </table>
-
 
 {% endblock %}
 
 {% block scripts %}
 <script>
 (function() {
-  const advanceVisible = localStorage.getItem('inventoryAdvance') === '1';
 
   function recalcRow(row) {
     const qty = parseFloat(row.querySelector('[name$="-jumlah_produk"]')?.value) || 0;
@@ -160,26 +151,6 @@
     });
   }
 
-  function setAdvanceVisible(show) {
-    document.querySelectorAll('.advance-col').forEach(el => {
-      el.classList.toggle('d-none', !show);
-    });
-    const btn = document.getElementById('toggleAdvanceBtn');
-    if (btn) {
-      btn.innerHTML = show
-        ? '<i class="fas fa-sliders-h"></i> Hide Advanced Fields'
-        : '<i class="fas fa-sliders-h"></i> Show Advanced Fields';
-    }
-    localStorage.setItem('inventoryAdvance', show ? '1' : '0');
-  }
-
-  document.getElementById('toggleAdvanceBtn')?.addEventListener('click', function() {
-    const currentlyHidden = document.querySelector('.advance-col')?.classList.contains('d-none');
-    setAdvanceVisible(currentlyHidden);
-  });
-
-  setAdvanceVisible(advanceVisible);
-
   document.getElementById('inputStockAdder')?.addEventListener('click', function() {
     const totalForms = document.getElementById('id_form-TOTAL_FORMS');
     const emptyForm = document.getElementById('EmptyForm');
@@ -189,9 +160,6 @@
     newRow.id = '';
     newRow.classList.add('stock-row');
     newRow.innerHTML = newRow.innerHTML.replace(/__prefix__/g, idx).replace('__sr__', idx + 1);
-    if (!advanceVisible) {
-      newRow.querySelectorAll('.advance-col').forEach(el => el.classList.add('d-none'));
-    }
     tableBody.appendChild(newRow);
     totalForms.value = idx + 1;
     refreshSrNumbers();
