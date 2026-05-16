@@ -141,11 +141,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 # Database Configuration
-# Uses DATABASE_URL environment variable for production (PostgreSQL)
-# Defaults to SQLite for local development
+# Uses DATABASE_URL for production (PostgreSQL). SQLite for local / Vercel.
+_db_path = os.environ.get('SQLITE_DB_PATH', os.path.join(BASE_DIR, 'cashier.db'))
 DATABASES = {
     'default': dj_database_url.config(
-        default=f"sqlite:///{os.path.join(BASE_DIR, 'cashier.db')}",
+        default=f"sqlite:///{_db_path}",
         conn_max_age=600
     )
 }

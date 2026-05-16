@@ -1,7 +1,6 @@
 .git
 .gitignore
 server.log
-cashier.db
 env/
 venv/
 __pycache__/
