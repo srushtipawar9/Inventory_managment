@@ -71,6 +71,66 @@
     {% endfor %}
     {% endif %}
 
+    {% if inventory_results %}
+    {% load humanize %}
+    <div class="card shadow mb-4 border-left-success">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-warehouse"></i> Current Inventory Matches</h6>
+            <button class="btn btn-sm btn-outline-success" id="toggleInventoryAdvance">Show All Details</button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-sm">
+                    <thead class="bg-success text-white">
+                        <tr>
+                            <th>Item Name</th>
+                            <th class="inv-adv d-none">No. / For What</th>
+                            <th class="inv-adv d-none">HSN / SAC</th>
+                            <th>Qty</th>
+                            <th class="inv-adv d-none">Vendor</th>
+                            <th class="inv-adv d-none">Purchase Price</th>
+                            <th class="inv-adv d-none">GST %</th>
+                            <th class="inv-adv d-none">GST Amt</th>
+                            <th class="inv-adv d-none">Amt Incl Tax</th>
+                            <th>Profit %</th>
+                            <th>Sales Price</th>
+                            <th>MRP</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in inventory_results %}
+                        <tr>
+                            <td class="font-weight-bold">{{ data.nama_product }}</td>
+                            <td class="inv-adv d-none">{{ data.part_for_what }}</td>
+                            <td class="inv-adv d-none">{{ data.hsn_sac }}</td>
+                            <td>{{ data.jumlah_produk }}</td>
+                            <td class="inv-adv d-none">{{ data.vendor }}</td>
+                            <td class="inv-adv d-none">₹{{ data.harga_beli_satuan|intcomma }}</td>
+                            <td class="inv-adv d-none">{{ data.gst_percent }}%</td>
+                            <td class="inv-adv d-none">₹{{ data.gst_amount|intcomma }}</td>
+                            <td class="inv-adv d-none">₹{{ data.amt_incl_tax|intcomma }}</td>
+                            <td>{{ data.laba_persen }}%</td>
+                            <td class="text-success font-weight-bold">₹{{ data.harga_jual_satuan|intcomma }}</td>
+                            <td>₹{{ data.mrp|intcomma }}</td>
+                            <td class="small text-muted">{{ data.created|date:"d M Y" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('toggleInventoryAdvance')?.addEventListener('click', function() {
+            const adv = document.querySelectorAll('.inv-adv');
+            const isHidden = adv[0]?.classList.contains('d-none');
+            adv.forEach(el => el.classList.toggle('d-none'));
+            this.textContent = isHidden ? 'Hide Details' : 'Show All Details';
+        });
+    </script>
+    {% endif %}
+
     {% if stocks %}
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -89,7 +149,7 @@
                         {% for stock in stocks %}
                         <tr>
                             <td>{{ stock.name }}</td>
-                            <td>${{ stock.price }}</td>
+                            <td>₹{{ stock.price|intcomma }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -98,6 +158,8 @@
         </div>
     </div>
     {% endif %}
+
+
 
     {% if amazon_results %}
     <div class="card shadow mb-4">

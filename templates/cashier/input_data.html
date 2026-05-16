@@ -31,20 +31,20 @@
           <table class="table table-bordered table-sm" id="inputDataTable">
             <thead class="bg-primary text-white text-center">
               <tr>
-                <th style="width:4%">SR</th>
-                <th style="width:16%">Item Name</th>
-                <th style="width:10%">No. / For What</th>
-                <th style="width:8%">HSN / SAC</th>
+                <th style="width:3%">SR No.</th>
+                <th style="width:15%">Item Name</th>
+                <th class="advance-col d-none" style="width:10%">No. / For What</th>
+                <th class="advance-col d-none" style="width:8%">HSN / SAC Code</th>
                 <th style="width:6%">Qty</th>
                 <th class="advance-col d-none" style="width:10%">Vendor</th>
                 <th class="advance-col d-none" style="width:8%">Purchase Price</th>
                 <th class="advance-col d-none" style="width:6%">GST %</th>
                 <th class="advance-col d-none" style="width:8%">GST Amt</th>
                 <th class="advance-col d-none" style="width:9%">Amt Incl Tax</th>
-                <th class="advance-col d-none" style="width:6%">Profit %</th>
+                <th style="width:6%">Profit %</th>
                 <th style="width:8%">Sales Price</th>
                 <th style="width:7%">MRP</th>
-                <th style="width:4%">Del</th>
+                <th style="width:4%">Action</th>
               </tr>
             </thead>
             <tbody id="table-stock">
@@ -52,15 +52,15 @@
               <tr class="stock-row">
                 <td class="text-center sr-cell align-middle">{{ forloop.counter }}</td>
                 <td>{{ form.nama_product }}{% if form.nama_product.errors %}<div class="text-danger small">{{ form.nama_product.errors }}</div>{% endif %}</td>
-                <td>{{ form.part_for_what }}</td>
-                <td>{{ form.hsn_sac }}</td>
+                <td class="advance-col d-none">{{ form.part_for_what }}</td>
+                <td class="advance-col d-none">{{ form.hsn_sac }}</td>
                 <td>{{ form.jumlah_produk }}</td>
                 <td class="advance-col d-none">{{ form.vendor }}</td>
                 <td class="advance-col d-none">{{ form.harga_beli_satuan }}</td>
                 <td class="advance-col d-none">{{ form.gst_percent }}</td>
                 <td class="advance-col d-none">{{ form.gst_amount }}</td>
                 <td class="advance-col d-none">{{ form.amt_incl_tax }}</td>
-                <td class="advance-col d-none">{{ form.laba_persen }}</td>
+                <td>{{ form.laba_persen }}</td>
                 <td>{{ form.harga_jual_satuan }}</td>
                 <td>{{ form.mrp }}</td>
                 <td class="text-center align-middle">
@@ -80,7 +80,7 @@
         </button>
 
         <div class="mt-4 pt-3 border-top">
-          <button class="btn btn-success px-4 shadow" type="submit"><i class="fas fa-save"></i> Save Inventory</button>
+          <button class="btn btn-success px-4 shadow" type="submit" id="saveBtn"><i class="fas fa-save"></i> Save Inventory</button>
           <a href="{% url 'HomeIndex' %}" class="btn btn-outline-secondary px-4"><i class="fas fa-home"></i> Back to Dashboard</a>
           <a href="{% url 'TotalStock' %}" class="btn btn-outline-info px-4"><i class="fas fa-eye"></i> View Total Stock</a>
         </div>
@@ -95,15 +95,15 @@
     <tr id="EmptyForm">
       <td class="text-center sr-cell align-middle">__sr__</td>
       <td><select name="form-__prefix__-nama_product" class="form-control part-select"><option value="">-- Select Item --</option>{% for stock in stocks %}<option value="{{ stock.part_number }} - {{ stock.name }}">{{ stock.part_number }} - {{ stock.name }}</option>{% endfor %}</select></td>
-      <td><input type="text" name="form-__prefix__-part_for_what" class="form-control" placeholder="No. / For What"></td>
-      <td><input type="text" name="form-__prefix__-hsn_sac" class="form-control" placeholder="HSN / SAC"></td>
+      <td class="advance-col d-none"><input type="text" name="form-__prefix__-part_for_what" class="form-control" placeholder="No. / For What"></td>
+      <td class="advance-col d-none"><input type="text" name="form-__prefix__-hsn_sac" class="form-control" placeholder="HSN / SAC"></td>
       <td><input type="number" name="form-__prefix__-jumlah_produk" class="form-control calc-field" placeholder="Qty" min="1"></td>
       <td class="advance-col d-none"><input type="text" name="form-__prefix__-vendor" class="form-control" placeholder="Vendor" list="vendor-list"></td>
       <td class="advance-col d-none"><input type="number" name="form-__prefix__-harga_beli_satuan" class="form-control calc-field" placeholder="Purchase" step="0.01" min="0"></td>
       <td class="advance-col d-none"><input type="number" name="form-__prefix__-gst_percent" class="form-control calc-field" placeholder="GST %" step="0.01" min="0" value="0"></td>
       <td class="advance-col d-none"><input type="number" name="form-__prefix__-gst_amount" class="form-control calc-field" placeholder="GST Amt" step="0.01" readonly></td>
       <td class="advance-col d-none"><input type="number" name="form-__prefix__-amt_incl_tax" class="form-control calc-field" placeholder="Incl Tax" step="0.01" readonly></td>
-      <td class="advance-col d-none"><input type="number" name="form-__prefix__-laba_persen" class="form-control calc-field" placeholder="%" min="0" value="10"></td>
+      <td><input type="number" name="form-__prefix__-laba_persen" class="form-control calc-field" placeholder="%" min="0" value="10"></td>
       <td><input type="number" name="form-__prefix__-harga_jual_satuan" class="form-control calc-field" placeholder="Sales" step="0.01" min="0"></td>
       <td><input type="number" name="form-__prefix__-mrp" class="form-control" placeholder="MRP" step="0.01" min="0"></td>
       <td class="text-center align-middle"><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
@@ -111,6 +111,7 @@
     </tr>
   </tbody>
 </table>
+
 
 {% endblock %}
 

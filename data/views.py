@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .resources import StockResource
 from tablib import Dataset
 from .models import JCBPart, Stock, VendorPartPrice
+from cashier.models import DaftarBarang
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,12 +12,14 @@ def GlobalSearch(request):
     results = {
         'categorized_parts': {},
         'stocks': [],
+        'inventory_results': [],
         'amazon_results': [],
         'extra_parts': [],
         'jcb_products': [],
         'query': query or '',
         'has_parts': False
     }
+
     
     if query:
         # Search in JCBPart
@@ -35,6 +38,11 @@ def GlobalSearch(request):
         # Search in Stock
         stocks = Stock.objects.filter(name__icontains=query)
         
+        # Search in Inventory (DaftarBarang)
+        inventory_results = DaftarBarang.objects.filter(
+            Q(nama_product__icontains=query) | Q(vendor__icontains=query) | Q(hsn_sac__icontains=query)
+        ).order_by('-created')
+
         # --- Amazon Marketplace Integration ---
         import requests
         amazon_results = []
@@ -56,9 +64,11 @@ def GlobalSearch(request):
         results.update({
             'categorized_parts': categorized_parts,
             'stocks': stocks,
+            'inventory_results': inventory_results,
             'amazon_results': amazon_results,
-            'has_parts': len(parts_list) > 0
+            'has_parts': len(parts_list) > 0 or inventory_results.exists()
         })
+
         
     return render(request, 'data/search_results.html', results)
 

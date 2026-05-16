@@ -2551,3 +2551,162 @@ Session data corrupted
 "GET /data/search/?q=JCB HTTP/1.1" 200 7217
 "GET /input/?prefill=JCB HTTP/1.1" 200 5409
 "GET /stock/ HTTP/1.1" 200 4607
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /login/?next=/ HTTP/1.1" 200 878
+"GET /static/css/sb-admin-2.min.css HTTP/1.1" 200 197981
+"POST /login/?next=/ HTTP/1.1" 302 0
+"GET / HTTP/1.1" 200 4836
+"GET /static/vendor/fontawesome-free/css/all.min.css HTTP/1.1" 200 55967
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.css HTTP/1.1" 200 5222
+"GET /static/css/bootstrap.min.css HTTP/1.1" 200 144877
+"GET /static/vendor/jquery/jquery.min.js HTTP/1.1" 200 88145
+"GET /static/vendor/bootstrap/js/bootstrap.bundle.min.js HTTP/1.1" 200 78635
+"GET /media/profile_picture.png HTTP/1.1" 200 61793
+"GET /static/vendor/datatables/jquery.dataTables.min.js HTTP/1.1" 200 82411
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.js HTTP/1.1" 200 2085
+"GET /static/js/datatables-demo.js HTTP/1.1" 200 103
+"GET /static/vendor/jquery-easing/jquery.easing.min.js HTTP/1.1" 200 2532
+"GET /static/js/sb-admin-2.min.js HTTP/1.1" 200 1106
+"GET /static/js/extends.js HTTP/1.1" 200 1689
+"GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 200 75440
+D:\inventort-managment\data\models.py changed, reloading.
+Watching for file changes with StatReloader
+D:\inventort-managment\data\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /data/search/?q=jcb HTTP/1.1" 200 7237
+"GET /media/parts/360/JCB-C601_oySBdHi.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-C602_ub80W4W.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-L702_BdNuUbk.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-L701_EircsNb.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-H303_gav3tSh.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-E401_Z6Z7eyt.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-G502_lVu8Ued.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-G501_xpYkb94.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-E402_cdTM2sR.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-H301_YwX5ojd.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/pump.png HTTP/1.1" 200 581797
+"GET /media/parts/360/JCB-E403_jcspZqy.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/tooth.png HTTP/1.1" 200 455208
+"GET /input/?prefill=jcb HTTP/1.1" 200 5419
+"GET /data/search/?q=jcb HTTP/1.1" 200 7239
+"GET /static/vendor/fontawesome-free/css/all.min.css HTTP/1.1" 200 55967
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.css HTTP/1.1" 200 5222
+"GET /static/css/sb-admin-2.min.css HTTP/1.1" 200 197981
+"GET /static/css/bootstrap.min.css HTTP/1.1" 200 144877
+"GET /media/profile_picture.png HTTP/1.1" 200 61793
+"GET /media/parts/360/JCB-C601_oySBdHi.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-L701_EircsNb.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-C602_ub80W4W.jpg HTTP/1.1" 200 78532
+"GET /static/vendor/jquery/jquery.min.js HTTP/1.1" 200 88145
+"GET /media/parts/360/JCB-L702_BdNuUbk.jpg HTTP/1.1" 200 78532
+"GET /static/vendor/bootstrap/js/bootstrap.bundle.min.js HTTP/1.1" 200 78635
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.js HTTP/1.1" 200 2085
+"GET /static/js/datatables-demo.js HTTP/1.1" 200 103
+"GET /static/vendor/datatables/jquery.dataTables.min.js HTTP/1.1" 200 82411
+"GET /static/vendor/jquery-easing/jquery.easing.min.js HTTP/1.1" 200 2532
+"GET /static/js/sb-admin-2.min.js HTTP/1.1" 200 1106
+"GET /static/js/extends.js HTTP/1.1" 200 1689
+"GET /media/parts/360/JCB-H303_gav3tSh.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-G501_xpYkb94.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-G502_lVu8Ued.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-E401_Z6Z7eyt.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-H301_YwX5ojd.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-E402_cdTM2sR.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/JCB-E403_jcspZqy.jpg HTTP/1.1" 200 78532
+"GET /media/parts/360/pump.png HTTP/1.1" 200 581797
+"GET /media/parts/360/tooth.png HTTP/1.1" 200 455208
+"GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 200 75440
+"GET /crm/customers/ HTTP/1.1" 200 4600
+"GET /crm/customers/delete/6/ HTTP/1.1" 302 0
+"GET /crm/customers/ HTTP/1.1" 200 4543
+"GET /crm/customers/edit/11/ HTTP/1.1" 200 3901
+"POST /crm/customers/edit/11/ HTTP/1.1" 302 0
+"GET /crm/customers/ HTTP/1.1" 200 4534
+"GET /crm/reminder/11/ HTTP/1.1" 302 0
+"GET /crm/customers/ HTTP/1.1" 200 4534
+Session data corrupted
+"GET / HTTP/1.1" 302 0
+"GET /login/?next=/ HTTP/1.1" 200 871
+"GET /static/css/sb-admin-2.min.css HTTP/1.1" 304 0
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 1243
+Session data corrupted
+"POST /login/?next=/ HTTP/1.1" 302 0
+"GET / HTTP/1.1" 200 4854
+"GET /static/vendor/fontawesome-free/css/all.min.css HTTP/1.1" 304 0
+"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.css HTTP/1.1" 304 0
+"GET /static/vendor/jquery/jquery.min.js HTTP/1.1" 304 0
+"GET /media/profile_picture.png HTTP/1.1" 304 0
+"GET /static/vendor/datatables/jquery.dataTables.min.js HTTP/1.1" 304 0
+"GET /static/vendor/bootstrap/js/bootstrap.bundle.min.js HTTP/1.1" 304 0
+"GET /static/js/extends.js HTTP/1.1" 304 0
+"GET /static/vendor/jquery-easing/jquery.easing.min.js HTTP/1.1" 304 0
+"GET /static/js/datatables-demo.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.js HTTP/1.1" 304 0
+"GET /static/js/sb-admin-2.min.js HTTP/1.1" 304 0
+"GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 304 0
+"GET / HTTP/1.1" 200 4854
+"GET /data/vendors/ HTTP/1.1" 200 4421
+"GET /data/vendors/?category=ALL HTTP/1.1" 200 5669
+"GET /data/vendors/?category=HYDRAULICS HTTP/1.1" 200 4421
+"GET /data/vendors/ HTTP/1.1" 200 4421
+Internal Server Error: /input/
+Traceback (most recent call last):
+  File "D:\inventort-managment\venv\Lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\inventort-managment\venv\Lib\site-packages\django\core\handlers\base.py", line 167, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\inventort-managment\venv\Lib\site-packages\django\core\handlers\base.py", line 290, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\inventort-managment\venv\Lib\site-packages\django\urls\resolvers.py", line 560, in resolve
+    for pattern in self.url_patterns:
+                   ^^^^^^^^^^^^^^^^^
+  File "D:\inventort-managment\venv\Lib\site-packages\django\utils\functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+  File "D:\inventort-managment\venv\Lib\site-packages\django\urls\resolvers.py", line 602, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+                       ^^^^^^^^^^^^^^^^^^^
+  File "D:\inventort-managment\venv\Lib\site-packages\django\utils\functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+  File "D:\inventort-managment\venv\Lib\site-packages\django\urls\resolvers.py", line 595, in urlconf_module
+    return import_module(self.urlconf_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1206, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "D:\inventort-managment\core\urls.py", line 16, in <module>
+    path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')), #JET Dashboard
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\inventort-managment\venv\Lib\site-packages\django\urls\conf.py", line 34, in include
+    urlconf_module = import_module(urlconf_module)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SRUSHTI\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1206, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1178, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1149, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "D:\inventort-managment\venv\Lib\site-packages\jet\dashboard\urls.py", line 10, in <module>
+    from jet.dashboard import dashboard
+  File "D:\inventort-managment\venv\Lib\site-packages\jet\dashboard\dashboard.py", line 11, in <module>
+    from jet.ordered_set import OrderedSet
+  File "D:\inventort-managment\venv\Lib\site-packages\jet\ordered_set.py", line 4, in <module>
+    class OrderedSet(collections.MutableSet):
+                     ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'collections' has no attribute 'MutableSet'

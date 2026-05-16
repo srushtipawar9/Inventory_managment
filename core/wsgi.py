@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 
 import os
 import shutil
+import tempfile
 import collections
 import collections.abc
 
@@ -26,17 +27,31 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Vercel serverless: copy SQLite DB to writable /tmp
+# Vercel serverless: copy SQLite DB to writable /tmp and run migrations once
 if os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
     os.environ['VERCEL'] = '1'
     src_db = os.path.join(BASE_DIR, 'cashier.db')
-    tmp_db = '/tmp/cashier.db'
+    tmp_dir = '/tmp' if os.path.isdir('/tmp') else tempfile.gettempdir()
+    tmp_db = os.path.join(tmp_dir, 'cashier.db')
     if os.path.exists(src_db):
         if not os.path.exists(tmp_db) or os.path.getmtime(src_db) > os.path.getmtime(tmp_db):
             shutil.copy2(src_db, tmp_db)
+    elif not os.path.exists(tmp_db):
+        open(tmp_db, 'a').close()
     os.environ['SQLITE_DB_PATH'] = tmp_db
 
 from django.core.wsgi import get_wsgi_application
 
 application = get_wsgi_application()
 app = application
+
+if os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
+    _tmp = '/tmp' if os.path.isdir('/tmp') else tempfile.gettempdir()
+    _migrate_flag = os.path.join(_tmp, '.django_migrated')
+    if not os.path.exists(_migrate_flag):
+        try:
+            from django.core.management import call_command
+            call_command('migrate', '--noinput', verbosity=0)
+            open(_migrate_flag, 'w').close()
+        except Exception:
+            pass
