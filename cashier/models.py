@@ -11,9 +11,11 @@ class DaftarBarang(models.Model):
     nomor = models.AutoField(primary_key=True)
     # nama_product = models.ForeignKey(Stock, on_delete=models.CASCADE)
     nama_product = models.CharField(max_length=200, blank=False, null=False)
+    image = models.ImageField(upload_to='inventory_images/', blank=True, null=True)
     part_for_what = models.CharField(max_length=100, blank=True, default='')
     hsn_sac = models.CharField(max_length=30, blank=True, default='')
     jumlah_produk = models.IntegerField()
+
     unit_produk = models.IntegerField(blank=True, null=True)
     vendor = models.CharField(max_length=120, blank=True, default='')
     harga_beli_satuan = models.DecimalField(max_digits=14, decimal_places=2)

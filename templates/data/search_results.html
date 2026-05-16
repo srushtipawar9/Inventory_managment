@@ -315,7 +315,13 @@
                         <div class="mt-2">
                              <span class="badge badge-success px-3 py-2">Preview Generated for: <span id="display-prompt"></span></span>
                         </div>
+                        <div class="mt-3">
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#saveAiInventoryModal">
+                                <i class="fas fa-save"></i> Save to Inventory
+                            </button>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -459,5 +465,117 @@
             </div>
         </div>
     </div>
+    </div>
+    <!-- Save AI Inventory Modal -->
+    <div class="modal fade" id="saveAiInventoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Save AI Part to Inventory</h5>
+                    <button class="close text-white" type="button" data-dismiss="modal"><span>×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img id="modal-ai-preview" src="" class="img-fluid rounded shadow-sm mb-3">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Item Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="ai-save-name" class="form-control mb-2" placeholder="e.g. Hydraulic Valve">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>HSN / SAC</label>
+                                    <input type="text" id="ai-save-hsn" class="form-control mb-2">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Part For What</label>
+                                    <input type="text" id="ai-save-for" class="form-control mb-2">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Qty <span class="text-danger">*</span></label>
+                                    <input type="number" id="ai-save-qty" class="form-control mb-2" value="1">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Purchase Price</label>
+                                    <input type="number" id="ai-save-purchase" class="form-control mb-2" value="0">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Profit %</label>
+                                    <input type="number" id="ai-save-profit" class="form-control mb-2" value="10">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Vendor</label>
+                                    <input type="text" id="ai-save-vendor" class="form-control mb-2">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>MRP</label>
+                                    <input type="number" id="ai-save-mrp" class="form-control mb-2" value="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" id="confirmSaveAiBtn">Confirm Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set modal image when opened
+        $('#saveAiInventoryModal').on('show.bs.modal', function () {
+            const aiImg = document.getElementById('generated-ai-image').src;
+            const prompt = document.getElementById('ai-custom-prompt').value;
+            document.getElementById('modal-ai-preview').src = aiImg;
+            document.getElementById('ai-save-name').value = prompt;
+        });
+
+        document.getElementById('confirmSaveAiBtn').addEventListener('click', async function() {
+            const btn = this;
+            const data = {
+                image_url: document.getElementById('generated-ai-image').src,
+                name: document.getElementById('ai-save-name').value,
+                hsn_sac: document.getElementById('ai-save-hsn').value,
+                part_for_what: document.getElementById('ai-save-for').value,
+                qty: document.getElementById('ai-save-qty').value,
+                purchase_price: document.getElementById('ai-save-purchase').value,
+                profit_margin: document.getElementById('ai-save-profit').value,
+                vendor: document.getElementById('ai-save-vendor').value,
+                mrp: document.getElementById('ai-save-mrp').value,
+            };
+
+            if (!data.name) { alert("Please enter a name!"); return; }
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch("{% url 'SaveAIInventory' %}", {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert("Successfully saved to Inventory!");
+                    $('#saveAiInventoryModal').modal('hide');
+                    window.location.href = "{% url 'TotalStock' %}";
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (e) {
+                alert("Save failed: " + e.message);
+                btn.innerHTML = 'Confirm Save';
+                btn.disabled = false;
+            }
+        });
+    </script>
 </div>
 {% endblock %}

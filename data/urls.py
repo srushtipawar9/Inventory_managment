@@ -10,4 +10,6 @@ urlpatterns = [
     path('vendors/', views.VendorComparison, name='VendorComparison'),
     path('remove-image/<int:part_id>/', views.RemovePartImage, name='RemovePartImage'),
     path('quick-add/', views.QuickAddProduct, name='QuickAddProduct'),
+    path('save-ai-inventory/', views.SaveAIInventory, name='SaveAIInventory'),
 ]
+

@@ -1,5 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
+from django.core.files.base import ContentFile
+import requests
 from .resources import StockResource
+
 from tablib import Dataset
 from .models import JCBPart, Stock, VendorPartPrice
 from cashier.models import DaftarBarang
@@ -258,3 +262,41 @@ def QuickAddProduct(request):
             messages.error(request, f"Error adding product: {str(e)}")
             
     return redirect(request.META.get('HTTP_REFERER', '/data/search/'))
+
+
+@login_required
+def SaveAIInventory(request):
+    if request.method == 'POST':
+        import json
+        try:
+            data = json.loads(request.body)
+            image_url = data.get('image_url')
+            name = data.get('name')
+            
+            # Create the inventory item
+            item = DaftarBarang(
+                user=request.user.profile,
+                nama_product=name,
+                part_for_what=data.get('part_for_what', ''),
+                hsn_sac=data.get('hsn_sac', ''),
+                jumlah_produk=int(data.get('qty', 1)),
+                vendor=data.get('vendor', ''),
+                harga_beli_satuan=float(data.get('purchase_price', 0)),
+                laba_persen=int(data.get('profit_margin', 10)),
+                mrp=float(data.get('mrp', 0))
+            )
+            
+            # Download and save image
+            if image_url:
+                response = requests.get(image_url, timeout=15)
+                if response.status_code == 200:
+                    file_name = f"ai_{name.replace(' ', '_')}.jpg"
+                    item.image.save(file_name, ContentFile(response.content), save=False)
+            
+            item.save()
+            return JsonResponse({'success': True, 'id': item.nomor})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+            
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
