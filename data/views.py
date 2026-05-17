@@ -305,3 +305,33 @@ def SaveAIInventory(request):
             return JsonResponse({'success': False, 'error': str(e)})
             
     return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+@login_required
+def EditPart(request, part_id):
+    part = get_object_or_404(JCBPart, id=part_id)
+    if request.method == 'POST':
+        part.part_number = request.POST.get('part_number')
+        part.name = request.POST.get('name')
+        part.price = request.POST.get('price', 0)
+        part.category = request.POST.get('category', 'OTHER')
+        part.description = request.POST.get('description', '')
+        
+        image = request.FILES.get('image')
+        if image:
+            if part.image_360_base:
+                part.image_360_base.delete(save=False)
+            part.image_360_base = image
+            
+        part.save()
+        messages.success(request, f"Product '{part.name}' updated successfully!")
+    return redirect(request.META.get('HTTP_REFERER', '/data/search/'))
+
+
+@login_required
+def DeletePart(request, part_id):
+    part = get_object_or_404(JCBPart, id=part_id)
+    name = part.name
+    part.delete()
+    messages.success(request, f"Product '{name}' deleted successfully from catalog!")
+    return redirect(request.META.get('HTTP_REFERER', '/data/search/'))

@@ -35,7 +35,8 @@
                                 {% if part.image_360_base %}
                                 <div class="position-relative">
                                     <img src="{{ part.image_360_base.url }}" class="img-fluid rounded"
-                                        style="max-height: 100px; object-fit: contain;">
+                                        style="max-height: 100px; object-fit: contain;"
+                                        onerror="this.onerror=null; this.src='https://via.placeholder.com/150x150?text=JCB+Part';">
                                     {% if user.is_staff or user.is_superuser %}
                                     <a href="{% url 'RemovePartImage' part.id %}" 
                                        class="btn btn-danger btn-circle btn-sm position-absolute" 
@@ -57,9 +58,24 @@
                                 {{ part.part_number }}</div>
                             <div class="h6 mb-0 font-weight-bold text-gray-800" style="height: 40px; overflow: hidden;">
                                 {{ part.name }}</div>
-                            <div class="mt-2">
-                                <a href="{% url 'PartDetail' part.id %}" class="btn btn-primary btn-sm btn-block">View
-                                    Details</a>
+                            <div class="mt-3 d-flex align-items-center justify-content-between">
+                                <a href="{% url 'PartDetail' part.id %}" class="btn btn-primary btn-sm px-3 flex-grow-1 mr-2"><i class="fas fa-info-circle"></i> View Details</a>
+                                {% if user.is_staff or user.is_superuser %}
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle px-2" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions" style="border-radius: 4px;">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in">
+                                        <button class="dropdown-item edit-part-btn" data-id="{{ part.id }}" data-number="{{ part.part_number }}" data-name="{{ part.name }}" data-price="{{ part.price }}" data-category="{{ part.category }}" data-description="{{ part.description|default:'' }}">
+                                            <i class="fas fa-edit text-primary mr-2"></i> Edit Product
+                                        </button>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item text-danger" href="{% url 'DeletePart' part.id %}" onclick="return confirm('Are you sure you want to PERMANENTLY DELETE this product from catalog?');">
+                                            <i class="fas fa-trash-alt mr-2"></i> Delete Product
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -434,10 +450,16 @@
                             <input type="number" step="0.01" name="price" class="form-control" required placeholder="0.00">
                         </div>
                         <div class="form-group">
-                            <label>Product Image</label>
-                            <div class="custom-file">
-                                <input type="file" name="image" class="custom-file-input" id="customFile" accept="image/*">
-                                <label class="custom-file-label" for="customFile">Choose file</label>
+                            <label class="font-weight-bold">Product Image</label>
+                            <div class="custom-file mb-2">
+                                <input type="file" name="image" class="custom-file-input" id="customFile" accept="image/*" onchange="previewNewProductImage(this)">
+                                <label class="custom-file-label text-truncate" for="customFile" id="customFileLabel">Choose file</label>
+                            </div>
+                            <div id="newProductImagePreviewContainer" class="text-center d-none mt-2" style="background: #f8f9fc; border: 1px dashed #ced4da; border-radius: 8px; padding: 10px;">
+                                <span class="badge badge-success mb-2"><i class="fas fa-check-circle"></i> Image Selected</span>
+                                <div>
+                                    <img id="newProductImagePreview" src="" class="img-fluid rounded shadow-sm" style="max-height: 120px; object-fit: contain; background: #fff; padding: 3px;">
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -466,6 +488,71 @@
         </div>
     </div>
     </div>
+
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-gradient-primary text-white" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+                    <h5 class="modal-title" id="editModalLabel"><i class="fas fa-edit"></i> Edit Product Details</h5>
+                    <button class="close text-white" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form id="editProductForm" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Part Number <span class="text-danger">*</span></label>
+                            <input type="text" name="part_number" id="edit_part_number" class="form-control" required placeholder="e.g. JCB-X100">
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold">Part Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" id="edit_name" class="form-control" required placeholder="e.g. Hydraulic Pump">
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold">Price (₹) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" name="price" id="edit_price" class="form-control" required placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold">Product Image</label>
+                            <div class="custom-file mb-2">
+                                <input type="file" name="image" class="custom-file-input" id="editCustomFile" accept="image/*" onchange="previewEditProductImage(this)">
+                                <label class="custom-file-label text-truncate" for="editCustomFile" id="editCustomFileLabel">Choose file...</label>
+                            </div>
+                            <div id="editProductImagePreviewContainer" class="text-center mt-2" style="background: #f8f9fc; border: 1px dashed #ced4da; border-radius: 8px; padding: 10px;">
+                                <span class="badge badge-primary mb-2"><i class="fas fa-image"></i> Image Preview</span>
+                                <div>
+                                    <img id="editProductImagePreview" src="" class="img-fluid rounded shadow-sm" style="max-height: 120px; object-fit: contain; background: #fff; padding: 3px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold">Category</label>
+                            <select name="category" id="edit_category" class="form-control">
+                                <option value="HYDRAULICS">Hydraulics</option>
+                                <option value="POWERTRAIN">Powertrain</option>
+                                <option value="GET">Ground Engaging Tools</option>
+                                <option value="FILTERS">Filters</option>
+                                <option value="ELECTRICAL">Electrical</option>
+                                <option value="CHASSIS">Chassis</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold">Description</label>
+                            <textarea name="description" id="edit_description" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                        <button class="btn btn-success" type="submit"><i class="fas fa-save"></i> Save Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Save AI Inventory Modal -->
     <div class="modal fade" id="saveAiInventoryModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -530,6 +617,85 @@
     </div>
 
     <script>
+        // Live previews for new product image upload
+        function previewNewProductImage(input) {
+            const file = input.files[0];
+            const label = document.getElementById('customFileLabel');
+            const container = document.getElementById('newProductImagePreviewContainer');
+            const preview = document.getElementById('newProductImagePreview');
+            
+            if (file) {
+                label.textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    container.classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                label.textContent = "Choose file";
+                container.classList.add('d-none');
+                preview.src = "";
+            }
+        }
+
+        // Live previews for edit product image upload
+        function previewEditProductImage(input) {
+            const file = input.files[0];
+            const label = document.getElementById('editCustomFileLabel');
+            const container = document.getElementById('editProductImagePreviewContainer');
+            const preview = document.getElementById('editProductImagePreview');
+            
+            if (file) {
+                label.textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    container.classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                label.textContent = "Choose file...";
+                container.classList.add('d-none');
+                preview.src = "";
+            }
+        }
+
+        // Handle Edit Part Click
+        document.querySelectorAll('.edit-part-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id = this.dataset.id;
+                document.getElementById('edit_part_number').value = this.dataset.number;
+                document.getElementById('edit_name').value = this.dataset.name;
+                document.getElementById('edit_price').value = this.dataset.price;
+                document.getElementById('edit_category').value = this.dataset.category;
+                document.getElementById('edit_description').value = this.dataset.description;
+                
+                // Set form action dynamically
+                const form = document.getElementById('editProductForm');
+                form.action = `/data/edit-part/${id}/`;
+                
+                // Handle current image preview if available
+                const previewImg = document.getElementById('editProductImagePreview');
+                const card = this.closest('.card-body');
+                const cardImg = card.querySelector('img');
+                const previewContainer = document.getElementById('editProductImagePreviewContainer');
+                
+                if (cardImg && cardImg.src && !cardImg.src.includes('placeholder')) {
+                    previewImg.src = cardImg.src;
+                    previewContainer.classList.remove('d-none');
+                } else {
+                    previewImg.src = "";
+                    previewContainer.classList.add('d-none');
+                }
+                
+                document.getElementById('editCustomFileLabel').textContent = "Choose file...";
+                
+                // Show modal
+                $('#editProductModal').modal('show');
+            });
+        });
+
         // Set modal image when opened
         $('#saveAiInventoryModal').on('show.bs.modal', function () {
             const aiImg = document.getElementById('generated-ai-image').src;

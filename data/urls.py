@@ -11,5 +11,7 @@ urlpatterns = [
     path('remove-image/<int:part_id>/', views.RemovePartImage, name='RemovePartImage'),
     path('quick-add/', views.QuickAddProduct, name='QuickAddProduct'),
     path('save-ai-inventory/', views.SaveAIInventory, name='SaveAIInventory'),
+    path('edit-part/<int:part_id>/', views.EditPart, name='EditPart'),
+    path('delete-part/<int:part_id>/', views.DeletePart, name='DeletePart'),
 ]
 
