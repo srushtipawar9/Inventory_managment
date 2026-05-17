@@ -60,10 +60,14 @@ def InputStock(request):
     vendor_names = list(
         Vendor.objects.order_by('city', 'name').values_list('name', flat=True).distinct()
     )
-
     if request.method == 'POST':
+        post_data = request.POST.copy()
+        for key in post_data.keys():
+            if any(suffix in key for suffix in ['-harga_beli_satuan', '-harga_jual_satuan', '-mrp']):
+                post_data[key] = post_data[key].replace(',', '').strip()
+
         formset_post = DaftarBarangFormset(
-            request.POST,
+            post_data,
             form_kwargs={'part_choices': part_choices},
         )
         if formset_post.is_valid():
@@ -72,7 +76,14 @@ def InputStock(request):
                 if not form.cleaned_data.get('nama_product'):
                     continue
                 jumlah = form.cleaned_data.get('jumlah_produk', 0) or 0
-                harga = form.cleaned_data.get('harga_beli_satuan', 0) or 0
+                
+                # Clean purchase price comma for checking
+                harga_beli_raw = form.data.get(form.add_prefix(form.prefix) + '-harga_beli_satuan', '0')
+                try:
+                    harga = Decimal(str(harga_beli_raw).replace(',', '').strip())
+                except:
+                    harga = Decimal('0')
+
                 if jumlah < 1 or harga < 1:
                     messages.warning(
                         request,
@@ -106,8 +117,6 @@ def InputStock(request):
         'vendor_names': vendor_names,
     }
     return render(request, 'cashier/input_data.html', context)
-
-
 @login_required()
 def TotalStock(request):
     data = DaftarBarang.objects.filter(user_id=request.user.profile.id)
@@ -127,7 +136,11 @@ def EditStock(request, pk):
     )
     
     if request.method == 'POST':
-        form = DaftarBarangForm(request.POST, request.FILES, instance=item, part_choices=part_choices)
+        post_data = request.POST.copy()
+        for key in ['harga_beli_satuan', 'harga_jual_satuan', 'mrp']:
+            if key in post_data:
+                post_data[key] = post_data[key].replace(',', '').strip()
+        form = DaftarBarangForm(post_data, request.FILES, instance=item, part_choices=part_choices)
         if form.is_valid():
             form.save()
             messages.success(request, f"Inventory item '{item.nama_product}' updated successfully!")

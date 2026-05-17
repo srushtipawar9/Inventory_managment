@@ -31,13 +31,13 @@ class DaftarBarangForm(forms.ModelForm):
             'hsn_sac': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'HSN / SAC'}),
             'jumlah_produk': forms.NumberInput(attrs={'class': 'form-control calc-field', 'placeholder': 'Qty', 'min': '1'}),
             'vendor': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Vendor', 'list': 'vendor-list'}),
-            'harga_beli_satuan': forms.NumberInput(attrs={'class': 'form-control calc-field', 'placeholder': 'Purchase', 'step': '0.01', 'min': '0'}),
+            'harga_beli_satuan': forms.TextInput(attrs={'class': 'form-control calc-field', 'placeholder': 'Purchase'}),
             'gst_percent': forms.NumberInput(attrs={'class': 'form-control calc-field', 'placeholder': 'GST %', 'step': '0.01', 'min': '0'}),
-            'gst_amount': forms.NumberInput(attrs={'class': 'form-control calc-field', 'placeholder': 'GST Amt', 'step': '0.01', 'readonly': 'readonly'}),
-            'amt_incl_tax': forms.NumberInput(attrs={'class': 'form-control calc-field', 'placeholder': 'Incl Tax', 'step': '0.01', 'readonly': 'readonly'}),
+            'gst_amount': forms.TextInput(attrs={'class': 'form-control calc-field', 'placeholder': 'GST Amt', 'readonly': 'readonly'}),
+            'amt_incl_tax': forms.TextInput(attrs={'class': 'form-control calc-field', 'placeholder': 'Incl Tax', 'readonly': 'readonly'}),
             'laba_persen': forms.NumberInput(attrs={'class': 'form-control calc-field', 'placeholder': '%', 'min': '0'}),
-            'harga_jual_satuan': forms.NumberInput(attrs={'class': 'form-control calc-field', 'placeholder': 'Sales', 'step': '0.01', 'min': '0'}),
-            'mrp': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'MRP', 'step': '0.01', 'min': '0'}),
+            'harga_jual_satuan': forms.TextInput(attrs={'class': 'form-control calc-field', 'placeholder': 'Sales'}),
+            'mrp': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MRP'}),
             'user': forms.HiddenInput(),
         }
 

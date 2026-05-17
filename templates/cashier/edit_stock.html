@@ -186,7 +186,8 @@
   
   function recalc() {
     const qty = parseFloat(form.querySelector('[name="jumlah_produk"]')?.value) || 0;
-    const purchase = parseFloat(form.querySelector('[name="harga_beli_satuan"]')?.value) || 0;
+    const purchaseVal = form.querySelector('[name="harga_beli_satuan"]')?.value || '0';
+    const purchase = parseFloat(purchaseVal.replace(/,/g, '')) || 0;
     const gstPct = parseFloat(form.querySelector('[name="gst_percent"]')?.value) || 0;
     const profitPct = parseFloat(form.querySelector('[name="laba_persen"]')?.value) || 0;
     

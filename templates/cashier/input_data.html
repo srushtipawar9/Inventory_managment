@@ -2,6 +2,32 @@
 {% load static %}
 {% block content %}
 
+<style>
+  #inputDataTable input.form-control {
+    font-size: 13px !important;
+    padding: 4px 8px !important;
+    height: auto !important;
+  }
+  #inputDataTable th {
+    font-size: 12px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  #inputDataTable .image-upload-wrapper { min-width: 80px; }
+  #inputDataTable input[name$="-nama_product"] { min-width: 180px; }
+  #inputDataTable input[name$="-part_for_what"] { min-width: 130px; }
+  #inputDataTable input[name$="-hsn_sac"] { min-width: 90px; }
+  #inputDataTable input[name$="-jumlah_produk"] { min-width: 70px; }
+  #inputDataTable input[name$="-vendor"] { min-width: 130px; }
+  #inputDataTable input[name$="-harga_beli_satuan"] { min-width: 95px; }
+  #inputDataTable input[name$="-gst_percent"] { min-width: 75px; }
+  #inputDataTable input[name$="-gst_amount"] { min-width: 90px; }
+  #inputDataTable input[name$="-amt_incl_tax"] { min-width: 100px; }
+  #inputDataTable input[name$="-laba_persen"] { min-width: 70px; }
+  #inputDataTable input[name$="-harga_jual_satuan"] { min-width: 100px; }
+  #inputDataTable input[name$="-mrp"] { min-width: 100px; }
+</style>
+
 <div class="container-fluid">
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">JCB Part Inventory Input</h1>
@@ -135,13 +161,13 @@
       <td><input type="text" name="form-__prefix__-hsn_sac" class="form-control" placeholder="HSN/SAC"></td>
       <td><input type="number" name="form-__prefix__-jumlah_produk" class="form-control calc-field" placeholder="Qty" min="1"></td>
       <td><input type="text" name="form-__prefix__-vendor" class="form-control" placeholder="Vendor" list="vendor-list"></td>
-      <td><input type="number" name="form-__prefix__-harga_beli_satuan" class="form-control calc-field" placeholder="Purchase" step="0.01" min="0"></td>
+      <td><input type="text" name="form-__prefix__-harga_beli_satuan" class="form-control calc-field" placeholder="Purchase"></td>
       <td><input type="number" name="form-__prefix__-gst_percent" class="form-control calc-field" placeholder="GST %" step="0.01" min="0" value="0"></td>
-      <td><input type="number" name="form-__prefix__-gst_amount" class="form-control calc-field" placeholder="GST Amt" step="0.01" readonly></td>
-      <td><input type="number" name="form-__prefix__-amt_incl_tax" class="form-control calc-field" placeholder="Incl Tax" step="0.01" readonly></td>
+      <td><input type="text" name="form-__prefix__-gst_amount" class="form-control calc-field" placeholder="GST Amt" readonly></td>
+      <td><input type="text" name="form-__prefix__-amt_incl_tax" class="form-control calc-field" placeholder="Incl Tax" readonly></td>
       <td><input type="number" name="form-__prefix__-laba_persen" class="form-control calc-field" placeholder="%" min="0" value="10"></td>
-      <td><input type="number" name="form-__prefix__-harga_jual_satuan" class="form-control calc-field" placeholder="Sales" step="0.01" min="0"></td>
-      <td><input type="number" name="form-__prefix__-mrp" class="form-control" placeholder="MRP" step="0.01" min="0"></td>
+      <td><input type="text" name="form-__prefix__-harga_jual_satuan" class="form-control calc-field" placeholder="Sales"></td>
+      <td><input type="text" name="form-__prefix__-mrp" class="form-control" placeholder="MRP"></td>
       <td class="text-center align-middle"><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
       <input type="hidden" name="form-__prefix__-user" value="{{ request_user }}">
     </tr>
@@ -156,7 +182,8 @@
 
   function recalcRow(row) {
     const qty = parseFloat(row.querySelector('[name$="-jumlah_produk"]')?.value) || 0;
-    const purchase = parseFloat(row.querySelector('[name$="-harga_beli_satuan"]')?.value) || 0;
+    const purchaseVal = row.querySelector('[name$="-harga_beli_satuan"]')?.value || '0';
+    const purchase = parseFloat(purchaseVal.replace(/,/g, '')) || 0;
     const gstPct = parseFloat(row.querySelector('[name$="-gst_percent"]')?.value) || 0;
     const profitPct = parseFloat(row.querySelector('[name$="-laba_persen"]')?.value) || 0;
     const base = purchase * qty;
