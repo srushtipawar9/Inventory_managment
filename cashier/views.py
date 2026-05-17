@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from decimal import Decimal
 from django.http import HttpResponse, HttpResponseRedirect
 from django.forms import formset_factory, modelformset_factory
@@ -115,6 +115,44 @@ def TotalStock(request):
         'data':data
     }
     return render(request, 'cashier/stock.html', context)
+
+
+@login_required()
+def EditStock(request, pk):
+    item = get_object_or_404(DaftarBarang, nomor=pk, user_id=request.user.profile.id)
+    stocks = JCBPart.objects.all().order_by('category', 'name')
+    part_choices = _part_choices(stocks)
+    vendor_names = list(
+        Vendor.objects.order_by('city', 'name').values_list('name', flat=True).distinct()
+    )
+    
+    if request.method == 'POST':
+        form = DaftarBarangForm(request.POST, request.FILES, instance=item, part_choices=part_choices)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Inventory item '{item.nama_product}' updated successfully!")
+            return redirect('TotalStock')
+        else:
+            messages.warning(request, "Please correct the errors in the form.")
+    else:
+        form = DaftarBarangForm(instance=item, part_choices=part_choices)
+        
+    context = {
+        'form': form,
+        'item': item,
+        'stocks': stocks,
+        'vendor_names': vendor_names,
+    }
+    return render(request, 'cashier/edit_stock.html', context)
+
+
+@login_required()
+def DeleteStock(request, pk):
+    item = get_object_or_404(DaftarBarang, nomor=pk, user_id=request.user.profile.id)
+    name = item.nama_product
+    item.delete()
+    messages.success(request, f"Inventory item '{name}' deleted successfully!")
+    return redirect('TotalStock')
 
 
 @login_required()

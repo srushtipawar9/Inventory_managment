@@ -5,6 +5,8 @@ from . import views
 urlpatterns = [
     path('', views.HomeIndex, name='HomeIndex'),
     path('stock/', views.TotalStock, name='TotalStock'),
+    path('stock/edit/<int:pk>/', views.EditStock, name='EditStock'),
+    path('stock/delete/<int:pk>/', views.DeleteStock, name='DeleteStock'),
     path('input/', views.InputStock, name='InputStock'),
     path('cart/', views.Cart, name='Cart'),
     path('struck/<int:pk>/', views.StruckPembelian, name='StruckPembelian'),

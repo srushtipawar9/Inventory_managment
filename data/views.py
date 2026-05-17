@@ -76,6 +76,13 @@ def GlobalSearch(request):
 
 def PartDetail(request, part_id):
     part = get_object_or_404(JCBPart, id=part_id)
+    if request.method == 'POST' and request.FILES.get('image'):
+        if part.image_360_base:
+            part.image_360_base.delete(save=False)
+        part.image_360_base = request.FILES.get('image')
+        part.save()
+        messages.success(request, f"Product image for part '{part.part_number}' uploaded successfully!")
+        return redirect('PartDetail', part_id=part.id)
     return render(request, 'data/part_detail.html', {'part': part})
 
 def StockUpload(request):

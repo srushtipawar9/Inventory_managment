@@ -25,23 +25,24 @@
         </datalist>
 
         <div class="table-responsive">
-          <table class="table table-bordered table-sm" id="inputDataTable">
+          <table class="table table-bordered table-sm align-middle" id="inputDataTable">
             <thead class="bg-primary text-white text-center">
               <tr>
-                <th style="width:3%">SR No.</th>
-                <th style="width:14%">Item Name</th>
-                <th style="width:10%">No. / For What</th>
-                <th style="width:7%">HSN / SAC</th>
-                <th style="width:5%">Qty</th>
-                <th style="width:10%">Vendor</th>
-                <th style="width:7%">Purchase</th>
-                <th style="width:5%">GST %</th>
-                <th style="width:7%">GST Amt</th>
-                <th style="width:8%">Incl Tax</th>
-                <th style="width:5%">Profit %</th>
-                <th style="width:7%">Sales</th>
-                <th style="width:7%">MRP</th>
-                <th style="width:5%">Action</th>
+                <th style="width:3%">SR</th>
+                <th style="width:13%">Item Name</th>
+                <th style="width:6%">Image</th>
+                <th style="width:9%">No. / For What</th>
+                <th style="width:6%">HSN / SAC</th>
+                <th style="width:4%">Qty</th>
+                <th style="width:9%">Vendor</th>
+                <th style="width:6%">Purchase</th>
+                <th style="width:4%">GST %</th>
+                <th style="width:6%">GST Amt</th>
+                <th style="width:7%">Incl Tax</th>
+                <th style="width:4%">%</th>
+                <th style="width:6%">Sales</th>
+                <th style="width:6%">MRP</th>
+                <th style="width:4%">Action</th>
               </tr>
             </thead>
             <tbody id="table-stock">
@@ -50,6 +51,22 @@
                 <td class="text-center sr-cell align-middle">{{ forloop.counter }}</td>
                 <td>
                   <input type="text" name="{{ form.nama_product.html_name }}" class="form-control part-select" list="part-list" value="{{ form.nama_product.value|default:'' }}" placeholder="Item Name">
+                </td>
+                <td class="text-center align-middle">
+                  <div class="image-upload-wrapper" style="position: relative;">
+                    <div class="real-file-input d-none">
+                      {{ form.image }}
+                    </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm px-2 py-1 custom-file-trigger" style="font-size: 11px; white-space: nowrap; border-radius: 4px;">
+                      <i class="fas fa-camera"></i> <span class="btn-text">Add</span>
+                    </button>
+                    <div class="img-preview-box mt-1 d-none" style="display: inline-flex; align-items: center; justify-content: center; background: #fff; border-radius: 4px; padding: 2px; border: 1px solid #ddd; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                      <img class="img-thumbnail mini-preview" style="width: 32px; height: 32px; object-fit: cover; border: none; padding: 0;">
+                      <button type="button" class="btn btn-xs btn-link text-danger p-0 ml-1 clear-img-btn" style="font-size: 10px; line-height: 1;" title="Clear Image">
+                        <i class="fas fa-times-circle"></i>
+                      </button>
+                    </div>
+                  </div>
                 </td>
                 <td>{{ form.part_for_what }}</td>
                 <td>{{ form.hsn_sac }}</td>
@@ -63,12 +80,9 @@
                 <td>{{ form.harga_jual_satuan }}</td>
                 <td>{{ form.mrp }}</td>
                 <td class="text-center align-middle">
-                  {% if not forloop.first %}
                   <button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button>
-                  {% endif %}
                 </td>
                 {{ form.user }}
-                <div class="d-none">{{ form.image }}</div>
               </tr>
               {% endfor %}
             </tbody>
@@ -101,6 +115,22 @@
     <tr id="EmptyForm">
       <td class="text-center sr-cell align-middle">__sr__</td>
       <td><input type="text" name="form-__prefix__-nama_product" class="form-control part-select" list="part-list" placeholder="Item Name"></td>
+      <td class="text-center align-middle">
+        <div class="image-upload-wrapper" style="position: relative;">
+          <div class="real-file-input d-none">
+            <input type="file" name="form-__prefix__-image" class="image-file-input">
+          </div>
+          <button type="button" class="btn btn-outline-primary btn-sm px-2 py-1 custom-file-trigger" style="font-size: 11px; white-space: nowrap; border-radius: 4px;">
+            <i class="fas fa-camera"></i> <span class="btn-text">Add</span>
+          </button>
+          <div class="img-preview-box mt-1 d-none" style="display: inline-flex; align-items: center; justify-content: center; background: #fff; border-radius: 4px; padding: 2px; border: 1px solid #ddd; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <img class="img-thumbnail mini-preview" style="width: 32px; height: 32px; object-fit: cover; border: none; padding: 0;">
+            <button type="button" class="btn btn-xs btn-link text-danger p-0 ml-1 clear-img-btn" style="font-size: 10px; line-height: 1;" title="Clear Image">
+              <i class="fas fa-times-circle"></i>
+            </button>
+          </div>
+        </div>
+      </td>
       <td><input type="text" name="form-__prefix__-part_for_what" class="form-control" placeholder="No./For What"></td>
       <td><input type="text" name="form-__prefix__-hsn_sac" class="form-control" placeholder="HSN/SAC"></td>
       <td><input type="number" name="form-__prefix__-jumlah_produk" class="form-control calc-field" placeholder="Qty" min="1"></td>
@@ -114,7 +144,6 @@
       <td><input type="number" name="form-__prefix__-mrp" class="form-control" placeholder="MRP" step="0.01" min="0"></td>
       <td class="text-center align-middle"><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button></td>
       <input type="hidden" name="form-__prefix__-user" value="{{ request_user }}">
-      <div class="d-none"><input type="file" name="form-__prefix__-image"></div>
     </tr>
   </tbody>
 </table>
@@ -165,11 +194,98 @@
     refreshSrNumbers();
   });
 
+  // Handle file input click delegation
+  document.addEventListener('click', function(e) {
+    const trigger = e.target.closest('.custom-file-trigger');
+    if (trigger) {
+      e.preventDefault();
+      const wrapper = trigger.closest('.image-upload-wrapper');
+      const fileInput = wrapper.querySelector('input[type="file"]');
+      if (fileInput) fileInput.click();
+    }
+  });
+
+  // Handle image changes & previews
+  document.addEventListener('change', function(e) {
+    if (e.target.matches('input[type="file"][name$="-image"]')) {
+      const fileInput = e.target;
+      const file = fileInput.files[0];
+      const wrapper = fileInput.closest('.image-upload-wrapper');
+      const trigger = wrapper.querySelector('.custom-file-trigger');
+      const previewBox = wrapper.querySelector('.img-preview-box');
+      const previewImg = wrapper.querySelector('.mini-preview');
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          previewImg.src = event.target.result;
+          previewBox.classList.remove('d-none');
+          trigger.innerHTML = '<i class="fas fa-check"></i> <span class="btn-text">Edit</span>';
+          trigger.classList.remove('btn-outline-primary');
+          trigger.classList.add('btn-success');
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewBox.classList.add('d-none');
+        trigger.innerHTML = '<i class="fas fa-camera"></i> <span class="btn-text">Add</span>';
+        trigger.classList.remove('btn-success');
+        trigger.classList.add('btn-outline-primary');
+      }
+    }
+  });
+
+  // Handle clearing selected image
+  document.addEventListener('click', function(e) {
+    const clearBtn = e.target.closest('.clear-img-btn');
+    if (clearBtn) {
+      e.preventDefault();
+      const wrapper = clearBtn.closest('.image-upload-wrapper');
+      const fileInput = wrapper.querySelector('input[type="file"]');
+      const trigger = wrapper.querySelector('.custom-file-trigger');
+      const previewBox = wrapper.querySelector('.img-preview-box');
+
+      if (fileInput) {
+        fileInput.value = '';
+        const clearCheckbox = wrapper.querySelector('input[type="checkbox"][name$="-clear"]');
+        if (clearCheckbox) clearCheckbox.checked = true;
+      }
+      previewBox.classList.add('d-none');
+      trigger.innerHTML = '<i class="fas fa-camera"></i> <span class="btn-text">Add</span>';
+      trigger.classList.remove('btn-success');
+      trigger.classList.add('btn-outline-primary');
+    }
+  });
+
+  // Handle row deletes
   document.addEventListener('click', function(e) {
     if (e.target.closest('.remove-row')) {
       e.preventDefault();
-      e.target.closest('tr').remove();
-      refreshSrNumbers();
+      const row = e.target.closest('tr');
+      const allRows = document.querySelectorAll('#table-stock .stock-row');
+      if (allRows.length > 1) {
+        row.remove();
+        refreshSrNumbers();
+        // Update TOTAL_FORMS count
+        const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+        if (totalForms) totalForms.value = document.querySelectorAll('#table-stock .stock-row').length;
+      } else {
+        // Only 1 row left - clear its inputs instead of deleting it to preserve form template
+        row.querySelectorAll('input').forEach(input => {
+          if (input.type === 'file' || input.type === 'number' || input.type === 'text') {
+            input.value = '';
+          }
+          if (input.dataset.manual) delete input.dataset.manual;
+        });
+        const previewBox = row.querySelector('.img-preview-box');
+        if (previewBox) previewBox.classList.add('d-none');
+        const trigger = row.querySelector('.custom-file-trigger');
+        if (trigger) {
+          trigger.innerHTML = '<i class="fas fa-camera"></i> <span class="btn-text">Add</span>';
+          trigger.classList.remove('btn-success');
+          trigger.classList.add('btn-outline-primary');
+        }
+        recalcRow(row);
+      }
     }
   });
 

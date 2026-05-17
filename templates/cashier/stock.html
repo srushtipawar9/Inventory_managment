@@ -40,6 +40,7 @@
                       <th>Sales Price</th>
                       <th>MRP</th>
                       <th>Date</th>
+                      <th style="width: 10%;">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -59,6 +60,16 @@
                       <td>₹{{data.harga_jual_satuan|intcomma}}</td>
                       <td>₹{{data.mrp|default:"0"|intcomma}}</td>
                       <td>{{data.created}}</td>
+                      <td class="text-center align-middle">
+                        <div class="btn-group" role="group">
+                          <a href="{% url 'EditStock' data.nomor %}" class="btn btn-primary btn-sm px-2 mr-1 rounded" title="Edit Item">
+                            <i class="fas fa-edit"></i>
+                          </a>
+                          <a href="{% url 'DeleteStock' data.nomor %}" class="btn btn-danger btn-sm px-2 rounded" title="Delete Item" onclick="return confirm('Are you sure you want to delete this inventory item?');">
+                            <i class="fas fa-trash-alt"></i>
+                          </a>
+                        </div>
+                      </td>
                     </tr>
                   {% endfor %}
                   </tbody>

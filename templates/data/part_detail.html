@@ -2,31 +2,66 @@
 {% block content %}
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">{{ part.name }}</h1>
-        <a href="/data/search/?q={{ part.name }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-search fa-sm text-white-50"></i> Related Parts
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-cog text-primary mr-2"></i>{{ part.name }}</h1>
+        <a href="/data/search/?q={{ part.name }}" class="btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-search fa-sm text-white-50 mr-1"></i> Related Parts
         </a>
     </div>
 
+    <!-- Hidden form for image upload -->
+    <form method="post" enctype="multipart/form-data" id="partImageForm" class="d-none">
+        {% csrf_token %}
+        <input type="file" name="image" id="partImageInput" accept="image/*" onchange="document.getElementById('partImageForm').submit();">
+    </form>
+
     <div class="row">
-        <!-- 360 Degree Viewer Simulation -->
+        <!-- Product Image Preview / Upload Card -->
         <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Product Preview (JCB Spare Part)</h6>
+            <div class="card shadow mb-4 border-0" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-image mr-2"></i>Product Preview (JCB Spare Part)</h6>
+                    {% if part.image_360_base %}
+                    <a href="{% url 'RemovePartImage' part.id %}" class="btn btn-sm btn-outline-danger" 
+                       onclick="return confirm('Are you sure you want to remove this product image?');" title="Remove Product Image">
+                        <i class="fas fa-trash-alt"></i> Remove Image
+                    </a>
+                    {% endif %}
                 </div>
-                <div class="card-body">
+                <div class="card-body bg-light p-4">
                     <div class="text-center">
-                        <div id="viewer-container">
+                        <div id="viewer-container" class="position-relative">
                             {% if part.image_360_base %}
-                            <img id="jcb-part-image" src="{{ part.image_360_base.url }}" 
-                                 class="img-fluid rounded shadow" style="max-height: 400px; border: 1px solid #ddd;">
+                            <div class="hover-image-overlay shadow rounded" style="border: 2px solid #eaecf4; overflow: hidden; background-color: #fff; max-width: 550px; margin: 0 auto; min-height: 320px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <img id="jcb-part-image" src="{{ part.image_360_base.url }}" 
+                                     class="img-fluid" style="max-height: 380px; object-fit: contain;">
+                                <div class="image-actions-overlay d-flex align-items-center justify-content-center" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.3s ease;">
+                                    <button class="btn btn-light font-weight-bold shadow px-3 py-2 mr-2" onclick="document.getElementById('partImageInput').click();">
+                                        <i class="fas fa-sync mr-1"></i> Change Photo
+                                    </button>
+                                </div>
+                            </div>
+                            <style>
+                                .hover-image-overlay:hover .image-actions-overlay {
+                                    opacity: 1 !important;
+                                }
+                            </style>
                             {% else %}
-                            <img id="jcb-part-image" src="https://via.placeholder.com/600x400?text=JCB+Part+{{ part.part_number }}" 
-                                 class="img-fluid rounded shadow" style="max-height: 400px; border: 1px solid #ddd;">
+                            <div class="upload-dropzone border-dashed rounded bg-white p-5 d-flex flex-column align-items-center justify-content-center shadow-sm" 
+                                 style="border: 2.5px dashed #b2c2ed; cursor: pointer; transition: all 0.3s ease; max-width: 550px; margin: 0 auto; min-height: 320px;"
+                                 onclick="document.getElementById('partImageInput').click();"
+                                 onmouseover="this.style.borderColor='#4e73df'; this.style.backgroundColor='#f8f9fc';"
+                                 onmouseout="this.style.borderColor='#b2c2ed'; this.style.backgroundColor='#fff';">
+                                <div class="icon-circle bg-light-primary text-primary mb-3" style="width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #e8f0fe;">
+                                    <i class="fas fa-cloud-upload-alt fa-2x"></i>
+                                </div>
+                                <h5 class="font-weight-bold text-gray-800 mb-1" style="font-size: 1.1rem;">Upload Product Image</h5>
+                                <p class="text-muted small px-3 text-center mb-0">Drag & drop your photo or click to choose from your PC.</p>
+                                <span class="badge badge-primary mt-3 px-3 py-2"><i class="fas fa-plus mr-1"></i> Choose File</span>
+                            </div>
                             {% endif %}
-                            <p class="mt-3 text-muted">
-                                <i class="fas fa-image"></i> High-quality product preview
+                            
+                            <p class="mt-3 text-muted small">
+                                <i class="fas fa-info-circle mr-1"></i> High-quality preview helps identify correct machine components.
                             </p>
                         </div>
                     </div>
@@ -34,33 +69,48 @@
             </div>
         </div>
 
-        <!-- Part Details -->
+        <!-- Part Details Specification Card -->
         <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Specifications</h6>
+            <div class="card shadow mb-4 border-0" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-list-ul mr-2"></i>Specifications</h6>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Part Number:</strong> {{ part.part_number }}</li>
-                        <li class="list-group-item"><strong>Price:</strong> ₹{{ part.price }}</li>
-                        <li class="list-group-item"><strong>Stock:</strong> {{ part.stock_quantity }} units</li>
-                        <li class="list-group-item"><strong>Status:</strong> 
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush" style="font-size: 0.95rem;">
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted font-weight-bold"><i class="fas fa-barcode mr-2"></i>Part Number:</span>
+                            <span class="font-weight-bold text-gray-800">{{ part.part_number }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted font-weight-bold"><i class="fas fa-tag mr-2"></i>Price:</span>
+                            <span class="font-weight-bold text-primary" style="font-size: 1.15rem;">₹{{ part.price }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted font-weight-bold"><i class="fas fa-cubes mr-2"></i>Stock:</span>
+                            <span class="font-weight-bold text-gray-800">{{ part.stock_quantity }} units</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted font-weight-bold"><i class="fas fa-check-circle mr-2"></i>Status:</span>
                             {% if part.stock_quantity > 0 %}
-                            <span class="badge badge-success">In Stock</span>
+                            <span class="badge badge-success px-2 py-1"><i class="fas fa-check mr-1"></i>In Stock</span>
                             {% else %}
-                            <span class="badge badge-danger">Out of Stock</span>
+                            <span class="badge badge-danger px-2 py-1"><i class="fas fa-exclamation-triangle mr-1"></i>Out of Stock</span>
                             {% endif %}
                         </li>
                     </ul>
-                    <div class="mt-4">
-                        <p class="small text-gray-600">{{ part.description|default:"No description available for this JCB spare part." }}</p>
+                    
+                    <div class="p-3 bg-light border-top">
+                        <label class="small font-weight-bold text-gray-700 uppercase mb-1">Description:</label>
+                        <p class="small text-gray-600 mb-0" style="line-height: 1.5;">{{ part.description|default:"No description available for this JCB spare part." }}</p>
                     </div>
-                    <button id="order-btn" class="btn btn-success btn-block mt-3 py-2 font-weight-bold transition-all">
-                        <i class="fas fa-shopping-cart"></i> Add to Order
-                    </button>
-                    <div id="order-status" class="mt-2 text-center small font-weight-bold text-success" style="display:none;">
-                        <i class="fas fa-check-circle"></i> Item added to your inventory list.
+                    
+                    <div class="p-3">
+                        <button id="order-btn" class="btn btn-success btn-block py-2 font-weight-bold shadow-sm transition-all" style="font-size: 1.05rem; border-radius: 8px;">
+                            <i class="fas fa-shopping-cart mr-2"></i> Add to Order
+                        </button>
+                        <div id="order-status" class="mt-3 text-center small font-weight-bold text-success border border-success rounded p-2" style="display:none; background-color: #f6fff9;">
+                            <i class="fas fa-check-circle mr-1"></i> Item successfully ordered & recorded!
+                        </div>
                     </div>
                 </div>
             </div>
@@ -68,34 +118,126 @@
     </div>
 </div>
 
+<!-- UPI QR Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
+      
+      <!-- Modal Header -->
+      <div class="modal-header text-white py-3" style="background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%); border-bottom: none;">
+        <h5 class="modal-title font-weight-bold" id="paymentModalLabel">
+            <i class="fas fa-qrcode mr-2"></i>Scan & Pay (UPI Checkout)
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 0.8; outline: none;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-4 text-center">
+        <!-- Payee Info -->
+        <h6 class="text-gray-800 font-weight-bold mb-1" style="font-size: 1.1rem;">JCB Parts Shop & Inventory</h6>
+        <p class="text-muted small mb-3">Payee UPI ID: <strong class="text-dark">9657493275@ybl</strong></p>
+        
+        <!-- QR Code Container -->
+        <div class="qr-code-box my-3 p-3 bg-white d-inline-block rounded shadow-sm border position-relative" style="border: 2px solid #1cc88a;">
+          <!-- Custom pulsing border design -->
+          <div class="qr-pulse-scanner" style="position: absolute; top:0; left:0; right:0; bottom:0; pointer-events: none; border-radius: 6px; box-shadow: 0 0 10px rgba(28, 200, 138, 0.4); animation: qrPulse 2s infinite alternate;"></div>
+          
+          <!-- UPI QR Image generated dynamically with exact price -->
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi%3A%2F%2Fpay%3Fpa%3D9657493275%40ybl%26pn%3DJCB%20InventoryPro%26am%3D{{ part.price }}%26cu%3DINR%26tn%3DJCB%20Part%20{{ part.part_number }}" 
+               alt="UPI QR Payment" 
+               class="img-fluid rounded" 
+               style="width: 220px; height: 220px; object-fit: contain;">
+        </div>
+
+        <style>
+          @keyframes qrPulse {
+            0% { box-shadow: 0 0 5px rgba(28, 200, 138, 0.2); }
+            100% { box-shadow: 0 0 18px rgba(28, 200, 138, 0.8); }
+          }
+        </style>
+
+        <!-- Amount to Pay -->
+        <div class="amount-badge my-2 py-2 px-4 d-inline-block bg-light rounded text-success font-weight-bold" style="font-size: 1.25rem; border: 1px dashed #1cc88a;">
+          ₹{{ part.price }}
+        </div>
+        
+        <!-- Scanning Help -->
+        <p class="text-gray-700 small mt-3 mb-1 font-weight-bold">
+            <i class="fas fa-mobile-alt mr-1"></i> Scan using any UPI App
+        </p>
+        <div class="d-flex justify-content-center align-items-center mb-3">
+          <span class="badge badge-light border mx-1 px-2 py-1 small text-secondary">Google Pay</span>
+          <span class="badge badge-light border mx-1 px-2 py-1 small text-secondary">PhonePe</span>
+          <span class="badge badge-light border mx-1 px-2 py-1 small text-secondary">Paytm</span>
+          <span class="badge badge-light border mx-1 px-2 py-1 small text-secondary">BHIM</span>
+        </div>
+        
+        <div class="alert alert-warning py-2 small border text-left" role="alert" style="border-radius: 8px;">
+          <i class="fas fa-info-circle mr-1"></i> <strong>Mobile Users:</strong> Send ₹{{ part.price }} directly to UPI address <strong class="text-dark">9657493275@ybl</strong> if unable to scan the code.
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer bg-light py-2 px-3 border-top d-flex justify-content-between">
+        <button type="button" class="btn btn-secondary font-weight-bold btn-sm shadow-sm" data-dismiss="modal">Cancel</button>
+        <button type="button" id="confirm-payment-btn" class="btn btn-success font-weight-bold btn-sm shadow-sm px-3">
+            <i class="fas fa-check-double mr-1"></i> I Have Paid
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <script>
+    // Click on Add to Order opens QR Checkout Modal
     document.getElementById('order-btn').addEventListener('click', function() {
-        const btn = this;
+        // Open the beautiful UPI Modal
+        $('#paymentModal').modal('show');
+    });
+
+    // Handle payment confirmation inside checkout modal
+    document.getElementById('confirm-payment-btn').addEventListener('click', function() {
+        // Hide payment modal
+        $('#paymentModal').modal('hide');
+
+        const btn = document.getElementById('order-btn');
         const status = document.getElementById('order-status');
         
-        // Step 1: Processing
+        // Step 1: Processing Payment
         btn.disabled = true;
         btn.classList.remove('btn-success');
         btn.classList.add('btn-warning');
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Payment...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Verifying Payment...';
         
         setTimeout(() => {
-            // Step 2: Confirmed
+            // Step 2: Payment Confirmed
             btn.classList.remove('btn-warning');
             btn.classList.add('btn-info');
-            btn.innerHTML = '<i class="fas fa-check"></i> Payment Confirmed ✅';
+            btn.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Payment Confirmed ✅';
             
             setTimeout(() => {
-                // Step 3: Complete
+                // Step 3: Complete Order
                 btn.classList.remove('btn-info');
                 btn.classList.add('btn-primary');
-                btn.innerHTML = '<i class="fas fa-box"></i> Order Complete! 📦';
+                btn.innerHTML = '<i class="fas fa-box mr-1"></i> Order Complete! 📦';
                 status.style.display = 'block';
                 
-                // Optional: Confetti or animation could go here
+                // Add a notification alert at the top of page
+                const container = document.querySelector('.container-fluid');
+                const alertHtml = `
+                    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert" style="border-radius: 8px;">
+                        <i class="fas fa-check-circle mr-1"></i> <strong>Success!</strong> Your payment has been received and verified. The order is placed.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                `;
+                container.insertAdjacentHTML('afterbegin', alertHtml);
             }, 1500);
         }, 1500);
     });
 </script>
-
 {% endblock %}
