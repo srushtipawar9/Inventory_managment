@@ -279,18 +279,44 @@ def SaveAIInventory(request):
             image_url = data.get('image_url')
             name = data.get('name')
             
+            # Robust type conversion to prevent ValueErrors when numeric inputs are blank or invalid
+            try:
+                qty = int(data.get('qty') or 1)
+            except:
+                qty = 1
+                
+            try:
+                purchase_price = float(str(data.get('purchase_price') or 0).replace(',', '').strip())
+            except:
+                purchase_price = 0.0
+                
+            try:
+                profit_margin = int(data.get('profit_margin') or 10)
+            except:
+                profit_margin = 10
+                
+            try:
+                gst_percent = float(str(data.get('gst_percent') or 0).replace(',', '').strip())
+            except:
+                gst_percent = 0.0
+                
+            try:
+                mrp = float(str(data.get('mrp') or 0).replace(',', '').strip())
+            except:
+                mrp = 0.0
+
             # Create the inventory item
             item = DaftarBarang(
                 user=request.user.profile,
                 nama_product=name,
                 part_for_what=data.get('part_for_what', ''),
                 hsn_sac=data.get('hsn_sac', ''),
-                jumlah_produk=int(data.get('qty', 1)),
+                jumlah_produk=qty,
                 vendor=data.get('vendor', ''),
-                harga_beli_satuan=float(data.get('purchase_price', 0)),
-                laba_persen=int(data.get('profit_margin', 10)),
-                gst_percent=float(data.get('gst_percent', 0)),
-                mrp=float(data.get('mrp', 0))
+                harga_beli_satuan=purchase_price,
+                laba_persen=profit_margin,
+                gst_percent=gst_percent,
+                mrp=mrp
             )
             
             # Download and save image
