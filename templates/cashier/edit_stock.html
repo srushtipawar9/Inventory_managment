@@ -32,8 +32,13 @@
                 
                 <div class="image-preview-container mb-3 position-relative d-inline-block">
                   {% if item.image %}
-                  <img id="image-view-preview" src="{{ item.image.url }}" 
-                       class="img-fluid rounded shadow-md border" style="max-height: 220px; object-fit: contain; min-width: 150px; background-color: #fff; padding: 5px;">
+                    {% if "http" in item.image.name %}
+                    <img id="image-view-preview" src="{{ item.image.name }}" 
+                         class="img-fluid rounded shadow-md border" style="max-height: 220px; object-fit: contain; min-width: 150px; background-color: #fff; padding: 5px;">
+                    {% else %}
+                    <img id="image-view-preview" src="{{ item.image.url }}" 
+                         class="img-fluid rounded shadow-md border" style="max-height: 220px; object-fit: contain; min-width: 150px; background-color: #fff; padding: 5px;">
+                    {% endif %}
                   {% else %}
                   <img id="image-view-preview" src="https://via.placeholder.com/220x220?text=No+Product+Image" 
                        class="img-fluid rounded shadow-md border" style="max-height: 220px; object-fit: contain; min-width: 150px; background-color: #fff; padding: 5px;">

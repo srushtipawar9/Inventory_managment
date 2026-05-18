@@ -162,15 +162,17 @@ def ImportAmazonPart(request):
                 try:
                     import requests
                     from django.core.files.base import ContentFile
-                    from django.core.files.temp import NamedTemporaryFile
                     
                     img_response = requests.get(image_url, timeout=15)
                     if img_response.status_code == 200:
                         # Create a filename from ASIN
                         img_filename = f"{data.get('asin', 'part')}.jpg"
-                        new_part.image_360_base.save(img_filename, ContentFile(img_response.content), save=True)
+                        new_part.image_360_base.save(img_filename, ContentFile(img_response.content), save=False)
+                    else:
+                        new_part.image_360_base = image_url
                 except Exception as e:
-                    print(f"CRITICAL: Image download error: {e}")
+                    print(f"Fallback to external URL for JCBPart: {e}")
+                    new_part.image_360_base = image_url
 
             new_part.save()
             
@@ -293,10 +295,16 @@ def SaveAIInventory(request):
             
             # Download and save image
             if image_url:
-                response = requests.get(image_url, timeout=15)
-                if response.status_code == 200:
-                    file_name = f"ai_{name.replace(' ', '_')}.jpg"
-                    item.image.save(file_name, ContentFile(response.content), save=False)
+                try:
+                    response = requests.get(image_url, timeout=15)
+                    if response.status_code == 200:
+                        file_name = f"ai_{name.replace(' ', '_')}.jpg"
+                        item.image.save(file_name, ContentFile(response.content), save=False)
+                    else:
+                        item.image = image_url
+                except Exception as e:
+                    print(f"Fallback to external URL string due to write/network error: {e}")
+                    item.image = image_url
             
             item.save()
             return JsonResponse({'success': True, 'id': item.nomor})

@@ -32,8 +32,13 @@
                         <div id="viewer-container" class="position-relative">
                             {% if part.image_360_base %}
                             <div class="hover-image-overlay shadow rounded" style="border: 2px solid #eaecf4; overflow: hidden; background-color: #fff; max-width: 550px; margin: 0 auto; min-height: 320px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                {% if "http" in part.image_360_base.name %}
+                                <img id="jcb-part-image" src="{{ part.image_360_base.name }}" 
+                                     class="img-fluid" style="max-height: 380px; object-fit: contain;">
+                                {% else %}
                                 <img id="jcb-part-image" src="{{ part.image_360_base.url }}" 
                                      class="img-fluid" style="max-height: 380px; object-fit: contain;">
+                                {% endif %}
                                 <div class="image-actions-overlay d-flex align-items-center justify-content-center" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.3s ease;">
                                     <button class="btn btn-light font-weight-bold shadow px-3 py-2 mr-2" onclick="document.getElementById('partImageInput').click();">
                                         <i class="fas fa-sync mr-1"></i> Change Photo

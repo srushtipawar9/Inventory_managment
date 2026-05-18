@@ -27,6 +27,7 @@
                   <thead>
                     <tr>
                       <th>SR</th>
+                      <th>Image</th>
                       <th>Item Name</th>
                       <th>No. / For What</th>
                       <th>HSN / SAC</th>
@@ -47,6 +48,13 @@
                   {% for data in data %}
                     <tr>
                       <td>{{data.nomor}}</td>
+                      <td class="text-center align-middle" style="width: 80px;">
+                        {% if data.image %}
+                        <img src="{{data.image.url}}" class="img-thumbnail rounded shadow-sm" style="max-height: 50px; max-width: 70px; object-fit: contain; background: #fff; padding: 2px;">
+                        {% else %}
+                        <span class="badge badge-light text-muted" style="font-size: 0.75rem;">No Image</span>
+                        {% endif %}
+                      </td>
                       <td>{{data.nama_product}}</td>
                       <td>{{data.part_for_what|default:"—"}}</td>
                       <td>{{data.hsn_sac|default:"—"}}</td>

@@ -34,9 +34,15 @@
                             <div class="text-center mb-3">
                                 {% if part.image_360_base %}
                                 <div class="position-relative">
+                                    {% if "http" in part.image_360_base.name %}
+                                    <img src="{{ part.image_360_base.name }}" class="img-fluid rounded"
+                                         style="max-height: 100px; object-fit: contain;"
+                                         onerror="this.onerror=null; this.src='https://via.placeholder.com/150x150?text=JCB+Part';">
+                                    {% else %}
                                     <img src="{{ part.image_360_base.url }}" class="img-fluid rounded"
-                                        style="max-height: 100px; object-fit: contain;"
-                                        onerror="this.onerror=null; this.src='https://via.placeholder.com/150x150?text=JCB+Part';">
+                                         style="max-height: 100px; object-fit: contain;"
+                                         onerror="this.onerror=null; this.src='https://via.placeholder.com/150x150?text=JCB+Part';">
+                                    {% endif %}
                                     {% if user.is_staff or user.is_superuser %}
                                     <a href="{% url 'RemovePartImage' part.id %}" 
                                        class="btn btn-danger btn-circle btn-sm position-absolute" 
