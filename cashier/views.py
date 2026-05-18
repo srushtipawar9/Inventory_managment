@@ -62,12 +62,19 @@ def InputStock(request):
     )
     if request.method == 'POST':
         post_data = request.POST.copy()
+        
+        # Ensure user field is filled for all forms in the post data to prevent validation errors
+        total_forms = int(post_data.get('form-TOTAL_FORMS', 0))
+        for i in range(total_forms):
+            post_data[f'form-{i}-user'] = str(request.user.profile.id)
+            
         for key in post_data.keys():
             if any(suffix in key for suffix in ['-harga_beli_satuan', '-harga_jual_satuan', '-mrp']):
                 post_data[key] = post_data[key].replace(',', '').strip()
 
         formset_post = DaftarBarangFormset(
             post_data,
+            request.FILES,
             form_kwargs={'part_choices': part_choices},
         )
         if formset_post.is_valid():
@@ -108,7 +115,10 @@ def InputStock(request):
         }
         return render(request, 'cashier/input_data.html', context)
 
-    formset = DaftarBarangFormset(form_kwargs={'part_choices': part_choices})
+    formset = DaftarBarangFormset(
+        initial=[{'user': request.user.profile.id}],
+        form_kwargs={'part_choices': part_choices}
+    )
     context = {
         'stocks': stocks,
         'forms': formset,
