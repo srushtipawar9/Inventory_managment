@@ -63,18 +63,61 @@ def InputStock(request):
     if request.method == 'POST':
         post_data = request.POST.copy()
         
-        # Ensure user field is filled for all forms in the post data to prevent validation errors
+        # Determine which forms are actually filled
         total_forms = int(post_data.get('form-TOTAL_FORMS', 0))
+        filled_form_indices = []
         for i in range(total_forms):
-            post_data[f'form-{i}-user'] = str(request.user.profile.id)
+            # A form is considered filled if at least the product name is typed or selected
+            nama = post_data.get(f'form-{i}-nama_product', '').strip()
+            qty = post_data.get(f'form-{i}-jumlah_produk', '').strip()
+            price = post_data.get(f'form-{i}-harga_beli_satuan', '').strip()
             
-        for key in post_data.keys():
-            if any(suffix in key for suffix in ['-harga_beli_satuan', '-harga_jual_satuan', '-mrp']):
-                post_data[key] = post_data[key].replace(',', '').strip()
+            if nama or qty or price:
+                filled_form_indices.append(i)
+                
+        # Rebuild clean POST data containing only filled forms to avoid empty rows triggering validation errors
+        clean_post_data = post_data.copy()
+        clean_post_data['form-TOTAL_FORMS'] = str(len(filled_form_indices))
+        clean_post_data['form-INITIAL_FORMS'] = '0'
+        clean_post_data['form-MIN_NUM_FORMS'] = '0'
+        clean_post_data['form-MAX_NUM_FORMS'] = '1000'
+        
+        # Clear all original forms from clean_post_data
+        for key in list(clean_post_data.keys()):
+            if key.startswith('form-') and not any(key.startswith(f'form-{prefix}') for prefix in ['TOTAL_FORMS', 'INITIAL_FORMS', 'MIN_NUM_FORMS', 'MAX_NUM_FORMS']):
+                del clean_post_data[key]
+                
+        # Copy file uploads dictionary to clean new files dict
+        clean_files = request.FILES.copy()
+        for key in list(request.FILES.keys()):
+            if key.startswith('form-'):
+                del clean_files[key]
+                
+        # Re-index filled forms sequentially starting from index 0
+        for new_idx, old_idx in enumerate(filled_form_indices):
+            # Inject current logged-in user profile ID
+            clean_post_data[f'form-{new_idx}-user'] = str(request.user.profile.id)
+            
+            # Copy form fields and clean numerical values (commas)
+            for field_name in ['nama_product', 'part_for_what', 'hsn_sac', 'jumlah_produk', 'vendor', 
+                               'harga_beli_satuan', 'gst_percent', 'gst_amount', 'amt_incl_tax', 
+                               'laba_persen', 'harga_jual_satuan', 'mrp']:
+                old_key = f'form-{old_idx}-{field_name}'
+                new_key = f'form-{new_idx}-{field_name}'
+                if old_key in post_data:
+                    val = post_data[old_key]
+                    if field_name in ['harga_beli_satuan', 'harga_jual_satuan', 'mrp']:
+                        val = val.replace(',', '').strip()
+                    clean_post_data[new_key] = val
+                    
+            # Copy file/image attachment if present
+            file_key = f'form-{old_idx}-image'
+            if file_key in request.FILES:
+                clean_files[f'form-{new_idx}-image'] = request.FILES[file_key]
 
         formset_post = DaftarBarangFormset(
-            post_data,
-            request.FILES,
+            clean_post_data,
+            clean_files,
             form_kwargs={'part_choices': part_choices},
         )
         if formset_post.is_valid():
@@ -84,7 +127,7 @@ def InputStock(request):
                     continue
                 jumlah = form.cleaned_data.get('jumlah_produk', 0) or 0
                 
-                # Clean purchase price comma for checking
+                # Retrieve price safely
                 harga_beli_raw = form.data.get(form.add_prefix(form.prefix) + '-harga_beli_satuan', '0')
                 try:
                     harga = Decimal(str(harga_beli_raw).replace(',', '').strip())
