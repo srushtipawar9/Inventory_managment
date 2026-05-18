@@ -128,7 +128,7 @@ def InputStock(request):
                 jumlah = form.cleaned_data.get('jumlah_produk', 0) or 0
                 
                 # Retrieve price safely
-                harga_beli_raw = form.data.get(form.add_prefix(form.prefix) + '-harga_beli_satuan', '0')
+                harga_beli_raw = form.data.get(form.add_prefix('harga_beli_satuan'), '0')
                 try:
                     harga = Decimal(str(harga_beli_raw).replace(',', '').strip())
                 except:
