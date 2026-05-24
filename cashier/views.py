@@ -1,14 +1,18 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from decimal import Decimal
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.forms import formset_factory, modelformset_factory
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.views.decorators.http import require_POST
+import json
 from . models import (
     DaftarBarang,
     DaftarTransaksi,
     ListProductTransaksi,
-
+    EstimateSlip,
+    EstimateSlipItem,
+    FinancialInsightReport,
 )
 from accounts.models import Profile
 from cashier.forms import (
@@ -21,27 +25,55 @@ from django.utils.timezone import datetime
 from data.models import JCBPart, Vendor
 
 
+# ── Helper: is the current user an admin? ────────────────────────────────────
+def is_admin(user):
+    return user.is_staff or user.is_superuser or user.username == 'admin'
+
+
 def handler404(request):
     return render(request, '404.html', status=404)
 
 def handler500(request):
     return render(request, '500.html', status=500)
 
+
 @login_required()
 def HomeIndex(request):
     today = datetime.today()
-    data = DaftarBarang.objects.filter(user_id = request.user.id)
-    data_pendapatan = DaftarTransaksi.objects.filter(created__day=today.day,user_id=request.user.id)
-    pendapatan_hari_ini = 0
-    if data_pendapatan is not None :
-        for pendapatan in data_pendapatan:
-            pendapatan_hari_ini += Decimal(pendapatan.total)
-    #         # raise ValueError(data_pendapatan)
+
+    # Revenue – today's sales total
+    txns_today = DaftarTransaksi.objects.filter(
+        created__day=today.day,
+        created__month=today.month,
+        created__year=today.year,
+        user_id=request.user.profile.id,
+    )
+    pendapatan_hari_ini = sum(Decimal(t.total) for t in txns_today)
+
+    # Inventory summary
+    inventory_qs = DaftarBarang.objects.filter(user_id=request.user.profile.id, status='Active')
+    total_items = inventory_qs.count()
+    total_stock_value = sum(Decimal(d.subtotal_harga_beli or 0) for d in inventory_qs)
+    total_sell_value  = sum(Decimal(d.subtotal_harga_jual or 0) for d in inventory_qs)
+    potential_profit  = total_sell_value - total_stock_value
+
+    # All-time transactions
+    all_txns = DaftarTransaksi.objects.filter(user_id=request.user.profile.id)
+    total_sales = sum(Decimal(t.total) for t in all_txns)
+
     context = {
-        'data': data,
-        'data_pendapatan': pendapatan_hari_ini
+        'data_pendapatan': pendapatan_hari_ini,
+        'total_items': total_items,
+        'total_stock_value': total_stock_value,
+        'total_sell_value': total_sell_value,
+        'potential_profit': potential_profit,
+        'total_sales': total_sales,
+        'txns_today_count': txns_today.count(),
+        'recent_items': inventory_qs.order_by('-created')[:10],
+        'is_admin': is_admin(request.user),
     }
     return render(request, 'cashier/home.html', context)
+
 
 def _part_choices(stocks, prefill=''):
     choices = [('', '-- Select Item --')]
@@ -60,48 +92,45 @@ def InputStock(request):
     vendor_names = list(
         Vendor.objects.order_by('city', 'name').values_list('name', flat=True).distinct()
     )
+    company_list = ['JCB', 'CAT', 'Komatsu', 'Volvo', 'Tata Hitachi', 'CASE', 'Doosan', 'Liebherr']
+
     if request.method == 'POST':
         post_data = request.POST.copy()
-        
-        # Determine which forms are actually filled
+
         total_forms = int(post_data.get('form-TOTAL_FORMS', 0))
         filled_form_indices = []
         for i in range(total_forms):
-            # A form is considered filled if at least the product name is typed or selected
-            nama = post_data.get(f'form-{i}-nama_product', '').strip()
-            qty = post_data.get(f'form-{i}-jumlah_produk', '').strip()
+            nama  = post_data.get(f'form-{i}-nama_product', '').strip()
+            qty   = post_data.get(f'form-{i}-jumlah_produk', '').strip()
             price = post_data.get(f'form-{i}-harga_beli_satuan', '').strip()
-            
             if nama or qty or price:
                 filled_form_indices.append(i)
-                
-        # Rebuild clean POST data containing only filled forms to avoid empty rows triggering validation errors
+
         clean_post_data = post_data.copy()
-        clean_post_data['form-TOTAL_FORMS'] = str(len(filled_form_indices))
+        clean_post_data['form-TOTAL_FORMS']   = str(len(filled_form_indices))
         clean_post_data['form-INITIAL_FORMS'] = '0'
         clean_post_data['form-MIN_NUM_FORMS'] = '0'
         clean_post_data['form-MAX_NUM_FORMS'] = '1000'
-        
-        # Clear all original forms from clean_post_data
+
         for key in list(clean_post_data.keys()):
-            if key.startswith('form-') and not any(key.startswith(f'form-{prefix}') for prefix in ['TOTAL_FORMS', 'INITIAL_FORMS', 'MIN_NUM_FORMS', 'MAX_NUM_FORMS']):
+            if key.startswith('form-') and not any(
+                key.startswith(f'form-{prefix}')
+                for prefix in ['TOTAL_FORMS', 'INITIAL_FORMS', 'MIN_NUM_FORMS', 'MAX_NUM_FORMS']
+            ):
                 del clean_post_data[key]
-                
-        # Copy file uploads dictionary to clean new files dict
+
         clean_files = request.FILES.copy()
         for key in list(request.FILES.keys()):
             if key.startswith('form-'):
                 del clean_files[key]
-                
-        # Re-index filled forms sequentially starting from index 0
+
         for new_idx, old_idx in enumerate(filled_form_indices):
-            # Inject current logged-in user profile ID
             clean_post_data[f'form-{new_idx}-user'] = str(request.user.profile.id)
-            
-            # Copy form fields and clean numerical values (commas)
-            for field_name in ['nama_product', 'part_for_what', 'hsn_sac', 'jumlah_produk', 'vendor', 
-                               'harga_beli_satuan', 'gst_percent', 'gst_amount', 'amt_incl_tax', 
-                               'laba_persen', 'harga_jual_satuan', 'mrp']:
+            for field_name in [
+                'nama_product', 'part_for_what', 'hsn_sac', 'jumlah_produk', 'vendor',
+                'company', 'harga_beli_satuan', 'gst_percent', 'gst_amount', 'amt_incl_tax',
+                'laba_persen', 'harga_jual_satuan', 'mrp', 'status',
+            ]:
                 old_key = f'form-{old_idx}-{field_name}'
                 new_key = f'form-{new_idx}-{field_name}'
                 if old_key in post_data:
@@ -109,8 +138,7 @@ def InputStock(request):
                     if field_name in ['harga_beli_satuan', 'harga_jual_satuan', 'mrp']:
                         val = val.replace(',', '').strip()
                     clean_post_data[new_key] = val
-                    
-            # Copy file/image attachment if present
+
             file_key = f'form-{old_idx}-image'
             if file_key in request.FILES:
                 clean_files[f'form-{new_idx}-image'] = request.FILES[file_key]
@@ -126,14 +154,11 @@ def InputStock(request):
                 if not form.cleaned_data.get('nama_product'):
                     continue
                 jumlah = form.cleaned_data.get('jumlah_produk', 0) or 0
-                
-                # Retrieve price safely
                 harga_beli_raw = form.data.get(form.add_prefix('harga_beli_satuan'), '0')
                 try:
                     harga = Decimal(str(harga_beli_raw).replace(',', '').strip())
-                except:
+                except Exception:
                     harga = Decimal('0')
-
                 if jumlah < 1 or harga < 1:
                     messages.warning(
                         request,
@@ -155,6 +180,7 @@ def InputStock(request):
             'request_user': request.user.profile.id,
             'prefill': prefill,
             'vendor_names': vendor_names,
+            'company_list': company_list,
         }
         return render(request, 'cashier/input_data.html', context)
 
@@ -168,13 +194,20 @@ def InputStock(request):
         'request_user': request.user.profile.id,
         'prefill': prefill,
         'vendor_names': vendor_names,
+        'company_list': company_list,
     }
     return render(request, 'cashier/input_data.html', context)
+
+
 @login_required()
 def TotalStock(request):
-    data = DaftarBarang.objects.filter(user_id=request.user.profile.id)
+    if is_admin(request.user):
+        data = DaftarBarang.objects.filter(user_id=request.user.profile.id)
+    else:
+        data = DaftarBarang.objects.filter(user_id=request.user.profile.id, status='Active')
     context = {
-        'data':data
+        'data': data,
+        'is_admin': is_admin(request.user),
     }
     return render(request, 'cashier/stock.html', context)
 
@@ -187,7 +220,8 @@ def EditStock(request, pk):
     vendor_names = list(
         Vendor.objects.order_by('city', 'name').values_list('name', flat=True).distinct()
     )
-    
+    company_list = ['JCB', 'CAT', 'Komatsu', 'Volvo', 'Tata Hitachi', 'CASE', 'Doosan', 'Liebherr']
+
     if request.method == 'POST':
         post_data = request.POST.copy()
         for key in ['harga_beli_satuan', 'harga_jual_satuan', 'mrp']:
@@ -195,6 +229,9 @@ def EditStock(request, pk):
                 post_data[key] = post_data[key].replace(',', '').strip()
         form = DaftarBarangForm(post_data, request.FILES, instance=item, part_choices=part_choices)
         if form.is_valid():
+            # Only admin can change status
+            if not is_admin(request.user):
+                form.instance.status = item.status
             form.save()
             messages.success(request, f"Inventory item '{item.nama_product}' updated successfully!")
             return redirect('TotalStock')
@@ -202,12 +239,14 @@ def EditStock(request, pk):
             messages.warning(request, "Please correct the errors in the form.")
     else:
         form = DaftarBarangForm(instance=item, part_choices=part_choices)
-        
+
     context = {
         'form': form,
         'item': item,
         'stocks': stocks,
         'vendor_names': vendor_names,
+        'company_list': company_list,
+        'is_admin': is_admin(request.user),
     }
     return render(request, 'cashier/edit_stock.html', context)
 
@@ -222,41 +261,57 @@ def DeleteStock(request, pk):
 
 
 @login_required()
+def HideStock(request, pk):
+    if not is_admin(request.user):
+        messages.error(request, "You do not have permission to hide inventory records.")
+        return redirect('TotalStock')
+    item = get_object_or_404(DaftarBarang, nomor=pk)
+    item.status = 'Hidden'
+    item.save()
+    messages.success(request, f"'{item.nama_product}' has been hidden.")
+    return redirect('TotalStock')
+
+
+@login_required()
+def UnhideStock(request, pk):
+    if not is_admin(request.user):
+        messages.error(request, "You do not have permission to unhide inventory records.")
+        return redirect('TotalStock')
+    item = get_object_or_404(DaftarBarang, nomor=pk)
+    item.status = 'Active'
+    item.save()
+    messages.success(request, f"'{item.nama_product}' has been made visible again.")
+    return redirect('TotalStock')
+
+
+@login_required()
 def Cart(request):
-    TransaksiListProdukFormset = formset_factory(TransaksiProductListForm , extra=1)
+    TransaksiListProdukFormset = formset_factory(TransaksiProductListForm, extra=1)
     formset = TransaksiListProdukFormset()
-    data = DaftarBarang.objects.filter(user_id=request.user.id)
+    data = DaftarBarang.objects.filter(user_id=request.user.profile.id, status='Active')
 
     if request.method == 'POST':
         formset_post = TransaksiListProdukFormset(request.POST)
         if formset_post.is_valid():
             total_harga_transaksi = 0
             total_jumlah_transaksi = 0
-            transaksi = DaftarTransaksi.objects.create(user_id=request.user.id)
+            transaksi = DaftarTransaksi.objects.create(user_id=request.user.profile.id)
             transaksi.save()
             for form in formset_post:
-                #print(form.cleaned_data)
-                "if quantity == 0"
                 if form.cleaned_data['quantity'] < 1:
                     messages.warning(request, 'Jumlah barang yang dibeli tidak boleh kosong!')
                     return redirect('/cart/')
                 output = form.save(transaksi)
-                "False == Transaksi Gagal"
-                if(output == False):
+                if output is False:
                     messages.warning(request, 'Barang melebihi batas stock!')
                     return redirect('/cart/')
-
-                "Hitung Total Harga Transaksi"
                 total_harga_transaksi += output.quantity
-                "Hitung Total Jumlah Transaksi"
                 total_jumlah_transaksi += output.subtotal
-            "Update Total Ke DaftarTransaksi"
             transaksi.total = total_jumlah_transaksi
             transaksi.produk_jumlah = total_harga_transaksi
             transaksi.save()
-            "True == Transaksi Sukses"
             messages.success(request, 'Transaksi Berhasil!')
-            return HttpResponseRedirect('/struck/'+str(transaksi.nomor)+'/')
+            return HttpResponseRedirect('/struck/' + str(transaksi.nomor) + '/')
         else:
             messages.warning(request, 'Data yang dibeli tidak boleh kosong!')
             return redirect('/cart/')
@@ -264,25 +319,34 @@ def Cart(request):
         context = {
             'data_barang': data,
             'forms': formset,
-            'request_user': request.user.id,
+            'request_user': request.user.profile.id,
         }
         return render(request, 'cashier/cart.html', context)
+
 
 @login_required()
 def StruckPembelian(request, pk):
     dataStruck = DaftarTransaksi.objects.get(nomor=pk)
     dataStruckListProduk = ListProductTransaksi.objects.filter(transaksi_id=dataStruck.nomor)
     dataUser = Profile.objects.get(id=dataStruck.user_id)
+
+    import urllib.parse
+    upi_qr_data = urllib.parse.quote(
+        f"upi://pay?pa=merchant@upi&pn=JCB+Hydraulic+Parts&am={dataStruck.total}&cu=INR&tn=Invoice+%23{dataStruck.nomor}"
+    )
+
     context = {
         'dataStruck': dataStruck,
         'dataStruckListProduk': dataStruckListProduk,
-        'dataUser': dataUser
+        'dataUser': dataUser,
+        'upi_qr_data': upi_qr_data,
     }
     return render(request, 'cashier/struck.html', context)
 
+
 @login_required()
 def DaftarPembelian(request):
-    data = DaftarTransaksi.objects.filter(user_id=request.user.id)
+    data = DaftarTransaksi.objects.filter(user_id=request.user.profile.id)
     context = {
         'data': data,
     }
@@ -291,28 +355,150 @@ def DaftarPembelian(request):
 
 @login_required()
 def ReportView(request):
-    if request.is_ajax():
-        endDate = None
+    # Handle saving Financial Insight metadata via POST
+    if request.method == 'POST' and request.POST.get('action') == 'save_insight_meta':
+        fi = FinancialInsightReport()
+        fi.user_id = request.user.profile.id
+        fi.name = request.POST.get('fi_name', '')
+        fi.mobile_number = request.POST.get('fi_mobile', '')
+        fi_date = request.POST.get('fi_date', '')
+        fi_time = request.POST.get('fi_time', '')
+        try:
+            fi.date = datetime.strptime(fi_date, '%Y-%m-%d').date() if fi_date else None
+        except Exception:
+            fi.date = None
+        try:
+            fi.time = datetime.strptime(fi_time, '%H:%M').time() if fi_time else None
+        except Exception:
+            fi.time = None
+        fi.save()
+        messages.success(request, 'Financial Insight metadata saved.')
+        return redirect('ReportView')
+
+    # Handle AJAX date-range filter
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('startDate'):
+        endDate   = None
         startDate = request.GET.get('startDate')
-        if request.GET.get('endDate') == '' or request.GET.get('endDate') is None :
+        if not request.GET.get('endDate'):
             endDateConverter = datetime.today()
         else:
             endDate = request.GET.get('endDate')
-            endDateConverter = datetime.strptime(endDate, "%Y-%m-%d").date()
-        startDateConverter = datetime.strptime(startDate, "%Y-%m-%d").date()
-        from_user = DaftarTransaksi.objects.filter(user_id=request.user.id,
-                                                   created__date__gte=startDateConverter,
-                                                   created__date__lte = endDateConverter)
+            endDateConverter = datetime.strptime(endDate, '%Y-%m-%d').date()
+        startDateConverter = datetime.strptime(startDate, '%Y-%m-%d').date()
+        from_user    = DaftarTransaksi.objects.filter(
+            user_id=request.user.profile.id,
+            created__date__gte=startDateConverter,
+            created__date__lte=endDateConverter,
+        )
         daftar_barang = ListProductTransaksi.objects.filter(transaksi_id__in=from_user)
         return render(request, 'cashier/report_details.html', {'daftar_barang': daftar_barang, 'num': startDateConverter})
 
-    from_user = DaftarTransaksi.objects.filter(user_id=request.user.id)
+    from_user     = DaftarTransaksi.objects.filter(user_id=request.user.profile.id)
     daftar_barang = ListProductTransaksi.objects.filter(transaksi_id__in=from_user)
 
+    # Latest saved insight meta for this user
+    latest_insight = FinancialInsightReport.objects.filter(user_id=request.user.profile.id).first()
+
+    # Aggregated financial data for the insight panel
+    inventory_qs     = DaftarBarang.objects.filter(user_id=request.user.profile.id, status='Active')
+    total_stock_val  = sum(Decimal(d.subtotal_harga_beli or 0) for d in inventory_qs)
+    total_sell_val   = sum(Decimal(d.subtotal_harga_jual or 0) for d in inventory_qs)
+    potential_profit = total_sell_val - total_stock_val
 
     context = {
         'daftar_barang': daftar_barang,
         'from_user': from_user,
-
+        'latest_insight': latest_insight,
+        'total_stock_val': total_stock_val,
+        'total_sell_val': total_sell_val,
+        'potential_profit': potential_profit,
     }
     return render(request, 'cashier/report.html', context)
+
+
+# ── Estimate Slip Views ────────────────────────────────────────────────────
+@login_required()
+def EstimateView(request):
+    if not is_admin(request.user):
+        messages.error(request, 'Only admin users can generate estimate slips.')
+        return redirect('HomeIndex')
+
+    # Last saved estimate to auto-number the next one
+    last = EstimateSlip.objects.order_by('-id').first()
+    next_no = f"EST-{(last.id + 1) if last else 1:04d}"
+
+    saved_estimates = EstimateSlip.objects.filter(user_id=request.user.profile.id).order_by('-created_at')[:10]
+
+    today = datetime.today()
+    context = {
+        'next_no': next_no,
+        'today_date': today.strftime('%Y-%m-%d'),
+        'today_time': today.strftime('%H:%M'),
+        'saved_estimates': saved_estimates,
+        'is_admin': True,
+    }
+    return render(request, 'cashier/estimate.html', context)
+
+
+@login_required()
+@require_POST
+def SaveEstimate(request):
+    if not is_admin(request.user):
+        return JsonResponse({'success': False, 'error': 'Permission denied.'}, status=403)
+
+    try:
+        data = json.loads(request.body)
+    except Exception:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON.'}, status=400)
+
+    estimate_no   = data.get('estimate_no', '').strip()
+    customer_name = data.get('customer_name', '').strip()
+    mobile_number = data.get('mobile_number', '').strip()
+    date_str      = data.get('date', '')
+    time_str      = data.get('time', '')
+    items         = data.get('items', [])
+
+    if not customer_name or not estimate_no:
+        return JsonResponse({'success': False, 'error': 'Estimate No. and Customer Name are required.'}, status=400)
+
+    try:
+        slip_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except Exception:
+        slip_date = datetime.today().date()
+
+    try:
+        slip_time = datetime.strptime(time_str, '%H:%M').time()
+    except Exception:
+        slip_time = datetime.today().time()
+
+    # Check for duplicate estimate_no and auto-suffix if needed
+    if EstimateSlip.objects.filter(estimate_no=estimate_no).exists():
+        estimate_no = f"{estimate_no}-{datetime.now().strftime('%S')}"
+
+    slip = EstimateSlip.objects.create(
+        user_id=request.user.profile.id,
+        estimate_no=estimate_no,
+        customer_name=customer_name,
+        mobile_number=mobile_number,
+        date=slip_date,
+        time=slip_time,
+    )
+
+    total = Decimal('0')
+    for row in items:
+        qty  = Decimal(str(row.get('qty', 1)))
+        rate = Decimal(str(row.get('rate', 0)))
+        amt  = qty * rate
+        total += amt
+        EstimateSlipItem.objects.create(
+            estimate=slip,
+            particulars=row.get('particulars', ''),
+            quantity=qty,
+            rate=rate,
+            amount=amt,
+        )
+
+    slip.total_amount = total
+    slip.save()
+
+    return JsonResponse({'success': True, 'id': slip.id, 'estimate_no': slip.estimate_no})

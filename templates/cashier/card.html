@@ -1,30 +1,91 @@
 {% load humanize %}
 
-          <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-<!--            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Unduh Laporan</a>-->
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">
+    <i class="fas fa-tachometer-alt text-primary mr-2"></i>Dashboard
+  </h1>
+  {% if is_admin %}
+  <a href="{% url 'EstimateView' %}" class="btn btn-warning shadow-sm font-weight-bold" id="btn-generate-estimate">
+    <i class="fas fa-file-invoice mr-1"></i> Generate Estimate
+  </a>
+  {% endif %}
+</div>
+
+<!-- KPI Cards Row -->
+<div class="row">
+
+  <!-- Revenue Card -->
+  <div class="col-xl-3 col-md-6 mb-4">
+    <div class="card border-0 shadow h-100" style="border-radius:15px; background: linear-gradient(135deg,#1a2a6c,#2d57cc);">
+      <div class="card-body text-white">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="text-uppercase font-weight-bold" style="font-size:0.7rem; letter-spacing:1.5px; opacity:0.85;">Today's Revenue</div>
+          <div style="width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-rupee-sign"></i>
           </div>
+        </div>
+        <div class="h4 font-weight-bold mb-1">₹ {{ data_pendapatan|intcomma }}</div>
+        <div style="font-size:0.78rem;opacity:0.75;">
+          <i class="fas fa-shopping-bag mr-1"></i>{{ txns_today_count }} transaction{{ txns_today_count|pluralize }} today
+        </div>
+      </div>
+    </div>
+  </div>
 
-          <!-- Content Row -->
-          <div class="row">
+  <!-- Inventory Summary Card -->
+  <div class="col-xl-3 col-md-6 mb-4">
+    <div class="card border-0 shadow h-100" style="border-radius:15px; background: linear-gradient(135deg,#11998e,#38ef7d);">
+      <div class="card-body text-white">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="text-uppercase font-weight-bold" style="font-size:0.7rem; letter-spacing:1.5px; opacity:0.85;">Inventory Summary</div>
+          <div style="width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-boxes"></i>
+          </div>
+        </div>
+        <div class="h4 font-weight-bold mb-1">{{ total_items }} Items</div>
+        <div style="font-size:0.78rem;opacity:0.85;">
+          Stock Value: ₹ {{ total_stock_value|floatformat:0|intcomma }}
+        </div>
+      </div>
+    </div>
+  </div>
 
-            <!-- Earnings (Monthly) Card Example -->
-            <div class="col-xl-3 col-md-6 mb-4">
-              <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                  <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Today's Revenue</div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800">
-                         <a id="ribuan">₹ {{data_pendapatan|intcomma}}</a>
-                         <br>
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <i class="fas fa-wallet fa-2x text-blue-300"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <!-- Financial Insights Card -->
+  <div class="col-xl-3 col-md-6 mb-4">
+    <div class="card border-0 shadow h-100" style="border-radius:15px; background: linear-gradient(135deg,#f7971e,#ffd200);">
+      <div class="card-body text-white">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="text-uppercase font-weight-bold" style="font-size:0.7rem; letter-spacing:1.5px; opacity:0.85;">Financial Insights</div>
+          <div style="width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-chart-line"></i>
+          </div>
+        </div>
+        <div class="h4 font-weight-bold mb-1">₹ {{ potential_profit|floatformat:0|intcomma }}</div>
+        <div style="font-size:0.78rem;opacity:0.85;">
+          Potential Profit on Current Stock
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Sales KPI Card -->
+  <div class="col-xl-3 col-md-6 mb-4">
+    <div class="card border-0 shadow h-100" style="border-radius:15px; background: linear-gradient(135deg,#b21f1f,#ee0979);">
+      <div class="card-body text-white">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="text-uppercase font-weight-bold" style="font-size:0.7rem; letter-spacing:1.5px; opacity:0.85;">Total Sales (All-Time)</div>
+          <div style="width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+        </div>
+        <div class="h4 font-weight-bold mb-1">₹ {{ total_sales|floatformat:0|intcomma }}</div>
+        <div style="font-size:0.78rem;opacity:0.85;">
+          Sell Value: ₹ {{ total_sell_value|floatformat:0|intcomma }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- End KPI Cards Row -->

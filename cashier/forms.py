@@ -15,6 +15,7 @@ class DaftarBarangForm(forms.ModelForm):
             'hsn_sac',
             'jumlah_produk',
             'vendor',
+            'company',
             'harga_beli_satuan',
             'gst_percent',
             'gst_amount',
@@ -22,6 +23,7 @@ class DaftarBarangForm(forms.ModelForm):
             'laba_persen',
             'harga_jual_satuan',
             'mrp',
+            'status',
         ]
         widgets = {
             'nama_product': forms.Select(attrs={'class': 'form-control part-select'}),
@@ -31,6 +33,8 @@ class DaftarBarangForm(forms.ModelForm):
             'hsn_sac': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'HSN / SAC'}),
             'jumlah_produk': forms.NumberInput(attrs={'class': 'form-control calc-field', 'placeholder': 'Qty', 'min': '1'}),
             'vendor': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Vendor', 'list': 'vendor-list'}),
+            'company': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Company (e.g. JCB, CAT)', 'list': 'company-list'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
             'harga_beli_satuan': forms.TextInput(attrs={'class': 'form-control calc-field', 'placeholder': 'Purchase'}),
             'gst_percent': forms.NumberInput(attrs={'class': 'form-control calc-field', 'placeholder': 'GST %', 'step': '0.01', 'min': '0'}),
             'gst_amount': forms.TextInput(attrs={'class': 'form-control calc-field', 'placeholder': 'GST Amt', 'readonly': 'readonly'}),
@@ -48,6 +52,8 @@ class DaftarBarangForm(forms.ModelForm):
         self.fields['part_for_what'].required = False
         self.fields['hsn_sac'].required = False
         self.fields['vendor'].required = False
+        self.fields['company'].required = False
+        self.fields['status'].required = False
         self.fields['gst_percent'].required = False
         self.fields['gst_amount'].required = False
         self.fields['amt_incl_tax'].required = False

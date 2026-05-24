@@ -1,17 +1,111 @@
 {% extends "base.html" %}
-
 {% load static %}
-{% block content %}
 {% load humanize %}
+{% block content %}
 
 {% include "cashier/card.html" %}
-          <!-- Content Row -->
-          <div class="row">
-            <!-- Content Column -->
-            <div class="col-lg-6 mb-4">
+
+<div class="container-fluid mt-2">
+
+  <!-- Quick Actions Row -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow border-0" style="border-radius:15px;">
+        <div class="card-header border-0 py-3" style="background:linear-gradient(90deg,#1a2a6c,#4e73df);border-radius:15px 15px 0 0;">
+          <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-bolt mr-2"></i>Quick Actions</h6>
         </div>
-        <!-- /.container-fluid -->
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-3 col-6 mb-3">
+              <a href="{% url 'InputStock' %}" class="btn btn-outline-primary btn-block py-3 shadow-sm" style="border-radius:12px;">
+                <i class="fas fa-plus-circle fa-2x d-block mb-2 text-primary"></i>
+                <span class="font-weight-bold">Add Inventory</span>
+              </a>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+              <a href="{% url 'TotalStock' %}" class="btn btn-outline-success btn-block py-3 shadow-sm" style="border-radius:12px;">
+                <i class="fas fa-warehouse fa-2x d-block mb-2 text-success"></i>
+                <span class="font-weight-bold">View Stock</span>
+              </a>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+              <a href="{% url 'ReportView' %}" class="btn btn-outline-warning btn-block py-3 shadow-sm" style="border-radius:12px;">
+                <i class="fas fa-chart-line fa-2x d-block mb-2 text-warning"></i>
+                <span class="font-weight-bold">Financial Insights</span>
+              </a>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+              {% if is_admin %}
+              <a href="{% url 'EstimateView' %}" class="btn btn-warning btn-block py-3 shadow-sm" style="border-radius:12px;">
+                <i class="fas fa-file-invoice fa-2x d-block mb-2"></i>
+                <span class="font-weight-bold">Generate Estimate</span>
+              </a>
+              {% else %}
+              <a href="{% url 'DaftarPembelian' %}" class="btn btn-outline-secondary btn-block py-3 shadow-sm" style="border-radius:12px;">
+                <i class="fas fa-history fa-2x d-block mb-2 text-secondary"></i>
+                <span class="font-weight-bold">Transaction Log</span>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
       </div>
-      <!-- End of Main Content -->
-  {% include "cashier/data_table.html" %}
+    </div>
+  </div>
+
+  <!-- Inventory Overview Table (read-only, no data entry) -->
+  <div class="card shadow border-0 mb-4" style="border-radius:15px;">
+    <div class="card-header border-0 py-3 d-flex justify-content-between align-items-center" style="background:linear-gradient(90deg,#11998e,#38ef7d);border-radius:15px 15px 0 0;">
+      <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-boxes mr-2"></i>JCB Parts Inventory Overview</h6>
+      <a href="{% url 'TotalStock' %}" class="btn btn-sm btn-light shadow-sm">
+        <i class="fas fa-expand-arrows-alt"></i> Full View
+      </a>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover table-bordered" id="dashInventoryTable" width="100%">
+          <thead class="thead-light">
+            <tr>
+              <th>#</th>
+              <th>Part Name</th>
+              <th>Company</th>
+              <th>Qty</th>
+              <th>Purchase Price</th>
+              <th>Sales Price</th>
+              <th>Date Added</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in recent_items %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td class="font-weight-bold">{{ item.nama_product }}</td>
+              <td>
+                {% if item.company %}
+                <span class="badge badge-info px-2 py-1">{{ item.company }}</span>
+                {% else %}
+                <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td>{{ item.jumlah_produk }}</td>
+              <td>₹ {{ item.harga_beli_satuan|intcomma }}</td>
+              <td>₹ {{ item.harga_jual_satuan|intcomma }}</td>
+              <td>{{ item.created|date:"d M Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" class="text-center text-muted py-4">
+                <i class="fas fa-inbox fa-2x d-block mb-2"></i>No inventory found.
+                <a href="{% url 'InputStock' %}" class="btn btn-sm btn-primary mt-2">Add Stock</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
 {% endblock %}

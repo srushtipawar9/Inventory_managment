@@ -18,6 +18,13 @@ class DaftarBarang(models.Model):
 
     unit_produk = models.IntegerField(blank=True, null=True)
     vendor = models.CharField(max_length=120, blank=True, default='')
+    company = models.CharField(max_length=100, blank=True, default='', verbose_name='Company / Manufacturer')
+
+    STATUS_CHOICES = [
+        ('Active', 'Active'),
+        ('Hidden', 'Hidden'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Active')
     harga_beli_satuan = models.DecimalField(max_digits=14, decimal_places=2)
     product_price = models.DecimalField(max_digits=14, decimal_places=2, default=0, blank=True)
     gst_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0, blank=True)
@@ -117,3 +124,60 @@ class ListProductTransaksi(models.Model):
 
     def __str__(self):
         return str(self.nama_barang)
+
+
+# ── Estimate Slip Models ────────────────────────────────────────────────────
+
+class EstimateSlip(models.Model):
+    user = models.ForeignKey('accounts.Profile', on_delete=models.CASCADE, null=True, blank=True)
+    estimate_no = models.CharField(max_length=50, unique=True)
+    customer_name = models.CharField(max_length=200)
+    mobile_number = models.CharField(max_length=15)
+    date = models.DateField()
+    time = models.TimeField()
+    total_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    created_at = models.DateTimeField(default=now, editable=False)
+
+    class Meta:
+        verbose_name = 'Estimate Slip'
+        verbose_name_plural = 'Estimate Slips'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Estimate #{self.estimate_no} – {self.customer_name}"
+
+
+class EstimateSlipItem(models.Model):
+    estimate = models.ForeignKey(EstimateSlip, on_delete=models.CASCADE, related_name='items')
+    particulars = models.CharField(max_length=300)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
+    rate = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+
+    def save(self, *args, **kwargs):
+        from decimal import Decimal
+        self.amount = Decimal(str(self.quantity)) * Decimal(str(self.rate))
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.particulars
+
+
+# ── Financial Insight Report Header ─────────────────────────────────────────
+
+class FinancialInsightReport(models.Model):
+    user = models.ForeignKey('accounts.Profile', on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=200, blank=True, default='')
+    mobile_number = models.CharField(max_length=15, blank=True, default='')
+    date = models.DateField(null=True, blank=True)
+    time = models.TimeField(null=True, blank=True)
+    created_at = models.DateTimeField(default=now, editable=False)
+
+    class Meta:
+        verbose_name = 'Financial Insight Report'
+        verbose_name_plural = 'Financial Insight Reports'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} – {self.date}"
+

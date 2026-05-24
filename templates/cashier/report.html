@@ -1,60 +1,175 @@
 {% extends "base.html" %}
 {% load static %}
-{% block content %}
 {% load humanize %}
-{% block extra_head_content  %}
 
-{{block.super}}
+{% block extra_head_content %}
+  {{ block.super }}
   <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
 {% endblock %}
 
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
-          <!-- Page Heading -->
-          <h1 class="h3 mb-2 text-gray-800">Sales Reports</h1>
-          <p class="mb-4">Daily and monthly sales reports</p>
-          <!-- DataTales Example -->
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">Sales Report</h6>
+{% block content %}
+<div class="container-fluid">
+  <!-- Page Heading -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">
+      <i class="fas fa-chart-line text-warning mr-2"></i>Financial Insights &amp; Reports
+    </h1>
+  </div>
+
+  <!-- Financial Summary KPI Cards -->
+  <div class="row mb-4">
+    <!-- Total Stock Value Card -->
+    <div class="col-xl-4 col-md-6 mb-3">
+      <div class="card border-0 shadow h-100" style="border-radius:12px; background: linear-gradient(135deg, #11998e, #38ef7d); color: white;">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="text-uppercase font-weight-bold small" style="letter-spacing: 1px; opacity: 0.85;">Total Stock Value (Cost)</div>
+            <i class="fas fa-warehouse fa-lg"></i>
+          </div>
+          <div class="h3 font-weight-bold mb-1">₹ {{ total_stock_val|floatformat:2|intcomma }}</div>
+          <p class="small m-0" style="opacity: 0.8;">Aggregated purchase value of active stock</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Sell Value Card -->
+    <div class="col-xl-4 col-md-6 mb-3">
+      <div class="card border-0 shadow h-100" style="border-radius:12px; background: linear-gradient(135deg, #1a2a6c, #2759e3); color: white;">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="text-uppercase font-weight-bold small" style="letter-spacing: 1px; opacity: 0.85;">Expected Sell Value</div>
+            <i class="fas fa-tags fa-lg"></i>
+          </div>
+          <div class="h3 font-weight-bold mb-1">₹ {{ total_sell_val|floatformat:2|intcomma }}</div>
+          <p class="small m-0" style="opacity: 0.8;">Total value of active stock at sale prices</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Potential Profit Card -->
+    <div class="col-xl-4 col-md-6 mb-3">
+      <div class="card border-0 shadow h-100" style="border-radius:12px; background: linear-gradient(135deg, #f7971e, #ffd200); color: white;">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="text-uppercase font-weight-bold small" style="letter-spacing: 1px; opacity: 0.85;">Potential Profit</div>
+            <i class="fas fa-coins fa-lg"></i>
+          </div>
+          <div class="h3 font-weight-bold mb-1">₹ {{ potential_profit|floatformat:2|intcomma }}</div>
+          <p class="small m-0" style="opacity: 0.8;">Projected gross earnings on current inventory</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Left Column: Report Metadata Details -->
+    <div class="col-lg-5 mb-4">
+      <div class="card shadow border-0" style="border-radius:12px;">
+        <div class="card-header bg-light border-0 py-3">
+          <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-heading mr-2"></i>Report Header Details
+          </h6>
+        </div>
+        <div class="card-body">
+          <!-- Info display if exists -->
+          {% if latest_insight %}
+          <div class="alert alert-info py-2 px-3 mb-4 shadow-sm" style="border-radius: 8px; font-size: 13px; border-left: 4px solid #4e73df;">
+            <strong class="text-gray-800 d-block mb-1"><i class="fas fa-file-alt mr-1"></i>Active Report Header:</strong>
+            Name: <strong>{{ latest_insight.name|default:"—" }}</strong> <br>
+            Mobile: <strong>{{ latest_insight.mobile_number|default:"—" }}</strong> <br>
+            Date/Time: <strong>{{ latest_insight.date|date:"d M Y" }}</strong> at <strong>{{ latest_insight.time|time:"h:i A" }}</strong>
+          </div>
+          {% endif %}
+
+          <form method="post" action="{% url 'ReportView' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="save_insight_meta">
+            
+            <div class="form-group">
+              <label class="font-weight-bold small text-gray-700">Client / Preparer Name</label>
+              <input type="text" name="fi_name" class="form-control" placeholder="Enter Name" value="{{ latest_insight.name|default:'' }}">
+            </div>
+            
+            <div class="form-group">
+              <label class="font-weight-bold small text-gray-700">Mobile Number</label>
+              <input type="text" name="fi_mobile" class="form-control" placeholder="Enter Mobile Number" value="{{ latest_insight.mobile_number|default:'' }}">
             </div>
 
-              <!--Sort By Date and Mo   nth-->
-            <div class="d-flex p-4">
-                <input class="btn btn-outline-secondary" type="date" id="sortTableDataStart" name="dateData" placeholder="Input Sort"/>
-                <span>&nbsp; &nbsp; &nbsp;</span>
-                <input class="btn btn-outline-secondary" type="date" id="sortTableDataEnd" name="dateData" placeholder="Input Sort"/>
-                <span>&nbsp; &nbsp; &nbsp;</span>
-                <button class="btn btn-outline-success" type="submit" id=sortTable>Search <i class="fas fa-search"></i></button>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label class="font-weight-bold small text-gray-700">Report Date</label>
+                <input type="date" name="fi_date" class="form-control" value="{{ latest_insight.date|date:'Y-m-d' }}">
+              </div>
+              <div class="form-group col-md-6">
+                <label class="font-weight-bold small text-gray-700">Report Time</label>
+                <input type="time" name="fi_time" class="form-control" value="{{ latest_insight.time|time:'H:i' }}">
+              </div>
             </div>
-            <div class="card-body">
-              {% include "cashier/report_details.html" %}
+
+            <button type="submit" class="btn btn-primary btn-block font-weight-bold mt-2 shadow-sm">
+              <i class="fas fa-save mr-1"></i> Save Header Details
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Sales Log Filter & Details -->
+    <div class="col-lg-7 mb-4">
+      <div class="card shadow border-0" style="border-radius:12px;">
+        <div class="card-header border-0 py-3 d-flex justify-content-between align-items-center">
+          <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-calendar-alt mr-2"></i>Sort &amp; Filter Transactions
+          </h6>
+        </div>
+        <div class="card-body">
+          <!-- Sort controls -->
+          <div class="form-row align-items-end mb-4">
+            <div class="col-sm-5 mb-2 mb-sm-0">
+              <label class="font-weight-bold small text-gray-600">Start Date</label>
+              <input class="form-control" type="date" id="sortTableDataStart">
+            </div>
+            <div class="col-sm-5 mb-2 mb-sm-0">
+              <label class="font-weight-bold small text-gray-600">End Date</label>
+              <input class="form-control" type="date" id="sortTableDataEnd">
+            </div>
+            <div class="col-sm-2">
+              <button class="btn btn-success btn-block" type="button" id="sortTable" title="Search Transactions">
+                <i class="fas fa-search"></i>
+              </button>
             </div>
           </div>
+
+          <div id="reportTableWrapper">
+            {% include "cashier/report_details.html" %}
+          </div>
         </div>
-        <!-- /.container-fluid -->
       </div>
-      <!-- End of Main Content -->
-      <script>
-        $(document).ready(function() {
-          $('#sortTable').on('click', function() {
-            if ($('#sortTableDataStart').val() != ''){
-                $.ajax({
-                    'method': 'GET',  // defaults to GET. Set POST if you like, but be aware of the CSRF token submission too!
-                    'url': "{% url 'ReportView'%}" , // submit to the same url
-                    'data': {startDate : $('#sortTableDataStart').val(),endDate : $('#sortTableDataEnd').val() },
-                    success: function(dataReturned) {
-                        $('#reportDataTable').replaceWith(dataReturned);
-                    },
-                });
-             }else{
-                alert('Please select a date')
-             }
-          });
-      });
+    </div>
+  </div>
+</div>
 
-
-
-
-      </script>
+<script>
+  $(document).ready(function() {
+    $('#sortTable').on('click', function() {
+      const start = $('#sortTableDataStart').val();
+      const end = $('#sortTableDataEnd').val();
+      if (start !== '') {
+        $.ajax({
+          method: 'GET',
+          url: "{% url 'ReportView' %}",
+          data: { startDate: start, endDate: end },
+          success: function(dataReturned) {
+            $('#reportDataTable').replaceWith(dataReturned);
+          },
+          error: function() {
+            alert('An error occurred during sorting.');
+          }
+        });
+      } else {
+        alert('Please select a start date');
+      }
+    });
+  });
+</script>
 {% endblock %}

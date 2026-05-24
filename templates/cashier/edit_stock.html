@@ -98,6 +98,21 @@
                   </div>
                 </div>
 
+                <div class="form-row">
+                  <!-- Company -->
+                  <div class="form-group col-md-6">
+                    <label class="font-weight-bold text-gray-700">Company</label>
+                    {{ form.company }}
+                  </div>
+                  <!-- Status -->
+                  {% if is_admin %}
+                  <div class="form-group col-md-6">
+                    <label class="font-weight-bold text-gray-700">Status</label>
+                    {{ form.status }}
+                  </div>
+                  {% endif %}
+                </div>
+
                 <h5 class="text-secondary font-weight-bold mt-4 mb-3 border-bottom pb-2" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Financials (₹)</h5>
 
                 <div class="form-row">
@@ -179,6 +194,12 @@
 <datalist id="vendor-list">
   {% for v in vendor_names %}
   <option value="{{ v }}"></option>
+  {% endfor %}
+</datalist>
+
+<datalist id="company-list">
+  {% for c in company_list %}
+  <option value="{{ c }}"></option>
   {% endfor %}
 </datalist>
 

@@ -35,7 +35,7 @@
                 <div class="col-md-6">
                     <div class="p-3 bg-light rounded">
                         <h5 class="font-weight-bold text-primary mb-1">
-                            <i class="fas fa-industry"></i> JCB & Hydraulic Parts
+                            <i class="fas fa-industry"></i> JCB &amp; Hydraulic Parts
                         </h5>
                         <small class="text-muted">Industrial Inventory Pro</small>
                     </div>
@@ -63,7 +63,7 @@
                             {% endif %}
                         </p>
                         <p class="mb-1">
-                            <strong>Date & Time:</strong>
+                            <strong>Date &amp; Time:</strong>
                             <b>{{ dataStruck.created|date:"d M Y" }}</b>
                             at {{ dataStruck.created|time:"h:i A" }}
                         </p>
@@ -73,7 +73,7 @@
 
             <hr>
 
-            <!-- Parts Table -->
+            <!-- Parts Table — Itemized -->
             <div class="table-responsive">
                 <table class="table table-bordered" width="100%" cellspacing="0">
                     <thead>
@@ -81,22 +81,26 @@
                             <th>#</th>
                             <th>Part Name</th>
                             <th class="text-center">Quantity</th>
-                            <th class="text-right">Total Price</th>
+                            <th class="text-right">Unit Price (₹)</th>
+                            <th class="text-right">Total Price (₹)</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for produk in dataStruckListProduk %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ produk.nama_barang }}</td>
+                            <td><strong>{{ produk.nama_barang }}</strong></td>
                             <td class="text-center">{{ produk.quantity }}</td>
+                            <td class="text-right">
+                                —
+                            </td>
                             <td class="text-right"><b>₹ {{ produk.subtotal|intcomma }}</b></td>
                         </tr>
                         {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr class="table-light">
-                            <td colspan="3" class="text-right font-weight-bold">
+                            <td colspan="4" class="text-right font-weight-bold">
                                 <strong>GRAND TOTAL</strong>
                             </td>
                             <td class="text-right">
@@ -107,10 +111,58 @@
                 </table>
             </div>
 
+            <hr>
+
+            <!-- Dynamic Payment QR Code Section -->
+            <div class="row align-items-center mt-4">
+                <div class="col-md-6">
+                    <div class="p-3 border rounded bg-light">
+                        <h6 class="font-weight-bold text-primary mb-2">
+                            <i class="fas fa-qrcode"></i> Scan to Pay — ₹{{ dataStruck.total|intcomma }}
+                        </h6>
+                        <p class="small text-muted mb-2">
+                            Scan this QR code with any UPI app (GPay, PhonePe, Paytm).<br>
+                            The amount <strong>₹{{ dataStruck.total }}</strong> is <strong>pre-filled automatically</strong>.
+                        </p>
+                        <div class="text-center">
+                            <img id="paymentQR"
+                                 src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={{ upi_qr_data }}"
+                                 alt="UPI Payment QR — ₹{{ dataStruck.total }}"
+                                 style="border: 3px solid #1a2a6c; border-radius: 10px; padding: 6px; background: #fff;"
+                                 width="220" height="220">
+                        </div>
+                        <div class="text-center mt-2">
+                            <span class="badge badge-success px-3 py-2">
+                                <i class="fas fa-lock"></i> Amount: ₹{{ dataStruck.total|intcomma }} — Auto-filled on scan
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3">
+                        <h6 class="font-weight-bold mb-3">Payment Summary</h6>
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td class="text-muted">Invoice #</td>
+                                <td class="font-weight-bold">{{ dataStruck.nomor }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Total Parts</td>
+                                <td>{{ dataStruck.produk_jumlah }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Amount Due</td>
+                                <td><span class="text-danger font-weight-bold" style="font-size:1.2em;">₹ {{ dataStruck.total|intcomma }}</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- Footer note -->
             <div class="mt-3 p-3 bg-light rounded text-center">
                 <small class="text-muted">
-                    Thank you for your purchase! | JCB & Hydraulic Parts Inventory Pro
+                    Thank you for your purchase! | JCB &amp; Hydraulic Parts Inventory Pro
                 </small>
             </div>
 
@@ -129,7 +181,6 @@
 <!-- Print CSS -->
 <style>
     @media print {
-        /* Hide everything except invoice */
         body * { visibility: hidden; }
         #invoicePrintArea, #invoicePrintArea * { visibility: visible; }
         #invoicePrintArea {
@@ -140,16 +191,25 @@
             border: none !important;
             box-shadow: none !important;
         }
-        /* Hide nav, sidebar, buttons when printing */
         .sidebar, .topbar, .scroll-to-top, button, a.btn { display: none !important; }
     }
 </style>
 
 <script>
     function printInvoice() {
-        // Trigger browser print dialog
         window.print();
     }
+
+    // Dynamically build UPI QR data client-side as a fallback
+    (function() {
+        const total = "{{ dataStruck.total }}";
+        const invoiceNo = "{{ dataStruck.nomor }}";
+        // UPI deep link — amount pre-filled
+        const upiData = `upi://pay?pa=merchant@upi&pn=JCB+Hydraulic+Parts&am=${total}&cu=INR&tn=Invoice+%23${invoiceNo}`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiData)}`;
+        const qrImg = document.getElementById('paymentQR');
+        if (qrImg) qrImg.src = qrUrl;
+    })();
 </script>
 
 {% endblock %}

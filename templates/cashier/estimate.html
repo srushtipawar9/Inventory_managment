@@ -1,0 +1,527 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-fluid">
+  <!-- Page Header -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4 no-print">
+    <h1 class="h3 mb-0 text-gray-800">
+      <i class="fas fa-file-invoice-dollar text-warning mr-2"></i>Estimate Slip Builder
+    </h1>
+    <div>
+      <a href="{% url 'HomeIndex' %}" class="btn btn-secondary btn-sm shadow-sm mr-2">
+        <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Left Column: Interactive Slip Builder -->
+    <div class="col-xl-9 col-lg-8">
+      
+      <!-- Control Actions Panel -->
+      <div class="card shadow border-0 mb-4 no-print" style="border-radius:12px;">
+        <div class="card-body py-3 d-flex justify-content-between align-items-center flex-wrap" style="gap:10px;">
+          <div class="d-flex" style="gap:8px;">
+            <button id="btn-save-estimate" class="btn btn-success font-weight-bold shadow-sm px-3">
+              <i class="fas fa-save mr-1"></i> Save Estimate
+            </button>
+            <button onclick="printEstimate()" class="btn btn-primary font-weight-bold shadow-sm px-3">
+              <i class="fas fa-print mr-1"></i> Print Slip
+            </button>
+            <button onclick="downloadPDF()" class="btn btn-info font-weight-bold shadow-sm px-3">
+              <i class="fas fa-file-pdf mr-1"></i> Download PDF
+            </button>
+          </div>
+          <span class="badge badge-warning p-2 font-weight-bold" style="font-size: 0.85rem;">
+            PRUTHVIRAJ Hydraulics & Lubricants
+          </span>
+        </div>
+      </div>
+
+      <!-- Printable Estimate Sheet -->
+      <div class="card shadow-lg border-0 mb-5" id="estimateSlipContainer" style="border-radius: 15px; overflow: hidden; background: #fff;">
+        <!-- Card Header decorative top band (hidden in print) -->
+        <div class="no-print" style="height: 6px; background: linear-gradient(90deg, #f7971e, #ffd200);"></div>
+        
+        <!-- Editable Paper Content -->
+        <div class="card-body p-4 p-md-5" id="estimate-slip-printout" style="color: #222; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+          
+          <!-- Branded Letterhead -->
+          <div class="row align-items-center mb-4">
+            <div class="col-12 text-center">
+              <h2 class="font-weight-bold m-0" style="font-family: 'Outfit', sans-serif; font-size: 2.2rem; letter-spacing: 0.5px; color: #1a2a6c;">
+                PRUTHVIRAJ HYDRAULICS & LUBRICANTS
+              </h2>
+              <div class="text-uppercase font-weight-bold text-warning mb-2" style="font-size: 0.75rem; letter-spacing: 2px;">
+                Dealers in JCB &amp; Hydraulic Spare Parts, High Pressure Hoses &amp; Lubricant Fittings
+              </h2>
+              <p class="m-0 text-muted small font-weight-bold" style="line-height: 1.4;">
+                MIDC Industrial Area, Sector 2, Pune - 411026 <br>
+                <i class="fas fa-phone mr-1"></i> Mobile: +91 98765 43210, +91 99988 77766 &nbsp;|&nbsp; 
+                <i class="fas fa-envelope mr-1"></i> Email: pruthvirajhydraulics@gmail.com
+              </p>
+            </div>
+          </div>
+          
+          <!-- Decorative separator -->
+          <div style="border-bottom: 2px solid #1a2a6c; margin-bottom: 20px; position: relative;">
+            <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: #fff; padding: 2px 15px; border: 1.5px solid #1a2a6c; border-radius: 20px; font-size: 0.7rem; font-weight: bold; letter-spacing: 2px; color: #1a2a6c; text-transform: uppercase;">
+              Estimate Slip
+            </div>
+          </div>
+
+          <!-- Meta Information Section -->
+          <div class="row mt-4 mb-4">
+            <!-- Left Info: Customer -->
+            <div class="col-md-7 col-sm-12">
+              <div class="p-3 border rounded h-100" style="background-color: #fafafa; border-color: #eaeaea !important;">
+                <h6 class="font-weight-bold text-gray-800 mb-3 border-bottom pb-1" style="font-size: 0.85rem; text-transform: uppercase; color: #1a2a6c;">Customer Details</h6>
+                
+                <div class="form-group row mb-2">
+                  <label class="col-sm-4 col-form-label col-form-label-sm font-weight-bold">Customer Name:</label>
+                  <div class="col-sm-8">
+                    <input type="text" id="cust_name" class="form-control form-control-sm border-0 border-bottom bg-transparent" placeholder="Enter Customer Name" required style="border-bottom: 1.5px dashed #ccc !important; border-radius: 0; padding-left: 0;">
+                  </div>
+                </div>
+                
+                <div class="form-group row mb-0">
+                  <label class="col-sm-4 col-form-label col-form-label-sm font-weight-bold">Mobile Number:</label>
+                  <div class="col-sm-8">
+                    <input type="text" id="cust_mobile" class="form-control form-control-sm border-0 border-bottom bg-transparent" placeholder="Enter Mobile Number" style="border-bottom: 1.5px dashed #ccc !important; border-radius: 0; padding-left: 0;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right Info: Estimate Details -->
+            <div class="col-md-5 col-sm-12 mt-3 mt-md-0">
+              <div class="p-3 border rounded h-100" style="background-color: #fafafa; border-color: #eaeaea !important;">
+                <h6 class="font-weight-bold text-gray-800 mb-3 border-bottom pb-1" style="font-size: 0.85rem; text-transform: uppercase; color: #1a2a6c;">Estimate Reference</h6>
+                
+                <div class="form-group row mb-2">
+                  <label class="col-sm-5 col-form-label col-form-label-sm font-weight-bold">Estimate No.:</label>
+                  <div class="col-sm-7">
+                    <input type="text" id="estimate_no" class="form-control form-control-sm border-0 border-bottom bg-transparent text-primary font-weight-bold" value="{{ next_no }}" style="border-bottom: 1.5px dashed #ccc !important; border-radius: 0; padding-left: 0;">
+                  </div>
+                </div>
+                
+                <div class="form-group row mb-2">
+                  <label class="col-sm-5 col-form-label col-form-label-sm font-weight-bold">Date:</label>
+                  <div class="col-sm-7">
+                    <input type="date" id="estimate_date" class="form-control form-control-sm border-0 border-bottom bg-transparent" value="{{ today_date }}" style="border-bottom: 1.5px dashed #ccc !important; border-radius: 0; padding-left: 0;">
+                  </div>
+                </div>
+                
+                <div class="form-group row mb-0">
+                  <label class="col-sm-5 col-form-label col-form-label-sm font-weight-bold">Time:</label>
+                  <div class="col-sm-7">
+                    <input type="time" id="estimate_time" class="form-control form-control-sm border-0 border-bottom bg-transparent" value="{{ today_time }}" style="border-bottom: 1.5px dashed #ccc !important; border-radius: 0; padding-left: 0;">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Items Table -->
+          <div class="table-responsive mt-4">
+            <table class="table table-bordered table-hover" id="itemsTable" style="border-color: #ddd;">
+              <thead class="bg-light text-gray-800">
+                <tr>
+                  <th style="width: 5%;" class="text-center">Sr No</th>
+                  <th style="width: 50%;">Particulars</th>
+                  <th style="width: 12%;" class="text-center">Quantity</th>
+                  <th style="width: 15%;" class="text-right">Rate (₹)</th>
+                  <th style="width: 18%;" class="text-right">Amount (₹)</th>
+                  <th style="width: 5%;" class="text-center no-print">Action</th>
+                </tr>
+              </thead>
+              <tbody id="itemsList">
+                <tr class="item-row">
+                  <td class="text-center row-sr align-middle">1</td>
+                  <td>
+                    <input type="text" class="form-control form-control-sm border-0 bg-transparent row-particulars" placeholder="Enter Item Particulars" required>
+                  </td>
+                  <td class="text-center">
+                    <input type="number" class="form-control form-control-sm text-center border-0 bg-transparent row-qty" value="1" min="1" step="any" required>
+                  </td>
+                  <td class="text-right">
+                    <input type="number" class="form-control form-control-sm text-right border-0 bg-transparent row-rate" value="0" min="0" step="0.01" required>
+                  </td>
+                  <td class="text-right align-middle font-weight-bold pr-3">
+                    ₹ <span class="row-amount">0.00</span>
+                  </td>
+                  <td class="text-center align-middle no-print">
+                    <button type="button" class="btn btn-link text-danger p-0 delete-row-btn" title="Delete Row">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <!-- Table Action Row (hidden in print) -->
+                <tr class="no-print">
+                  <td colspan="6" class="p-2 bg-light">
+                    <button type="button" id="btn-add-item-row" class="btn btn-sm btn-outline-primary ml-2">
+                      <i class="fas fa-plus"></i> Add Item Row
+                    </button>
+                  </td>
+                </tr>
+                <!-- Grand Total -->
+                <tr class="table-warning font-weight-bold">
+                  <td colspan="4" class="text-right align-middle pr-3" style="font-size: 1.15rem; color: #1a2a6c;">
+                    GRAND TOTAL:
+                  </td>
+                  <td class="text-right align-middle font-weight-extrabold pr-3 text-danger" style="font-size: 1.25rem;">
+                    ₹ <span id="estimateGrandTotal">0.00</span>
+                  </td>
+                  <td class="no-print"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- Total in words -->
+          <div class="row mt-2">
+            <div class="col-12">
+              <p class="m-0 font-weight-bold text-muted small" style="text-transform: uppercase;">
+                Amount in Words: <span id="amountInWords" class="text-dark ml-1 font-italic">Zero Rupees Only</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Signatures Footer -->
+          <div class="row mt-5 pt-4">
+            <div class="col-6 text-left">
+              <div class="d-inline-block text-center mt-4">
+                <div style="border-top: 1.5px solid #666; width: 180px; padding-top: 5px;" class="small text-muted font-weight-bold">
+                  Receiver's Signature
+                </div>
+              </div>
+            </div>
+            <div class="col-6 text-right">
+              <div class="d-inline-block text-center mt-3">
+                <span class="small font-weight-bold text-gray-800 d-block mb-4" style="line-height: 1;">
+                  For PRUTHVIRAJ Hydraulics &amp; Lubricants
+                </span>
+                <div style="border-top: 1.5px solid #666; width: 220px; padding-top: 5px;" class="small text-muted font-weight-bold">
+                  Authorized Signatory
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terms -->
+          <div class="mt-5 p-3 rounded" style="background-color: #fafafa; border: 1px solid #eee; font-size: 0.75rem; color: #666; line-height: 1.4;">
+            <strong class="text-dark d-block mb-1"><i class="fas fa-info-circle mr-1"></i>Terms &amp; Conditions:</strong>
+            1. This is a computer generated estimate slip which does not constitute a tax invoice.<br>
+            2. Prices mentioned above are estimated prices and subject to change without prior notice.
+          </div>
+
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Right Column: Recent Estimates Side-Panel -->
+    <div class="col-xl-3 col-lg-4 no-print">
+      <div class="card shadow border-0 mb-4" style="border-radius:12px; overflow:hidden;">
+        <div class="card-header border-0 py-3" style="background: linear-gradient(135deg, #1a2a6c 0%, #2a4cbf 100%);">
+          <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-history mr-2"></i>Recent Estimates</h6>
+        </div>
+        <div class="card-body p-0">
+          <div class="list-group list-group-flush" style="font-size: 0.85rem;">
+            {% for est in saved_estimates %}
+            <div class="list-group-item p-3 border-bottom d-flex flex-column" style="gap:4px;">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="font-weight-bold text-primary">{{ est.estimate_no }}</span>
+                <span class="badge badge-secondary">{{ est.date|date:"d M Y" }}</span>
+              </div>
+              <span class="font-weight-bold text-gray-800">{{ est.customer_name }}</span>
+              <div class="d-flex justify-content-between align-items-center mt-1">
+                <span class="font-weight-bold text-danger">₹ {{ est.total_amount|intcomma }}</span>
+                <span class="small text-muted">{{ est.time|time:"h:i A" }}</span>
+              </div>
+            </div>
+            {% empty %}
+            <div class="p-4 text-center text-muted">
+              <i class="fas fa-folder-open fa-2x mb-2 d-block"></i>No saved estimates yet.
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Print-Only Page Rules & Helper Print Styles -->
+<style>
+  #estimateSlipContainer input.form-control:focus {
+    background-color: rgba(255,193,7,0.05) !important;
+    border-bottom: 1.5px solid #f7971e !important;
+    box-shadow: none !important;
+  }
+  
+  @media print {
+    /* Hide all layout structures completely */
+    body * { visibility: hidden; }
+    .no-print, .sidebar, .topbar, .scroll-to-top, button, footer, header { display: none !important; }
+    
+    /* Reveal and position print content exactly at top left of physical page */
+    #estimateSlipContainer, #estimateSlipContainer * { visibility: visible; }
+    #estimateSlipContainer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      box-shadow: none !important;
+      border: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+    }
+    
+    /* Ensure borders and inputs display perfectly styled as text lines in print */
+    input.form-control {
+      border: none !important;
+      background: transparent !important;
+      padding: 0 !important;
+    }
+    .table-warning {
+      background-color: #fff3cd !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<!-- CDN script for client-side PDF export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+(function() {
+  const itemsList = document.getElementById('itemsList');
+  const addBtn = document.getElementById('btn-add-item-row');
+  
+  // Real-time calculation of Grand Total and Row Amounts
+  function calculateTotal() {
+    let grandTotal = 0;
+    document.querySelectorAll('.item-row').forEach(row => {
+      const qty = parseFloat(row.querySelector('.row-qty').value) || 0;
+      const rate = parseFloat(row.querySelector('.row-rate').value) || 0;
+      const amount = qty * rate;
+      grandTotal += amount;
+      
+      row.querySelector('.row-amount').textContent = amount.toFixed(2);
+    });
+    
+    document.getElementById('estimateGrandTotal').textContent = grandTotal.toFixed(2);
+    document.getElementById('amountInWords').textContent = numberToIndianWords(grandTotal);
+  }
+
+  // Refreshes the row index serial numbers
+  function refreshSrNumbers() {
+    document.querySelectorAll('.item-row').forEach((row, index) => {
+      row.querySelector('.row-sr').textContent = index + 1;
+    });
+  }
+
+  // Indian Rupee Word Conversion algorithm
+  function numberToIndianWords(num) {
+    if (num <= 0) return 'Zero Rupees Only';
+    
+    const single = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const double = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    
+    function convert(n) {
+      if (n < 20) return single[n];
+      if (n < 100) return double[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + single[n % 10] : '');
+      if (n < 1000) return single[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' and ' + convert(n % 100) : '');
+      return '';
+    }
+    
+    let wholeNumber = Math.floor(num);
+    let str = '';
+    const crores = Math.floor(wholeNumber / 10000000);
+    wholeNumber %= 10000000;
+    const lakhs = Math.floor(wholeNumber / 100000);
+    wholeNumber %= 100000;
+    const thousands = Math.floor(wholeNumber / 1000);
+    wholeNumber %= 1000;
+    
+    if (crores > 0) str += convert(crores) + ' Crore ';
+    if (lakhs > 0) str += convert(lakhs) + ' Lakh ';
+    if (thousands > 0) str += convert(thousands) + ' Thousand ';
+    if (wholeNumber > 0) str += convert(wholeNumber);
+    
+    let parsedStr = str.trim();
+    
+    // Decimals conversion (Paisa)
+    const decimals = Math.round((num % 1) * 100);
+    if (decimals > 0) {
+      parsedStr += ' and ' + convert(decimals) + ' Paisa';
+    }
+    
+    return parsedStr ? parsedStr + ' Rupees Only' : 'Zero Rupees Only';
+  }
+
+  // Add more item rows to table
+  addBtn.addEventListener('click', function() {
+    const rowCount = document.querySelectorAll('.item-row').length + 1;
+    const tr = document.createElement('tr');
+    tr.className = 'item-row';
+    tr.innerHTML = `
+      <td class="text-center row-sr align-middle">${rowCount}</td>
+      <td>
+        <input type="text" class="form-control form-control-sm border-0 bg-transparent row-particulars" placeholder="Enter Item Particulars" required>
+      </td>
+      <td class="text-center">
+        <input type="number" class="form-control form-control-sm text-center border-0 bg-transparent row-qty" value="1" min="1" step="any" required>
+      </td>
+      <td class="text-right">
+        <input type="number" class="form-control form-control-sm text-right border-0 bg-transparent row-rate" value="0" min="0" step="0.01" required>
+      </td>
+      <td class="text-right align-middle font-weight-bold pr-3">
+        ₹ <span class="row-amount">0.00</span>
+      </td>
+      <td class="text-center align-middle no-print">
+        <button type="button" class="btn btn-link text-danger p-0 delete-row-btn" title="Delete Row">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </td>
+    `;
+    itemsList.appendChild(tr);
+    calculateTotal();
+  });
+
+  // Handle deletions & inputs
+  document.addEventListener('click', function(e) {
+    const delBtn = e.target.closest('.delete-row-btn');
+    if (delBtn) {
+      e.preventDefault();
+      const rows = document.querySelectorAll('.item-row');
+      if (rows.length > 1) {
+        delBtn.closest('tr').remove();
+        refreshSrNumbers();
+        calculateTotal();
+      } else {
+        alert('An estimate slip must contain at least one item.');
+      }
+    }
+  });
+
+  // Calculate totals dynamically on user typing Qty or Rate
+  document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('row-qty') || e.target.classList.contains('row-rate')) {
+      calculateTotal();
+    }
+  });
+
+  // Save Estimate slip via AJAX
+  document.getElementById('btn-save-estimate').addEventListener('click', function() {
+    const customerName = document.getElementById('cust_name').value.trim();
+    const mobileNumber = document.getElementById('cust_mobile').value.trim();
+    const estimateNo = document.getElementById('estimate_no').value.trim();
+    const date = document.getElementById('estimate_date').value;
+    const time = document.getElementById('estimate_time').value;
+
+    if (!customerName) {
+      alert('Please fill out the Customer Name.');
+      document.getElementById('cust_name').focus();
+      return;
+    }
+    if (!estimateNo) {
+      alert('Please fill out the Estimate Number.');
+      document.getElementById('estimate_no').focus();
+      return;
+    }
+
+    const items = [];
+    let valid = true;
+    document.querySelectorAll('.item-row').forEach(row => {
+      const particulars = row.querySelector('.row-particulars').value.trim();
+      const qty = parseFloat(row.querySelector('.row-qty').value) || 0;
+      const rate = parseFloat(row.querySelector('.row-rate').value) || 0;
+
+      if (!particulars) {
+        valid = false;
+        row.querySelector('.row-particulars').focus();
+      }
+
+      items.push({
+        particulars: particulars,
+        qty: qty,
+        rate: rate
+      });
+    });
+
+    if (!valid) {
+      alert('Please enter particulars for all item rows.');
+      return;
+    }
+
+    const payload = {
+      customer_name: customerName,
+      mobile_number: mobileNumber,
+      estimate_no: estimateNo,
+      date: date,
+      time: time,
+      items: items
+    };
+
+    fetch("{% url 'SaveEstimate' %}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}"
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(res => {
+      if (res.success) {
+        alert(`Estimate Slip ${res.estimate_no} saved successfully!`);
+        window.location.reload();
+      } else {
+        alert("Error saving estimate: " + (res.error || "Unknown error"));
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("An unexpected error occurred while saving the estimate slip.");
+    });
+  });
+
+  // Calculate totals initially
+  calculateTotal();
+})();
+
+// PDF Export wrapper
+function downloadPDF() {
+  const element = document.getElementById('estimate-slip-printout');
+  const estimateNo = document.getElementById('estimate_no').value.trim();
+  const customerName = document.getElementById('cust_name').value.trim();
+  
+  // Clone element to customize for PDF rendering (remove inline styling or adjustments)
+  const opt = {
+    margin:       [10, 10, 10, 10],
+    filename:     `Estimate_${estimateNo}_${customerName.replace(/\s+/g, '_')}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2.5, useCORS: true },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  
+  // Execute conversion
+  html2pdf().set(opt).from(element).save();
+}
+
+// Print Handler
+function printEstimate() {
+  window.print();
+}
+</script>
+{% endblock %}
