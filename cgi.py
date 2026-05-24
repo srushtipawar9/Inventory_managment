@@ -1,4 +1,9 @@
+import re
 import sys
+
+
+_VALID_BOUNDARY_RE = re.compile(rb'^[ -~]{1,70}$')
+
 
 def _parseparam(s):
     while s[:1] == ';':
@@ -13,6 +18,7 @@ def _parseparam(s):
         else:
             yield s[:end]
             s = s[end:]
+
 
 def parse_header(line):
     """Parse a Content-type like header.
@@ -31,3 +37,19 @@ def parse_header(line):
                 value = value.replace('\\\\', '\\').replace('\\"', '"')
             pdict[name] = value
     return key, pdict
+
+
+def valid_boundary(boundary):
+    if boundary is None:
+        return False
+
+    if isinstance(boundary, str):
+        try:
+            boundary = boundary.encode('ascii')
+        except UnicodeEncodeError:
+            return False
+
+    if not isinstance(boundary, (bytes, bytearray)):
+        return False
+
+    return bool(_VALID_BOUNDARY_RE.fullmatch(boundary))
