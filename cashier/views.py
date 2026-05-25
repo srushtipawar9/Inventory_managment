@@ -358,12 +358,16 @@ def DaftarPembelian(request):
 def ReportView(request):
     # Handle saving Financial Insight metadata via POST
     if request.method == 'POST' and request.POST.get('action') == 'save_insight_meta':
-        fi = FinancialInsightReport()
-        fi.user_id = request.user.profile.id
+        # Try to update the latest instead of creating a new one each time
+        fi = FinancialInsightReport.objects.filter(user_id=request.user.profile.id).first()
+        if not fi:
+            fi = FinancialInsightReport(user_id=request.user.profile.id)
+            
         fi.name = request.POST.get('fi_name', '')
         fi.mobile_number = request.POST.get('fi_mobile', '')
         fi_date = request.POST.get('fi_date', '')
         fi_time = request.POST.get('fi_time', '')
+        
         try:
             fi.date = datetime.strptime(fi_date, '%Y-%m-%d').date() if fi_date else None
         except Exception:
@@ -372,8 +376,9 @@ def ReportView(request):
             fi.time = datetime.strptime(fi_time, '%H:%M').time() if fi_time else None
         except Exception:
             fi.time = None
+            
         fi.save()
-        messages.success(request, 'Financial Insight metadata saved.')
+        messages.success(request, 'Report Header Details updated successfully.')
         return redirect('ReportView')
 
     # Handle AJAX date-range filter
