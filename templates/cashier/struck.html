@@ -208,10 +208,11 @@
         const upiId = "9657493275@ptyes"; 
         
         // UPI deep link — amount and invoice pre-filled
-        const upiData = `upi://pay?pa=${upiId}&pn=JCB+Hydraulic+Parts&am=${total}&cu=INR&tn=Invoice+%23${invoiceNo}`;
+       const merchantName = "Anant Vijay Dhanavade";
+       const upiData = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(merchantName)}&am=${parseFloat(total).toFixed(2)}&cu=INR&tn=Invoice-${invoiceNo}`;
         
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiData)}`;
-        const qrImg = document.getElementById('paymentQR');
+       const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiData)}`;
+       const qrImg = document.getElementById('paymentQR');
         if (qrImg) qrImg.src = qrUrl;
     })();
 </script>
