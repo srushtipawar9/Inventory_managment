@@ -15,6 +15,8 @@ urlpatterns = [
     path('purchase/', views.DaftarPembelian, name='DaftarPembelian'),
     path('report/', views.ReportView, name='ReportView'),
     path('estimate/', views.EstimateView, name='EstimateView'),
+    path('estimate/part-price/', views.PartPriceLookup, name='PartPriceLookup'),
+    path('estimate/part-suggestions/', views.PartSuggestions, name='PartSuggestions'),
     path('estimate/save/', views.SaveEstimate, name='SaveEstimate'),
 ]
 

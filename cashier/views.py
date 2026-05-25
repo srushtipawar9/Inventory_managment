@@ -4,7 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.forms import formset_factory, modelformset_factory
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
+from django.db.models import Q
 import json
 from . models import (
     DaftarBarang,
@@ -438,6 +439,48 @@ def EstimateView(request):
         'is_admin': True,
     }
     return render(request, 'cashier/estimate.html', context)
+
+
+@login_required()
+@require_GET
+def PartPriceLookup(request):
+    part_name = request.GET.get('name', '').strip()
+
+    if not part_name:
+        return JsonResponse({'price': '0.00'})
+
+    part = JCBPart.objects.filter(
+        Q(name__iexact=part_name) | Q(part_number__iexact=part_name)
+    ).first()
+
+    if not part:
+        return JsonResponse({'price': '0.00'})
+
+    return JsonResponse({'price': str(part.price)})
+
+
+@login_required()
+@require_GET
+def PartSuggestions(request):
+    query = request.GET.get('q', '').strip()
+
+    if not query:
+        return JsonResponse({'results': []})
+
+    parts = JCBPart.objects.filter(
+        Q(name__icontains=query) | Q(part_number__icontains=query) | Q(description__icontains=query)
+    ).order_by('name')[:10]
+
+    results = [
+        {
+            'name': part.name,
+            'part_number': part.part_number,
+            'label': f"{part.part_number} - {part.name}",
+        }
+        for part in parts
+    ]
+
+    return JsonResponse({'results': results})
 
 
 @login_required()

@@ -141,7 +141,7 @@
                 <tr class="item-row">
                   <td class="text-center row-sr align-middle">1</td>
                   <td>
-                    <input type="text" class="form-control form-control-sm border-0 bg-transparent row-particulars" placeholder="Enter Item Particulars" required>
+                    <input type="text" class="form-control form-control-sm border-0 bg-transparent row-particulars" placeholder="Enter Item Particulars" list="estimatePartSuggestions" autocomplete="off" required>
                   </td>
                   <td class="text-center">
                     <input type="number" class="form-control form-control-sm text-center border-0 bg-transparent row-qty" value="1" min="1" step="any" required>
@@ -181,6 +181,8 @@
               </tfoot>
             </table>
           </div>
+
+          <datalist id="estimatePartSuggestions"></datalist>
 
           <!-- Total in words -->
           <div class="row mt-2">
@@ -306,6 +308,10 @@
 (function() {
   const itemsList = document.getElementById('itemsList');
   const addBtn = document.getElementById('btn-add-item-row');
+  const suggestionList = document.getElementById('estimatePartSuggestions');
+  const partLookupCache = new Map();
+  let partLookupTimer = null;
+  let suggestionTimer = null;
   
   // Real-time calculation of Grand Total and Row Amounts
   function calculateTotal() {
@@ -328,6 +334,68 @@
     document.querySelectorAll('.item-row').forEach((row, index) => {
       row.querySelector('.row-sr').textContent = index + 1;
     });
+  }
+
+  function lookupPartPrice(row, partName) {
+    const normalizedName = partName.trim().toLowerCase();
+
+    if (!normalizedName) {
+      calculateTotal();
+      return;
+    }
+
+    if (partLookupCache.has(normalizedName)) {
+      row.querySelector('.row-rate').value = partLookupCache.get(normalizedName);
+      calculateTotal();
+      return;
+    }
+
+    fetch(`/estimate/part-price/?name=${encodeURIComponent(partName)}`)
+      .then(response => response.json())
+      .then(data => {
+        const price = parseFloat(data.price || 0).toFixed(2);
+        partLookupCache.set(normalizedName, price);
+        row.querySelector('.row-rate').value = price;
+        calculateTotal();
+      })
+      .catch(() => {
+        calculateTotal();
+      });
+  }
+
+  function updatePartSuggestions(query, row) {
+    if (!query) {
+      suggestionList.innerHTML = '';
+      return;
+    }
+
+    clearTimeout(suggestionTimer);
+    suggestionTimer = setTimeout(() => {
+      fetch(`/estimate/part-suggestions/?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+          suggestionList.innerHTML = '';
+
+          (data.results || []).forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.name;
+            option.label = item.label;
+            suggestionList.appendChild(option);
+          });
+
+          const exactMatch = (data.results || []).find(item => {
+            const text = query.trim().toLowerCase();
+            return item.name.toLowerCase() === text || item.part_number.toLowerCase() === text;
+          });
+
+          if (exactMatch) {
+            lookupPartPrice(row, exactMatch.name);
+          }
+        })
+        .catch(() => {
+          suggestionList.innerHTML = '';
+        });
+    }, 200);
   }
 
   // Indian Rupee Word Conversion algorithm
@@ -377,7 +445,7 @@
     tr.innerHTML = `
       <td class="text-center row-sr align-middle">${rowCount}</td>
       <td>
-        <input type="text" class="form-control form-control-sm border-0 bg-transparent row-particulars" placeholder="Enter Item Particulars" required>
+        <input type="text" class="form-control form-control-sm border-0 bg-transparent row-particulars" placeholder="Enter Item Particulars" list="estimatePartSuggestions" autocomplete="off" required>
       </td>
       <td class="text-center">
         <input type="number" class="form-control form-control-sm text-center border-0 bg-transparent row-qty" value="1" min="1" step="any" required>
@@ -416,6 +484,22 @@
 
   // Calculate totals dynamically on user typing Qty or Rate
   document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('row-particulars')) {
+      const row = e.target.closest('.item-row');
+      const partName = e.target.value.trim();
+
+      clearTimeout(partLookupTimer);
+      partLookupTimer = setTimeout(() => {
+        if (!partName) {
+          calculateTotal();
+          return;
+        }
+
+        updatePartSuggestions(partName, row);
+      }, 250);
+      return;
+    }
+
     if (e.target.classList.contains('row-qty') || e.target.classList.contains('row-rate')) {
       calculateTotal();
     }
