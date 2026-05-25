@@ -51,7 +51,7 @@
                   <tbody>
                   {% for data in data %}
                     <tr>
-                      <td>{{data.nomor}}</td>
+                      <td>{{forloop.counter}}</td>
                       <td class="text-center align-middle" style="width: 80px;">
                         {% if data.image %}
                         <img src="{{data.image.url}}" class="img-thumbnail rounded shadow-sm" style="max-height: 50px; max-width: 70px; object-fit: contain; background: #fff; padding: 2px;">

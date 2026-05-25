@@ -105,6 +105,7 @@
                 <table class="table table-bordered table-hover table-sm">
                     <thead class="bg-success text-white">
                         <tr>
+                            <th>SR</th>
                             <th>Item Name</th>
                             <th class="inv-adv d-none">No. / For What</th>
                             <th class="inv-adv d-none">HSN / SAC</th>
@@ -118,11 +119,13 @@
                             <th>Sales Price</th>
                             <th>MRP</th>
                             <th>Date</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for data in inventory_results %}
                         <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
                             <td class="font-weight-bold">{{ data.nama_product }}</td>
                             <td class="inv-adv d-none">{{ data.part_for_what }}</td>
                             <td class="inv-adv d-none">{{ data.hsn_sac }}</td>
@@ -136,6 +139,11 @@
                             <td class="text-success font-weight-bold">₹{{ data.harga_jual_satuan|intcomma }}</td>
                             <td>₹{{ data.mrp|intcomma }}</td>
                             <td class="small text-muted">{{ data.created|date:"d M Y" }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'DeleteStock' data.nomor %}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this inventory item?');">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

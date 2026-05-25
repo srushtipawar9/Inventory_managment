@@ -252,20 +252,28 @@ def QuickAddProduct(request):
         image = request.FILES.get('image')
 
         try:
-            new_part = JCBPart.objects.create(
+            new_part, created = JCBPart.objects.update_or_create(
                 part_number=part_number,
-                name=name,
-                price=price,
-                category=category,
-                description=description,
-                stock_quantity=0
+                defaults={
+                    'name': name,
+                    'price': price,
+                    'category': category,
+                    'description': description,
+                    'stock_quantity': 0
+                }
             )
             if image:
+                if new_part.image_360_base:
+                    new_part.image_360_base.delete(save=False)
                 new_part.image_360_base = image
                 new_part.save()
-            messages.success(request, f"Product '{name}' added successfully!")
+            
+            if created:
+                messages.success(request, f"Product '{name}' added successfully to catalog!")
+            else:
+                messages.success(request, f"Product '{name}' already existed and has been updated in catalog!")
         except Exception as e:
-            messages.error(request, f"Error adding product: {str(e)}")
+            messages.error(request, f"Error processing product: {str(e)}")
             
     return redirect(request.META.get('HTTP_REFERER', '/data/search/'))
 
