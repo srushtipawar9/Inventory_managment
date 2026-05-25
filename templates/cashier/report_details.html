@@ -6,6 +6,7 @@
         <tr>
           <th>#</th>
           <th>Part Name</th>
+          <th>Customer Name</th>
           <th>Mobile Number</th>
           <th>Date</th>
           <th>Time</th>
@@ -16,9 +17,9 @@
             <tr>
               <td>{{ forloop.counter }}</td>
               <td class="font-weight-bold">{{ daftar_barang.nama_barang }}</td>
+              <td>{{ latest_insight.name|default:"—" }}</td>
               <td>
-                <!-- Mobile number field not stored on transaction; shown as N/A -->
-                <span class="text-muted small">N/A</span>
+                <span class="text-primary font-weight-bold">{{ latest_insight.mobile_number|default:"N/A" }}</span>
               </td>
               <td>{{ daftar_barang.created|date:"d M Y" }}</td>
               <td>{{ daftar_barang.created|date:"h:i A" }}</td>

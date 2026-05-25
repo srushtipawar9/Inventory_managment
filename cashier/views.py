@@ -397,7 +397,13 @@ def ReportView(request):
             created__date__lte=endDateConverter,
         )
         daftar_barang = ListProductTransaksi.objects.filter(transaksi_id__in=from_user)
-        return render(request, 'cashier/report_details.html', {'daftar_barang': daftar_barang, 'num': startDateConverter})
+        # Get latest insight for the AJAX response too
+        latest_insight = FinancialInsightReport.objects.filter(user_id=request.user.profile.id).first()
+        return render(request, 'cashier/report_details.html', {
+            'daftar_barang': daftar_barang, 
+            'num': startDateConverter,
+            'latest_insight': latest_insight
+        })
 
     from_user     = DaftarTransaksi.objects.filter(user_id=request.user.profile.id)
     daftar_barang = ListProductTransaksi.objects.filter(transaksi_id__in=from_user)
