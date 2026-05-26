@@ -169,8 +169,8 @@ def InputStock(request):
                 form.save()
                 saved += 1
             if saved:
-                messages.success(request, f'Inventory saved successfully! ({saved} item(s))')
-                return HttpResponseRedirect('/input/')
+                messages.success(request, f'Inventory saved successfully! ({saved} item(s)) saved to permanent stock.')
+                return redirect('TotalStock')
             messages.warning(request, 'No valid rows to save. Please fill Item Name, Qty and Purchase Price.')
         else:
             messages.warning(request, 'Please correct the highlighted fields and try again.')
