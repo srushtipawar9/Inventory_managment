@@ -337,15 +337,13 @@
   }
 
   function lookupPartPrice(row, partName) {
+    if (!partName) return;
     const normalizedName = partName.trim().toLowerCase();
 
-    if (!normalizedName) {
-      calculateTotal();
-      return;
-    }
-
     if (partLookupCache.has(normalizedName)) {
-      row.querySelector('.row-rate').value = partLookupCache.get(normalizedName);
+      const cachedPrice = partLookupCache.get(normalizedName);
+      row.querySelector('.row-rate').value = cachedPrice;
+      // Trigger amount calculation
       calculateTotal();
       return;
     }
@@ -482,7 +480,7 @@
     }
   });
 
-  // Calculate totals dynamically on user typing Qty or Rate
+  // Calculate totals dynamically on user typing Qty or Rate or Particulars
   document.addEventListener('input', function(e) {
     if (e.target.classList.contains('row-particulars')) {
       const row = e.target.closest('.item-row');
@@ -494,14 +492,26 @@
           calculateTotal();
           return;
         }
-
         updatePartSuggestions(partName, row);
-      }, 250);
+        
+        // Also try direct lookup if it looks like a full name (e.g. from copy-paste)
+        if (partName.length > 3) {
+            lookupPartPrice(row, partName);
+        }
+      }, 300);
       return;
     }
 
     if (e.target.classList.contains('row-qty') || e.target.classList.contains('row-rate')) {
       calculateTotal();
+    }
+  });
+
+  // Handle 'change' event for datalist selection (more reliable in some browsers)
+  document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('row-particulars')) {
+      const row = e.target.closest('.item-row');
+      lookupPartPrice(row, e.target.value.trim());
     }
   });
 

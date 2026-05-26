@@ -460,14 +460,24 @@ def PartPriceLookup(request):
     if not part_name:
         return JsonResponse({'price': '0.00'})
 
+    # 1. Try to find in user's actual inventory first (DaftarBarang)
+    inventory_item = DaftarBarang.objects.filter(
+        user_id=request.user.profile.id,
+        nama_product__iexact=part_name
+    ).order_by('-created').first()
+
+    if inventory_item:
+        return JsonResponse({'price': str(inventory_item.harga_jual_satuan or '0.00')})
+
+    # 2. Fallback to master catalog (JCBPart)
     part = JCBPart.objects.filter(
         Q(name__iexact=part_name) | Q(part_number__iexact=part_name)
     ).first()
 
-    if not part:
-        return JsonResponse({'price': '0.00'})
+    if part:
+        return JsonResponse({'price': str(part.price)})
 
-    return JsonResponse({'price': str(part.price)})
+    return JsonResponse({'price': '0.00'})
 
 
 @login_required()
@@ -478,20 +488,40 @@ def PartSuggestions(request):
     if not query:
         return JsonResponse({'results': []})
 
-    parts = JCBPart.objects.filter(
+    # Search in Master Catalog
+    catalog_parts = JCBPart.objects.filter(
         Q(name__icontains=query) | Q(part_number__icontains=query) | Q(description__icontains=query)
     ).order_by('name')[:10]
 
-    results = [
-        {
-            'name': part.name,
-            'part_number': part.part_number,
-            'label': f"{part.part_number} - {part.name}",
-        }
-        for part in parts
-    ]
+    # Search in User's actual Inventory
+    inv_parts = DaftarBarang.objects.filter(
+        user_id=request.user.profile.id,
+        nama_product__icontains=query
+    ).order_by('nama_product')[:10]
 
-    return JsonResponse({'results': results})
+    results = []
+    seen_names = set()
+
+    # Prioritize Inventory items in results
+    for p in inv_parts:
+        if p.nama_product not in seen_names:
+            results.append({
+                'name': p.nama_product,
+                'part_number': 'STOCK',
+                'label': f"📦 [In Stock] {p.nama_product}",
+            })
+            seen_names.add(p.nama_product)
+
+    for part in catalog_parts:
+        if part.name not in seen_names:
+            results.append({
+                'name': part.name,
+                'part_number': part.part_number,
+                'label': f"{part.part_number} - {part.name}",
+            })
+            seen_names.add(part.name)
+
+    return JsonResponse({'results': results[:15]})
 
 
 @login_required()
