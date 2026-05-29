@@ -14,19 +14,16 @@ def setup_admin():
     
     # 1. Create or get superuser 'admin'
     admin_user, created = User.objects.get_or_create(username='admin')
+    admin_user.set_password('Pruthvi@15')
+    admin_user.email = 'admin@pruthviraj.com'
+    admin_user.is_staff = True
+    admin_user.is_superuser = True
+    admin_user.save()
+
     if created:
-        admin_user.set_password('admin')
-        admin_user.email = 'admin@pruthviraj.com'
-        admin_user.is_staff = True
-        admin_user.is_superuser = True
-        admin_user.save()
-        print("Created new superuser: admin / admin")
+        print("Created new superuser: admin / Pruthvi@15")
     else:
-        # Ensure superuser flags are active
-        admin_user.is_staff = True
-        admin_user.is_superuser = True
-        admin_user.save()
-        print("Superuser 'admin' already exists.")
+        print("Superuser 'admin' already exists. Password updated to Pruthvi@15.")
         
     # 2. Create Profile associated with 'admin' if not present
     profile, p_created = Profile.objects.get_or_create(user=admin_user)
