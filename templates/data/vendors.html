@@ -76,5 +76,13 @@
     </div>
   {% endfor %}
 </div>
+
+<script>
+  // Refresh the vendors comparison page every 30 seconds to show the latest prices.
+  setInterval(function () {
+    window.location.reload();
+  }, 30000);
+</script>
+
 {% endblock %}
 
