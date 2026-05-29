@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
+from django.template.loader import render_to_string
 from django.core.files.base import ContentFile
 import requests
 from .resources import StockResource
@@ -228,6 +229,11 @@ def VendorComparison(request):
         "category": category,
         "parts_entries": list(parts_map.values()),
     }
+
+    if request.GET.get("format") == "json" or request.headers.get("x-requested-with") == "XMLHttpRequest":
+        html = render_to_string("data/vendors_partial.html", context, request=request)
+        return JsonResponse({"html": html, "category": category})
+
     return render(request, "data/vendors.html", context)
 
 @login_required

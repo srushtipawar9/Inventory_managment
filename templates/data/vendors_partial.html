@@ -1,0 +1,57 @@
+{% if parts_entries|length == 0 %}
+  <div class="alert alert-warning">
+    No vendor pricing found. Add vendors and prices from Admin → Data → Vendor / Vendor part prices.
+  </div>
+{% endif %}
+
+{% for entry in parts_entries %}
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <div>
+        <h6 class="m-0 font-weight-bold text-primary">
+          {{ entry.part.part_number }} — {{ entry.part.name }}
+        </h6>
+        <small class="text-muted">{{ entry.part.get_category_display }} • Master Price: ₹{{ entry.part.price }}</small>
+      </div>
+      <a class="btn btn-sm btn-info" href="{% url 'PartDetail' entry.part.id %}">
+        <i class="fas fa-info-circle"></i> Details
+      </a>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered mb-0" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Vendor</th>
+              <th>City</th>
+              <th>Price</th>
+              <th>Mark</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in entry.rows %}
+              <tr>
+                <td>{{ row.vendor.name }}</td>
+                <td><span class="badge badge-light">{{ row.vendor.city }}</span></td>
+                <td>₹{{ row.price }}</td>
+                <td class="text-center">
+                  {% if row.price == entry.min_price %}
+                    <span class="text-success" title="Cheapest">
+                      <i class="fas fa-check-circle"></i>
+                    </span>
+                  {% elif row.price == entry.max_price %}
+                    <span class="text-danger" title="Most expensive">
+                      <i class="fas fa-times-circle"></i>
+                    </span>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endfor %}
