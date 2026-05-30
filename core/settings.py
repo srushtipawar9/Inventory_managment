@@ -60,7 +60,7 @@ DEBUG = os.environ.get('DEBUG', '0') == '1'
 DEBUG_TAMPLATES = DEBUG
 
 # BASE_URL = "localhost:8000"
-ALLOWED_HOSTS = ['https://inventory-managment-1-7ylq.onrender.com']
+ALLOWED_HOSTS = ['inventory-managment-1-7ylq.onrender.com', 'localhost', '127.0.0.1']
 # Session, cache, ssl secure
 
 "Do not forget to uncoment this section below when you deploy to production"
