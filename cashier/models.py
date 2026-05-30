@@ -4,6 +4,7 @@ from django.utils import timezone
 from accounts.models import Profile
 from data.models import Stock
 from django.utils.timezone import now
+from cloudinary.models import CloudinaryField
 
 "Stock Input"
 class DaftarBarang(models.Model):
@@ -11,7 +12,7 @@ class DaftarBarang(models.Model):
     nomor = models.AutoField(primary_key=True)
     # nama_product = models.ForeignKey(Stock, on_delete=models.CASCADE)
     nama_product = models.CharField(max_length=200, blank=False, null=False)
-    image = models.ImageField(upload_to='inventory_images/', blank=True, null=True)
+    image = CloudinaryField('image', null=True, blank=True)
     part_for_what = models.CharField(max_length=100, blank=True, default='')
     hsn_sac = models.CharField(max_length=30, blank=True, default='')
     jumlah_produk = models.IntegerField()
