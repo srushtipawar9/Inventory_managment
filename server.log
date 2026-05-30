@@ -3068,3 +3068,74 @@ Watching for file changes with StatReloader
 "GET /input/ HTTP/1.1" 200 7855
 "GET /input/ HTTP/1.1" 200 7852
 Not Found: /estimate/part-price/
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /login/?next=/ HTTP/1.1" 200 873
+"GET /static/css/sb-admin-2.min.css HTTP/1.1" 304 0
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 1349
+"POST /login/?next=/ HTTP/1.1" 302 0
+Forbidden (CSRF token missing or incorrect.): /login/
+"POST /login/?next=/ HTTP/1.1" 403 1258
+- Broken pipe from ('127.0.0.1', 51834)
+
+"GET / HTTP/1.1" 200 4523
+"GET /static/vendor/fontawesome-free/css/all.min.css HTTP/1.1" 304 0
+"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.css HTTP/1.1" 304 0
+"GET /media/profile_picture.png HTTP/1.1" 200 61793
+"GET /static/vendor/bootstrap/js/bootstrap.bundle.min.js HTTP/1.1" 200 78635
+"GET /static/vendor/jquery/jquery.min.js HTTP/1.1" 200 88145
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.js HTTP/1.1" 200 2085
+"GET /static/js/datatables-demo.js HTTP/1.1" 200 618
+"GET /static/vendor/datatables/jquery.dataTables.min.js HTTP/1.1" 200 82411
+"GET /static/js/sb-admin-2.min.js HTTP/1.1" 200 1106
+"GET /static/vendor/jquery-easing/jquery.easing.min.js HTTP/1.1" 200 2532
+"GET /static/js/extends.js HTTP/1.1" 200 1689
+"GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 200 75440
+"GET /stock/ HTTP/1.1" 200 4168
+"GET /stock/ HTTP/1.1" 200 4168
+"GET /static/favicon.ico HTTP/1.1" 200 1150
+"GET /stock/ HTTP/1.1" 200 4168
+"GET /stock/ HTTP/1.1" 200 4168
+"GET /stock/ HTTP/1.1" 200 4168
+"GET /stock/ HTTP/1.1" 200 4168
+"GET /stock/ HTTP/1.1" 200 4168
+"GET /stock/ HTTP/1.1" 200 4168
+"GET /input/ HTTP/1.1" 200 7853
+"GET /input/ HTTP/1.1" 200 7850
+"POST /input/ HTTP/1.1" 302 0
+"GET /stock/ HTTP/1.1" 200 4475
+"GET /media/inventory_images/light1.jpg HTTP/1.1" 200 9333
+"GET /stock/delete/24/ HTTP/1.1" 302 0
+"GET /stock/ HTTP/1.1" 200 4315
+"GET /media/inventory_images/light1.jpg HTTP/1.1" 304 0
+"GET /stock/ HTTP/1.1" 200 4256
+"GET /media/inventory_images/light1.jpg HTTP/1.1" 304 0
+"GET /stock/ HTTP/1.1" 200 4256
+"GET /media/inventory_images/light1.jpg HTTP/1.1" 304 0
+"GET /stock/ HTTP/1.1" 200 4256
+"GET /media/inventory_images/light1.jpg HTTP/1.1" 304 0
+"GET /stock/delete/26/ HTTP/1.1" 302 0
+"GET /stock/ HTTP/1.1" 200 3788
+"GET /stock/ HTTP/1.1" 200 3728
+"GET /input/ HTTP/1.1" 200 7852
+"POST /input/ HTTP/1.1" 302 0
+"GET /stock/ HTTP/1.1" 200 4331
+"GET /media/inventory_images/hose.jpg HTTP/1.1" 200 8608
+"GET /input/ HTTP/1.1" 200 7853
+"GET /stock/ HTTP/1.1" 200 4273
+"GET /media/inventory_images/hose.jpg HTTP/1.1" 304 0
+"GET /stock/ HTTP/1.1" 200 4273
+"GET /media/inventory_images/hose.jpg HTTP/1.1" 304 0
+"GET /data/upload/ HTTP/1.1" 200 4784
+"GET /input/ HTTP/1.1" 200 7853
+D:\inventory_2\cashier\urls.py changed, reloading.
+Watching for file changes with StatReloader
+D:\inventory_2\cashier\views.py changed, reloading.
+Watching for file changes with StatReloader
+D:\inventory_2\cashier\urls.py changed, reloading.
+Watching for file changes with StatReloader
+D:\inventory_2\cashier\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader

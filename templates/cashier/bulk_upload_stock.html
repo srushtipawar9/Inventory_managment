@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container-fluid">
+
+  <!-- Page Heading -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-3">
+    <h1 class="h3 mb-0 text-gray-800">
+      <i class="fas fa-file-upload text-primary"></i> Bulk Upload Inventory Stock
+    </h1>
+    <div>
+      <a href="{% url 'TotalStock' %}" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left"></i> Back to Inventory
+      </a>
+      <a href="{% url 'InputStock' %}" class="btn btn-outline-primary btn-sm ml-1">
+        <i class="fas fa-plus"></i> Add Single Item
+      </a>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}warning{% else %}success{% endif %} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="row">
+
+    <!-- Upload Card -->
+    <div class="col-lg-5 mb-4">
+      <div class="card shadow h-100">
+        <div class="card-header py-3 bg-primary">
+          <h6 class="m-0 font-weight-bold text-white">
+            <i class="fas fa-cloud-upload-alt"></i> Upload Inventory File
+          </h6>
+        </div>
+        <div class="card-body">
+          <form method="POST" enctype="multipart/form-data" id="bulkUploadForm">
+            {% csrf_token %}
+            <div class="form-group">
+              <label class="font-weight-bold text-gray-700">Select Excel / CSV File</label>
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="file" name="file"
+                       accept=".csv,.xls,.xlsx" required>
+                <label class="custom-file-label" for="file">Choose file…</label>
+              </div>
+              <small class="form-text text-muted mt-1">
+                Supported: <strong>.csv</strong>, <strong>.xls</strong>, <strong>.xlsx</strong>
+              </small>
+            </div>
+
+            <div class="alert alert-info py-2 px-3" style="font-size:0.85rem;">
+              <i class="fas fa-info-circle"></i>
+              <strong>GST Amount, Incl. Tax</strong> and <strong>Sales Price</strong> are
+              <em>auto-calculated</em> — you don't need to fill them.
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-3" id="uploadBtn">
+              <i class="fas fa-upload"></i> Upload &amp; Import
+            </button>
+          </form>
+
+          <!-- Sample Download -->
+          <hr>
+          <p class="text-muted mb-2" style="font-size:0.85rem;">
+            Don't have a file? Download the sample template:
+          </p>
+          <a href="{% url 'DownloadSampleInventoryCSV' %}" class="btn btn-outline-success btn-sm btn-block">
+            <i class="fas fa-file-csv"></i> Download Sample CSV Template
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column Guide -->
+    <div class="col-lg-7 mb-4">
+      <div class="card shadow h-100">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-table"></i> File Format Guide — Column Names
+          </h6>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered mb-0">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Column Name <small class="text-warning">(use exactly)</small></th>
+                  <th>Example</th>
+                  <th>Required?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>Item Name</code></td>
+                  <td>Hydraulic Hose Assembly</td>
+                  <td><span class="badge badge-danger">Yes</span></td>
+                </tr>
+                <tr>
+                  <td><code>No. / For What</code></td>
+                  <td>jcb-x100 / Boom Cylinder</td>
+                  <td><span class="badge badge-secondary">Optional</span></td>
+                </tr>
+                <tr>
+                  <td><code>HSN / SAC</code></td>
+                  <td>84314995</td>
+                  <td><span class="badge badge-secondary">Optional</span></td>
+                </tr>
+                <tr>
+                  <td><code>Qty</code></td>
+                  <td>5</td>
+                  <td><span class="badge badge-danger">Yes</span></td>
+                </tr>
+                <tr>
+                  <td><code>Vendor</code></td>
+                  <td>Nagpur Earthmovers</td>
+                  <td><span class="badge badge-secondary">Optional</span></td>
+                </tr>
+                <tr>
+                  <td><code>Company</code></td>
+                  <td>JCB</td>
+                  <td><span class="badge badge-secondary">Optional</span></td>
+                </tr>
+                <tr>
+                  <td><code>Purchase</code></td>
+                  <td>10000</td>
+                  <td><span class="badge badge-danger">Yes</span></td>
+                </tr>
+                <tr>
+                  <td><code>GST %</code></td>
+                  <td>18</td>
+                  <td><span class="badge badge-secondary">Optional</span></td>
+                </tr>
+                <tr>
+                  <td><code>Profit %</code></td>
+                  <td>15</td>
+                  <td><span class="badge badge-secondary">Optional (default 10)</span></td>
+                </tr>
+                <tr>
+                  <td><code>MRP</code></td>
+                  <td>13000</td>
+                  <td><span class="badge badge-secondary">Optional</span></td>
+                </tr>
+                <tr class="table-light">
+                  <td><code>GST Amt</code></td>
+                  <td><em>Auto-calculated</em></td>
+                  <td><span class="badge badge-info">Auto</span></td>
+                </tr>
+                <tr class="table-light">
+                  <td><code>Incl. Tax</code></td>
+                  <td><em>Auto-calculated</em></td>
+                  <td><span class="badge badge-info">Auto</span></td>
+                </tr>
+                <tr class="table-light">
+                  <td><code>Sales</code></td>
+                  <td><em>Auto-calculated</em></td>
+                  <td><span class="badge badge-info">Auto</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Preview of what the stock table looks like -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">
+        <i class="fas fa-eye"></i> Preview — How Stock Table Looks After Upload
+      </h6>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm mb-0" style="font-size:0.82rem;">
+          <thead class="thead-dark">
+            <tr>
+              <th>SR</th>
+              <th>Item Name</th>
+              <th>Image</th>
+              <th>No. / For What</th>
+              <th>HSN / SAC</th>
+              <th>Qty</th>
+              <th>Vendor</th>
+              <th>Company</th>
+              <th>Purchase</th>
+              <th>GST %</th>
+              <th>GST Amt</th>
+              <th>Incl. Tax</th>
+              <th>Profit %</th>
+              <th>Sales</th>
+              <th>MRP</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="table-success">
+              <td>1</td>
+              <td>Hydraulic Hose Assembly</td>
+              <td><span class="badge badge-light">No Image</span></td>
+              <td>jcb-x100</td>
+              <td>84314995</td>
+              <td>2</td>
+              <td>Nagpur Earthmovers</td>
+              <td><span class="badge badge-info">JCB</span></td>
+              <td>₹10,000</td>
+              <td>18%</td>
+              <td>₹3,600</td>
+              <td>₹23,600</td>
+              <td>10%</td>
+              <td>₹11,000</td>
+              <td>₹13,000</td>
+              <td>
+                <span class="btn btn-primary btn-sm px-2"><i class="fas fa-edit"></i></span>
+                <span class="btn btn-danger btn-sm px-2"><i class="fas fa-trash-alt"></i></span>
+              </td>
+            </tr>
+            <tr class="text-muted">
+              <td colspan="16" class="text-center py-2">
+                <i class="fas fa-arrow-up text-success"></i>
+                Your uploaded rows will appear here in the inventory table.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Show file name in custom file input
+document.getElementById('file').addEventListener('change', function () {
+  const label = this.nextElementSibling;
+  label.textContent = this.files.length ? this.files[0].name : 'Choose file…';
+});
+
+// Show spinner on submit
+document.getElementById('bulkUploadForm').addEventListener('submit', function () {
+  const btn = document.getElementById('uploadBtn');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading…';
+  btn.disabled = true;
+});
+</script>
+
+{% endblock %}

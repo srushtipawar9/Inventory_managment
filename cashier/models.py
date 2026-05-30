@@ -63,16 +63,16 @@ class DaftarBarang(models.Model):
 
         self.product_price = purchase
         base = purchase * qty
-        if not self.gst_amount:
-            self.gst_amount = (base * gst_pct / Decimal('100')).quantize(Decimal('0.01'))
-        if not self.amt_incl_tax:
-            self.amt_incl_tax = (base + Decimal(self.gst_amount)).quantize(Decimal('0.01'))
+
+        # Always recalculate so edits are properly saved (bug fix: was using `if not`)
+        self.gst_amount = (base * gst_pct / Decimal('100')).quantize(Decimal('0.01'))
+        self.amt_incl_tax = (base + self.gst_amount).quantize(Decimal('0.01'))
 
         self.subtotal_harga_beli = base.quantize(Decimal('0.01'))
-        if not self.harga_jual_satuan:
-            self.harga_jual_satuan = (
-                purchase + (purchase * profit_pct / Decimal('100'))
-            ).quantize(Decimal('0.01'))
+        # Always recalculate sell price from current purchase price + profit
+        self.harga_jual_satuan = (
+            purchase + (purchase * profit_pct / Decimal('100'))
+        ).quantize(Decimal('0.01'))
 
         sell_unit = Decimal(self.harga_jual_satuan)
         self.marp = Decimal(self.mrp or 0)
@@ -81,7 +81,7 @@ class DaftarBarang(models.Model):
         laba = (Decimal(profit_pct) * self.subtotal_harga_beli) / Decimal('100')
         self.subtotal_harga_jual = (laba + self.subtotal_harga_beli).quantize(Decimal('0.01'))
         self.marp_last_amount_total = self.subtotal_harga_jual
-        
+
         super().save(*args, **kwargs)
 
 

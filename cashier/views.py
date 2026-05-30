@@ -262,6 +262,169 @@ def DeleteStock(request, pk):
 
 
 @login_required()
+def BulkUploadStock(request):
+    """
+    Bulk upload inventory stock via Excel / CSV.
+    Expected columns (order does not matter, matched by header name):
+        Item Name | No. / For What | HSN / SAC | Qty | Vendor | Company |
+        Purchase  | GST %          | Profit %  | MRP
+    Auto-calculated: GST Amt, Incl. Tax, Sales Price
+    """
+    if request.method == 'POST':
+        uploaded_file = request.FILES.get('file')
+        if not uploaded_file:
+            messages.warning(request, 'Please select a file to upload.')
+            return redirect('BulkUploadStock')
+
+        ext = uploaded_file.name.rsplit('.', 1)[-1].lower()
+        try:
+            if ext == 'csv':
+                import csv, io
+                decoded = uploaded_file.read().decode('utf-8-sig')
+                reader = csv.DictReader(io.StringIO(decoded))
+                rows = list(reader)
+            elif ext in ('xls', 'xlsx'):
+                import openpyxl
+                from decimal import Decimal as D
+                wb = openpyxl.load_workbook(uploaded_file, data_only=True)
+                ws = wb.active
+                headers = [str(c.value).strip() if c.value else '' for c in next(ws.iter_rows(min_row=1, max_row=1))]
+                rows = []
+                for row in ws.iter_rows(min_row=2, values_only=True):
+                    rows.append(dict(zip(headers, row)))
+            else:
+                messages.warning(request, 'Unsupported format. Please upload .csv, .xls or .xlsx')
+                return redirect('BulkUploadStock')
+        except Exception as e:
+            messages.error(request, f'Error reading file: {e}')
+            return redirect('BulkUploadStock')
+
+        # Normalize header → field mapping (flexible, case-insensitive)
+        FIELD_MAP = {
+            'item name':      'nama_product',
+            'name':           'nama_product',
+            'no. / for what': 'part_for_what',
+            'no/for what':    'part_for_what',
+            'no./for what':   'part_for_what',
+            'for what':       'part_for_what',
+            'hsn / sac':      'hsn_sac',
+            'hsn/sac':        'hsn_sac',
+            'hsn':            'hsn_sac',
+            'qty':            'jumlah_produk',
+            'quantity':       'jumlah_produk',
+            'vendor':         'vendor',
+            'company':        'company',
+            'purchase':       'harga_beli_satuan',
+            'purchase price': 'harga_beli_satuan',
+            'gst %':          'gst_percent',
+            'gst%':           'gst_percent',
+            'gst':            'gst_percent',
+            'profit %':       'laba_persen',
+            'profit%':        'laba_persen',
+            'profit':         'laba_persen',
+            'mrp':            'mrp',
+        }
+
+        saved = 0
+        errors = []
+        from decimal import Decimal, InvalidOperation
+
+        for i, row in enumerate(rows, start=2):  # row 2 onwards (row 1 = header)
+            # Normalize keys
+            normalized = {}
+            for k, v in row.items():
+                key = str(k).strip().lower() if k else ''
+                field = FIELD_MAP.get(key)
+                if field:
+                    normalized[field] = str(v).strip() if v is not None else ''
+
+            name = normalized.get('nama_product', '').strip()
+            if not name:
+                continue  # skip empty rows
+
+            def to_decimal(val, default='0'):
+                try:
+                    return Decimal(str(val).replace(',', '').strip() or default)
+                except InvalidOperation:
+                    return Decimal(default)
+
+            def to_int(val, default=0):
+                try:
+                    return int(str(val).replace(',', '').strip() or default)
+                except (ValueError, TypeError):
+                    return default
+
+            qty      = to_int(normalized.get('jumlah_produk', 1), 1)
+            purchase = to_decimal(normalized.get('harga_beli_satuan', '0'))
+            gst_pct  = to_decimal(normalized.get('gst_percent', '0'))
+            profit   = to_int(normalized.get('laba_persen', 10), 10)
+            mrp      = to_decimal(normalized.get('mrp', '0'))
+
+            if qty < 1 or purchase <= 0:
+                errors.append(f'Row {i} ({name}): Qty and Purchase Price are required.')
+                continue
+
+            try:
+                DaftarBarang.objects.create(
+                    user=request.user.profile,
+                    nama_product=name,
+                    part_for_what=normalized.get('part_for_what', ''),
+                    hsn_sac=normalized.get('hsn_sac', ''),
+                    jumlah_produk=qty,
+                    vendor=normalized.get('vendor', ''),
+                    company=normalized.get('company', ''),
+                    harga_beli_satuan=purchase,
+                    gst_percent=gst_pct,
+                    laba_persen=profit,
+                    mrp=mrp,
+                    status='Active',
+                )
+                saved += 1
+            except Exception as e:
+                errors.append(f'Row {i} ({name}): {e}')
+
+        if saved:
+            messages.success(request, f'✅ Bulk upload successful! {saved} item(s) added to inventory.')
+        if errors:
+            for err in errors[:5]:
+                messages.warning(request, err)
+        if not saved and not errors:
+            messages.warning(request, 'No valid data rows found. Check your file format.')
+
+        return redirect('TotalStock')
+
+    return render(request, 'cashier/bulk_upload_stock.html')
+
+
+@login_required()
+def DownloadSampleInventoryCSV(request):
+    """Return a sample CSV file with the exact column headers for bulk stock upload."""
+    import csv
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sample_inventory_upload.csv"'
+    writer = csv.writer(response)
+    # Header row — exact names the bulk upload parser recognises
+    writer.writerow([
+        'Item Name', 'No. / For What', 'HSN / SAC',
+        'Qty', 'Vendor', 'Company',
+        'Purchase', 'GST %', 'Profit %', 'MRP',
+    ])
+    # Two demo rows
+    writer.writerow([
+        'Hydraulic Hose Assembly', 'jcb-x100 / Boom Cylinder', '84314995',
+        '2', 'Nagpur Earthmovers', 'JCB',
+        '10000', '18', '10', '13000',
+    ])
+    writer.writerow([
+        'Bucket Pin Kit', 'Dipper Arm', '84313990',
+        '5', 'Pune Spares', 'CAT',
+        '2500', '18', '12', '3200',
+    ])
+    return response
+
+
+
+@login_required()
 def HideStock(request, pk):
     if not is_admin(request.user):
         messages.error(request, "You do not have permission to hide inventory records.")
