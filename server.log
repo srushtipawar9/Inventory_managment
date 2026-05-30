@@ -3139,3 +3139,6 @@ Watching for file changes with StatReloader
 D:\inventory_2\cashier\views.py changed, reloading.
 Watching for file changes with StatReloader
 Watching for file changes with StatReloader
+"GET /stock/ HTTP/1.1" 200 4315
+"GET /media/inventory_images/hose.jpg HTTP/1.1" 304 0
+"GET /stock/bulk-upload/ HTTP/1.1" 200 5206
