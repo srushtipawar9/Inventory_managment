@@ -56,11 +56,11 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-1234567890")
 # heroku git:remote -a app-name
 
 
-DEBUG = 1
+DEBUG = os.environ.get('DEBUG', '0') == '1'
 DEBUG_TAMPLATES = DEBUG
 
 # BASE_URL = "localhost:8000"
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['https://inventory-managment-1-7ylq.onrender.com']
 # Session, cache, ssl secure
 
 "Do not forget to uncoment this section below when you deploy to production"
@@ -287,8 +287,9 @@ JET_APP_INDEX_DASHBOARD = 'jet.dashboard.dashboard.DefaultAppIndexDashboard'
 JET_MODULE_GOOGLE_ANALYTICS_CLIENT_SECRETS_FILE = os.path.join(BASE_DIR, 'client_secrets.json')
 
 "Redis & Celery Setup"
-BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
