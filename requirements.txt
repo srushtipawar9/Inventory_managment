@@ -27,6 +27,8 @@ bcrypt==4.0.1
 
 # File handling & Data
 Pillow==10.4.0
+django-cloudinary-storage==0.3.0
+cloudinary==1.41.0
 pandas==2.2.3
 openpyxl==3.1.5
 tablib==3.5.0
