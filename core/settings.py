@@ -163,7 +163,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 _db_path = os.environ.get('SQLITE_DB_PATH', os.path.join(BASE_DIR, 'cashier.db'))
 DATABASES = {
     'default': dj_database_url.config(
-        default=f"sqlite:///{_db_path}",
+        default=os.environ.get('DATABASE_URL', f"sqlite:///{os.path.join(BASE_DIR, 'cashier.db')}"),
         conn_max_age=600
     )
 }
