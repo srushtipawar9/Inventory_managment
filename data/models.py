@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 from django.db import models
 from django.utils import timezone
+from cloudinary.models import CloudinaryField
 # Create your models here.
 class Stock(models.Model):
 
@@ -24,7 +25,7 @@ class JCBPart(models.Model):
     stock_quantity = models.IntegerField(default=0)
     
     # For 360 view - we can store multiple images or a sequence
-    image_360_base = models.ImageField(upload_to='parts/360/', blank=True, null=True)
+    image_360_base = CloudinaryField('image', blank=True, null=True)
     # Alternatively, a JSON or related model for multiple frames
     
     CATEGORY_CHOICES = [

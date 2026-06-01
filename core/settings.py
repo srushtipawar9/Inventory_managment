@@ -14,6 +14,10 @@ import os
 import logging.config
 import dj_database_url
 import collections
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Shim for Python 3.10+ compatibility with older packages (like django-3-jet)
 if not hasattr(collections, 'MutableSet'):
@@ -300,9 +304,9 @@ CELERY_TIMEZONE = 'Asia/Jakarta'
 
 # django_heroku.settings(locals())
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dsixeff35',
-    'API_KEY': '532418927355638',
-    'API_SECRET': 'E7FeQOEv1AgffRqwD3hulV1NiUs'
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'dsixeff35'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '532418927355638'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'E7FeQOEv1AgffRqwD3hulV1NiUs')
 }
 
 # मीडिया फाईल्ससाठी क्लाउड स्टोरेज कॉन्फिगरेशन
