@@ -14,14 +14,14 @@ vine
 cloudinary
 cryptography
 dj-database-url
-Django
+Django==3.2.25
 django-admin-rangefilter
 django-bootstrap4
 django-cloudinary-storage
 django-crispy-forms
 django-filter
 django-import-export
-django-jet
+django-jet==1.0.8
 django_urls
 djangorestframework
 docx2txt
