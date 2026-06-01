@@ -304,10 +304,13 @@ CELERY_TIMEZONE = 'Asia/Jakarta'
 
 # django_heroku.settings(locals())
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'dsixeff35'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '532418927355638'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'E7FeQOEv1AgffRqwD3hulV1NiUs')
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET')
 }
 
 # मीडिया फाईल्ससाठी क्लाउड स्टोरेज कॉन्फिगरेशन
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+if os.environ.get('CLOUDINARY_CLOUD_NAME'):
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
