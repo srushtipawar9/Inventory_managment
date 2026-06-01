@@ -12,7 +12,7 @@ class DaftarBarang(models.Model):
     nomor = models.AutoField(primary_key=True)
     # nama_product = models.ForeignKey(Stock, on_delete=models.CASCADE)
     nama_product = models.CharField(max_length=200, blank=False, null=False)
-    image = CloudinaryField('image', null=True, blank=True)
+    image = models.ImageField(upload_to='jcb_parts/', null=True, blank=True)
     part_for_what = models.CharField(max_length=100, blank=True, default='')
     hsn_sac = models.CharField(max_length=30, blank=True, default='')
     jumlah_produk = models.IntegerField()

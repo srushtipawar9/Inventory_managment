@@ -3,26 +3,24 @@
 import os
 import sys
 
-# Monkeypatch for django-jet compatibility
-import django.utils.encoding
-if not hasattr(django.utils.encoding, 'python_2_unicode_compatible'):
-    django.utils.encoding.python_2_unicode_compatible = lambda x: x
-
-# Monkeypatch for collections.MutableSet compatibility (Python 3.10+)
-import collections
-if not hasattr(collections, 'MutableSet'):
-    import collections.abc
-    collections.MutableSet = collections.abc.MutableSet
-    collections.MutableMapping = collections.abc.MutableMapping
-    collections.Mapping = collections.abc.Mapping
-    collections.Sequence = collections.abc.Sequence
-    collections.Iterable = collections.abc.Iterable
-    collections.Callable = collections.abc.Callable
-
-
-
 
 def main():
+    # Monkeypatch for collections.MutableSet compatibility (Python 3.10+)
+    import collections
+    if not hasattr(collections, 'MutableSet'):
+        import collections.abc
+        collections.MutableSet = collections.abc.MutableSet
+        collections.MutableMapping = collections.abc.MutableMapping
+        collections.Mapping = collections.abc.Mapping
+        collections.Sequence = collections.abc.Sequence
+        collections.Iterable = collections.abc.Iterable
+        collections.Callable = collections.abc.Callable
+
+    # Monkeypatch for django-jet compatibility
+    import django.utils.encoding
+    if not hasattr(django.utils.encoding, 'python_2_unicode_compatible'):
+        django.utils.encoding.python_2_unicode_compatible = lambda x: x
+
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
     try:
         from django.core.management import execute_from_command_line

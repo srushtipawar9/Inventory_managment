@@ -25,7 +25,7 @@ class JCBPart(models.Model):
     stock_quantity = models.IntegerField(default=0)
     
     # For 360 view - we can store multiple images or a sequence
-    image_360_base = CloudinaryField('image', blank=True, null=True)
+    image_360_base = models.ImageField(upload_to='360_images/', blank=True, null=True)
     # Alternatively, a JSON or related model for multiple frames
     
     CATEGORY_CHOICES = [
