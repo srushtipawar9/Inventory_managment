@@ -105,13 +105,12 @@ INSTALLED_APPS = [
 
     'django.contrib.admin',
     'django.contrib.auth',
+    'cloudinary_storage',
+    'cloudinary',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    'cloudinary_storage',
-    'cloudinary',
 
     # "Humanize"
     'django.contrib.humanize',
@@ -216,7 +215,7 @@ STATICFILES_DIRS = (
 "Static Files Handling"
 # Use plain staticfiles storage during deployment so collectstatic does not fail
 # while compressing source asset files like SCSS or vendor HTML files.
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 WHITENOISE_MANIFEST_STRICT = False
 # Skip compression for files that are not intended to be served compressed.
 WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
