@@ -213,8 +213,17 @@ STATICFILES_DIRS = (
 )
 
 "Static Files Handling"
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# Use plain staticfiles storage during deployment so collectstatic does not fail
+# while compressing source asset files like SCSS or vendor HTML files.
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 WHITENOISE_MANIFEST_STRICT = False
+# Skip compression for files that are not intended to be served compressed.
+WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
+    'html',
+    'scss',
+    'sass',
+    'less',
+)
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
