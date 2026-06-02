@@ -3553,3 +3553,63 @@ Not Found: /favicon.ico
 D:\inventory_2\core\settings.py changed, reloading.
 Watching for file changes with StatReloader
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 4591
+"GET /static/vendor/fontawesome-free/css/all.min.css HTTP/1.1" 304 0
+"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.css HTTP/1.1" 304 0
+"GET /static/css/sb-admin-2.min.css HTTP/1.1" 304 0
+"GET /static/vendor/jquery/jquery.min.js HTTP/1.1" 304 0
+"GET /static/vendor/jquery-easing/jquery.easing.min.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/jquery.dataTables.min.js HTTP/1.1" 304 0
+"GET /static/vendor/bootstrap/js/bootstrap.bundle.min.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.js HTTP/1.1" 304 0
+"GET /static/js/sb-admin-2.min.js HTTP/1.1" 304 0
+"GET /static/js/extends.js HTTP/1.1" 304 0
+"GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 304 0
+"GET /input/ HTTP/1.1" 200 7841
+"GET /static/vendor/fontawesome-free/css/all.min.css HTTP/1.1" 304 0
+"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+"GET /static/css/sb-admin-2.min.css HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.css HTTP/1.1" 304 0
+"GET /static/js/sb-admin-2.min.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/jquery.dataTables.min.js HTTP/1.1" 304 0
+"GET /static/vendor/jquery/jquery.min.js HTTP/1.1" 304 0
+"GET /static/vendor/bootstrap/js/bootstrap.bundle.min.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.js HTTP/1.1" 304 0
+"GET /static/vendor/jquery-easing/jquery.easing.min.js HTTP/1.1" 304 0
+"GET /static/js/extends.js HTTP/1.1" 304 0
+"GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 304 0
+"GET /stock/ HTTP/1.1" 200 4527
+"GET /media/jcb_parts/hose.jpg HTTP/1.1" 304 0
+"GET /media/inventory_images/hose.jpg HTTP/1.1" 304 0
+"GET /media/jcb_parts/OIP.jpg HTTP/1.1" 304 0
+"GET /estimate/ HTTP/1.1" 200 9516
+"GET /data/upload/ HTTP/1.1" 200 4774
+"GET /input/ HTTP/1.1" 200 7845
+"GET /static/css/sb-admin-2.min.css HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.css HTTP/1.1" 304 0
+"GET /static/vendor/fontawesome-free/css/all.min.css HTTP/1.1" 304 0
+"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+"GET /static/vendor/datatables/jquery.dataTables.min.js HTTP/1.1" 304 0
+"GET /static/js/sb-admin-2.min.js HTTP/1.1" 304 0
+"GET /static/vendor/jquery-easing/jquery.easing.min.js HTTP/1.1" 304 0
+"GET /static/vendor/bootstrap/js/bootstrap.bundle.min.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.js HTTP/1.1" 304 0
+"GET /static/vendor/jquery/jquery.min.js HTTP/1.1" 304 0
+"GET /static/js/extends.js HTTP/1.1" 304 0
+"GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 304 0
+"GET / HTTP/1.1" 200 4591
+D:\inventory_2\core\settings.py changed, reloading.
+D:\inventory_2\core\settings.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+D:\inventory_2\core\settings.py changed, reloading.
+D:\inventory_2\core\settings.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+D:\inventory_2\core\settings.py changed, reloading.
+D:\inventory_2\core\settings.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
