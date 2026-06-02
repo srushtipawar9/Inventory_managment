@@ -3552,3 +3552,4 @@ Not Found: /favicon.ico
 "GET / HTTP/1.1" 200 4591
 D:\inventory_2\core\settings.py changed, reloading.
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
