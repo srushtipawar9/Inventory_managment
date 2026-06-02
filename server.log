@@ -3526,3 +3526,29 @@ Session data corrupted
 "GET /static/js/sb-admin-2.min.js HTTP/1.1" 304 0
 "GET /static/js/extends.js HTTP/1.1" 304 0
 "GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 304 0
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 4591
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 4591
+"GET /static/vendor/fontawesome-free/css/all.min.css HTTP/1.1" 304 0
+"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+"GET /static/css/sb-admin-2.min.css HTTP/1.1" 304 0
+"GET /media/profile_picture.png HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.css HTTP/1.1" 304 0
+"GET /static/vendor/jquery/jquery.min.js HTTP/1.1" 304 0
+"GET /static/vendor/bootstrap/js/bootstrap.bundle.min.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/jquery.dataTables.min.js HTTP/1.1" 304 0
+"GET /static/js/sb-admin-2.min.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.js HTTP/1.1" 304 0
+"GET /static/vendor/jquery-easing/jquery.easing.min.js HTTP/1.1" 304 0
+"GET /static/js/datatables-demo.js HTTP/1.1" 304 0
+"GET /static/js/extends.js HTTP/1.1" 304 0
+"GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 304 0
+"GET /logout/ HTTP/1.1" 302 0
+"GET /login/ HTTP/1.1" 200 871
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 1400
+"POST /login/ HTTP/1.1" 302 0
+"GET / HTTP/1.1" 200 4591
+D:\inventory_2\core\settings.py changed, reloading.
+Watching for file changes with StatReloader
