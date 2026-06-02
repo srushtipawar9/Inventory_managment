@@ -3505,3 +3505,24 @@ Watching for file changes with StatReloader
 "GET /media/jcb_parts/hose.jpg HTTP/1.1" 200 8608
 "GET /media/jcb_parts/OIP.jpg HTTP/1.1" 200 8511
 "GET /media/inventory_images/hose.jpg HTTP/1.1" 200 8608
+Watching for file changes with StatReloader
+Session data corrupted
+"GET / HTTP/1.1" 302 0
+"GET /login/?next=/ HTTP/1.1" 200 876
+"GET /static/css/sb-admin-2.min.css HTTP/1.1" 304 0
+Session data corrupted
+"POST /login/?next=/ HTTP/1.1" 302 0
+"GET / HTTP/1.1" 200 4601
+"GET /static/vendor/fontawesome-free/css/all.min.css HTTP/1.1" 304 0
+"GET /static/css/bootstrap.min.css HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.css HTTP/1.1" 304 0
+"GET /static/vendor/jquery/jquery.min.js HTTP/1.1" 304 0
+"GET /static/vendor/bootstrap/js/bootstrap.bundle.min.js HTTP/1.1" 304 0
+"GET /media/profile_picture.png HTTP/1.1" 304 0
+"GET /static/vendor/datatables/jquery.dataTables.min.js HTTP/1.1" 304 0
+"GET /static/vendor/datatables/dataTables.bootstrap4.min.js HTTP/1.1" 304 0
+"GET /static/js/datatables-demo.js HTTP/1.1" 200 618
+"GET /static/vendor/jquery-easing/jquery.easing.min.js HTTP/1.1" 304 0
+"GET /static/js/sb-admin-2.min.js HTTP/1.1" 304 0
+"GET /static/js/extends.js HTTP/1.1" 304 0
+"GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 304 0
