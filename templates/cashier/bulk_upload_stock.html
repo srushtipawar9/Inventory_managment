@@ -20,12 +20,14 @@
   </div>
 
   {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}warning{% else %}success{% endif %} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-      </div>
-    {% endfor %}
+  {% for message in messages %}
+  <div
+    class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}warning{% else %}success{% endif %} alert-dismissible fade show"
+    role="alert">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+  </div>
+  {% endfor %}
   {% endif %}
 
   <div class="row">
@@ -44,8 +46,7 @@
             <div class="form-group">
               <label class="font-weight-bold text-gray-700">Select Excel / CSV File</label>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" id="file" name="file"
-                       accept=".csv,.xls,.xlsx" required>
+                <input type="file" class="custom-file-input" id="file" name="file" accept=".csv,.xls,.xlsx" required>
                 <label class="custom-file-label" for="file">Choose file…</label>
               </div>
               <small class="form-text text-muted mt-1">
@@ -236,18 +237,18 @@
 </div>
 
 <script>
-// Show file name in custom file input
-document.getElementById('file').addEventListener('change', function () {
-  const label = this.nextElementSibling;
-  label.textContent = this.files.length ? this.files[0].name : 'Choose file…';
-});
+  // Show file name in custom file input
+  document.getElementById('file').addEventListener('change', function () {
+    const label = this.nextElementSibling;
+    label.textContent = this.files.length ? this.files[0].name : 'Choose file…';
+  });
 
-// Show spinner on submit
-document.getElementById('bulkUploadForm').addEventListener('submit', function () {
-  const btn = document.getElementById('uploadBtn');
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading…';
-  btn.disabled = true;
-});
+  // Show spinner on submit
+  document.getElementById('bulkUploadForm').addEventListener('submit', function () {
+    const btn = document.getElementById('uploadBtn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading…';
+    btn.disabled = true;
+  });
 </script>
 
 {% endblock %}
