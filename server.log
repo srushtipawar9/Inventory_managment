@@ -3657,3 +3657,25 @@ Session data corrupted
 "GET /static/vendor/fontawesome-free/webfonts/fa-solid-900.woff2 HTTP/1.1" 304 0
 "GET /static/favicon.ico HTTP/1.1" 304 0
 D:\inventory_2\core\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 4591
+"GET / HTTP/1.1" 200 4591
+"GET /stock/ HTTP/1.1" 200 4527
+Not Found: /media/jcb_parts/OIP.jpg
+Not Found: /media/inventory_images/hose.jpg
+Not Found: /media/jcb_parts/hose.jpg
+"GET /media/jcb_parts/OIP.jpg HTTP/1.1" 404 370
+"GET /media/inventory_images/hose.jpg HTTP/1.1" 404 370
+"GET /media/jcb_parts/hose.jpg HTTP/1.1" 404 370
+"GET /input/ HTTP/1.1" 200 7843
+"POST /input/ HTTP/1.1" 302 0
+"GET /stock/ HTTP/1.1" 200 4671
+Not Found: /media/inventory_images/hose.jpg
+"GET /media/inventory_images/hose.jpg HTTP/1.1" 404 370
+Not Found: /media/jcb_parts/hose_BzrGbJ4.jpg
+Not Found: /media/jcb_parts/hose.jpg
+Not Found: /media/jcb_parts/OIP.jpg
+"GET /media/jcb_parts/hose_BzrGbJ4.jpg HTTP/1.1" 404 370
+"GET /media/jcb_parts/hose.jpg HTTP/1.1" 404 370
+"GET /media/jcb_parts/OIP.jpg HTTP/1.1" 404 370
+D:\inventory_2\core\settings.py changed, reloading.

@@ -60,7 +60,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-1234567890")
 # heroku git:remote -a app-name
 
 
-DEBUG = False
+DEBUG = True
 DEBUG_TAMPLATES = DEBUG
 
 # BASE_URL = "localhost:8000"
