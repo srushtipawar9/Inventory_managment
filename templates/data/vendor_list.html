@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-store text-primary"></i> Vendor Management
+        </h1>
+        <a href="{% url 'VendorAdd' %}" class="btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Add New Vendor
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-truck"></i> Vendor List ({{ vendors|length }} total)
+            </h6>
+            <a href="{% url 'VendorComparison' %}" class="btn btn-sm btn-info">
+                <i class="fas fa-balance-scale"></i> Price Comparison
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Vendor Name</th>
+                            <th>City</th>
+                            <th>Contact Phone</th>
+                            <th>Added On</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vendor in vendors %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><strong>{{ vendor.name }}</strong></td>
+                            <td><i class="fas fa-map-marker-alt text-danger"></i> {{ vendor.city }}</td>
+                            <td>
+                                {% if vendor.contact_phone %}
+                                <a href="tel:{{ vendor.contact_phone }}">
+                                    <i class="fas fa-phone"></i> {{ vendor.contact_phone }}
+                                </a>
+                                {% else %}
+                                <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ vendor.created_at|date:"d M Y" }}</td>
+                            <td>
+                                <a href="{% url 'VendorEdit' vendor.id %}" class="btn btn-info btn-sm" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'VendorDelete' vendor.id %}" class="btn btn-danger btn-sm" title="Delete"
+                                   onclick="return confirm('Are you sure you want to delete {{ vendor.name }}?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="fas fa-store fa-3x mb-3 d-block"></i>
+                                No vendors found.
+                                <a href="{% url 'VendorAdd' %}">Add your first vendor</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

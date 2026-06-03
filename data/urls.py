@@ -13,5 +13,12 @@ urlpatterns = [
     path('save-ai-inventory/', views.SaveAIInventory, name='SaveAIInventory'),
     path('edit-part/<int:part_id>/', views.EditPart, name='EditPart'),
     path('delete-part/<int:part_id>/', views.DeletePart, name='DeletePart'),
+    # Vendor CRUD
+    path('vendor-list/', views.VendorList, name='VendorList'),
+    path('vendor-add/', views.VendorAdd, name='VendorAdd'),
+    path('vendor-edit/<int:vendor_id>/', views.VendorEdit, name='VendorEdit'),
+    path('vendor-delete/<int:vendor_id>/', views.VendorDelete, name='VendorDelete'),
+    path('vendor-price-add/', views.VendorPriceAdd, name='VendorPriceAdd'),
 ]
+
 

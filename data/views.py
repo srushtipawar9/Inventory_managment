@@ -6,7 +6,7 @@ import requests
 from .resources import StockResource
 
 from tablib import Dataset
-from .models import JCBPart, Stock, VendorPartPrice
+from .models import JCBPart, Stock, VendorPartPrice, Vendor
 from cashier.models import DaftarBarang
 from django.db.models import Q
 from django.contrib import messages
@@ -190,51 +190,128 @@ def MasterCatalog(request):
 @login_required
 def VendorComparison(request):
     """
-    Compare vendor prices across cities and highlight cheapest/most-expensive.
+    City-wise vendor price comparison — green = cheapest, red = costliest.
+    Data is fully pre-computed so the template needs no custom tags.
     """
-    category = (request.GET.get("category") or "HYDRAULICS").upper()
-    if category not in ("HYDRAULICS", "ALL"):
-        category = "HYDRAULICS"
+    category = (request.GET.get("category") or "ALL").upper()
+    valid_cats = ["HYDRAULICS", "POWERTRAIN", "GET", "FILTERS",
+                  "ELECTRICAL", "CHASSIS", "OTHER", "ALL"]
+    if category not in valid_cats:
+        category = "ALL"
 
     prices_qs = (
         VendorPartPrice.objects.select_related("vendor", "part")
-        .all()
         .order_by("part__category", "part__name", "vendor__city", "vendor__name")
     )
     if category != "ALL":
         prices_qs = prices_qs.filter(part__category=category)
 
-    # Group by part
-    parts_map = {}
-    for vp in prices_qs:
-        p = vp.part
-        entry = parts_map.get(p.id)
-        if not entry:
-            entry = {
-                "part": p,
-                "rows": [],
-                "min_price": None,
-                "max_price": None,
-            }
-            parts_map[p.id] = entry
-        entry["rows"].append(vp)
+    # Force evaluation once so we can iterate multiple times
+    prices_list = list(prices_qs)
 
-    # Precompute min/max per part
+    # Collect all unique cities (sorted)
+    all_cities = sorted(set(vp.vendor.city for vp in prices_list))
+
+    # Build per-part dict: part_id -> {part, city_prices{city->{price,vendor_name}}}
+    parts_map = {}
+    for vp in prices_list:
+        p = vp.part
+        if p.id not in parts_map:
+            parts_map[p.id] = {"part": p, "city_prices": {}}
+        city = vp.vendor.city
+        existing = parts_map[p.id]["city_prices"].get(city)
+        if existing is None or vp.price < existing["price"]:
+            parts_map[p.id]["city_prices"][city] = {
+                "price": vp.price,
+                "vendor_name": vp.vendor.name,
+            }
+
+    # Build final rows with pre-computed cells (one per city) + color_class
+    parts_entries = []
     for entry in parts_map.values():
-        prices = [r.price for r in entry["rows"]]
-        entry["min_price"] = min(prices) if prices else None
-        entry["max_price"] = max(prices) if prices else None
+        city_prices = entry["city_prices"]
+        prices = [v["price"] for v in city_prices.values()]
+        min_p = min(prices) if prices else None
+        max_p = max(prices) if prices else None
+
+        cells = []
+        for city in all_cities:
+            info = city_prices.get(city)
+            if info is None:
+                cells.append(None)  # no data for this city
+            else:
+                if min_p == max_p:
+                    css = "cell-cheapest"          # only one price → neutral green
+                elif info["price"] == min_p:
+                    css = "cell-cheapest"
+                elif info["price"] == max_p:
+                    css = "cell-costliest"
+                else:
+                    css = "cell-mid"
+                cells.append({
+                    "price": info["price"],
+                    "vendor_name": info["vendor_name"],
+                    "css": css,
+                })
+
+        parts_entries.append({
+            "part": entry["part"],
+            "cells": cells,
+            "min_price": min_p,
+            "max_price": max_p,
+        })
+
+    category_choices = [
+        ("ALL", "All Parts"), ("HYDRAULICS", "Hydraulics"),
+        ("POWERTRAIN", "Powertrain"), ("GET", "Ground Engaging Tools"),
+        ("FILTERS", "Filters"), ("ELECTRICAL", "Electrical"),
+        ("CHASSIS", "Chassis"), ("OTHER", "Other"),
+    ]
 
     context = {
         "category": category,
-        "parts_entries": list(parts_map.values()),
+        "all_cities": all_cities,
+        "parts_entries": parts_entries,
+        "category_choices": category_choices,
     }
-
-    if request.GET.get("format") == "json" or request.headers.get("x-requested-with") == "XMLHttpRequest":
-        html = render_to_string("data/vendors_partial.html", context, request=request)
-        return JsonResponse({"html": html, "category": category})
-
     return render(request, "data/vendors.html", context)
+
+@login_required
+def VendorPriceAdd(request):
+    if request.method == 'POST':
+        vendor_id = request.POST.get('vendor_id')
+        part_id = request.POST.get('part_id')
+        price = request.POST.get('price')
+        notes = request.POST.get('notes', '')
+
+        if vendor_id and part_id and price:
+            vendor = get_object_or_404(Vendor, id=vendor_id)
+            part = get_object_or_404(JCBPart, id=part_id)
+            
+            # Update or create the price entry
+            price_entry, created = VendorPartPrice.objects.update_or_create(
+                vendor=vendor,
+                part=part,
+                defaults={'price': price, 'notes': notes}
+            )
+            
+            if created:
+                messages.success(request, f'Price added successfully for {part.part_number} at {vendor.name}')
+            else:
+                messages.success(request, f'Price updated successfully for {part.part_number} at {vendor.name}')
+                
+            return redirect('VendorComparison')
+        else:
+            messages.error(request, 'Please fill in all required fields.')
+
+    context = {
+        'vendors': Vendor.objects.all().order_by('name'),
+        'parts': JCBPart.objects.all().order_by('part_number', 'name'),
+        'recent_prices': VendorPartPrice.objects.select_related('vendor', 'part').order_by('-updated_at')[:5]
+    }
+    return render(request, 'data/vendor_price_add.html', context)
+
+
 
 @login_required
 def RemovePartImage(request, part_id):
@@ -383,3 +460,62 @@ def DeletePart(request, part_id):
     part.delete()
     messages.success(request, f"Product '{name}' deleted successfully from catalog!")
     return redirect(request.META.get('HTTP_REFERER', '/data/search/'))
+
+
+# ───────────────────────────── Vendor CRUD ─────────────────────────────
+
+@login_required
+def VendorList(request):
+    vendors = Vendor.objects.all().order_by('city', 'name')
+    return render(request, 'data/vendor_list.html', {'vendors': vendors})
+
+
+@login_required
+def VendorAdd(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        city = request.POST.get('city', '').strip()
+        contact_phone = request.POST.get('contact_phone', '').strip()
+
+        if not name or not city:
+            messages.warning(request, 'Vendor Name and City are required!')
+            return redirect('VendorAdd')
+
+        # Prevent duplicate name+city
+        if Vendor.objects.filter(name__iexact=name, city__iexact=city).exists():
+            messages.warning(request, f'Vendor "{name}" in "{city}" already exists!')
+            return redirect('VendorAdd')
+
+        Vendor.objects.create(
+            name=name,
+            city=city,
+            contact_phone=contact_phone if contact_phone else None,
+        )
+        messages.success(request, f'Vendor "{name}" added successfully!')
+        return redirect('VendorList')
+
+    return render(request, 'data/vendor_add.html')
+
+
+@login_required
+def VendorEdit(request, vendor_id):
+    vendor = get_object_or_404(Vendor, id=vendor_id)
+    if request.method == 'POST':
+        vendor.name = request.POST.get('name', vendor.name).strip()
+        vendor.city = request.POST.get('city', vendor.city).strip()
+        contact_phone = request.POST.get('contact_phone', '').strip()
+        vendor.contact_phone = contact_phone if contact_phone else None
+        vendor.save()
+        messages.success(request, f'Vendor "{vendor.name}" updated successfully!')
+        return redirect('VendorList')
+
+    return render(request, 'data/vendor_edit.html', {'vendor': vendor})
+
+
+@login_required
+def VendorDelete(request, vendor_id):
+    vendor = get_object_or_404(Vendor, id=vendor_id)
+    name = vendor.name
+    vendor.delete()
+    messages.success(request, f'Vendor "{name}" deleted successfully!')
+    return redirect('VendorList')

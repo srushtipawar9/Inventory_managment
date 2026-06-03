@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-store-alt text-primary"></i> Add New Vendor
+        </h1>
+        <a href="{% url 'VendorList' %}" class="btn btn-sm btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-truck"></i> Vendor Details
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="name"><strong>Vendor Name *</strong></label>
+                                <input type="text" class="form-control" id="name" name="name"
+                                       placeholder="e.g. Sharma Parts Supplier" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="city"><strong>City *</strong></label>
+                                <input type="text" class="form-control" id="city" name="city"
+                                       placeholder="e.g. Pune" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="contact_phone">Contact Phone (Optional)</label>
+                                <input type="tel" class="form-control" id="contact_phone" name="contact_phone"
+                                       placeholder="e.g. 9876543210">
+                            </div>
+                        </div>
+                        <hr>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Vendor
+                        </button>
+                        <a href="{% url 'VendorList' %}" class="btn btn-secondary ml-2">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4 border-left-info">
+                <div class="card-body">
+                    <h6 class="font-weight-bold text-info">
+                        <i class="fas fa-info-circle"></i> Tips
+                    </h6>
+                    <ul class="small text-muted">
+                        <li>Vendor Name and City are mandatory fields</li>
+                        <li>Each Vendor Name + City combination must be unique</li>
+                        <li>After adding a vendor, you can link part prices from the Price Comparison page</li>
+                        <li>Contact phone helps in quick vendor communication</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

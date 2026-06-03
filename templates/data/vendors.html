@@ -1,49 +1,173 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+  /* ── City-wise Price Comparison ── */
+  .comparison-wrap { overflow-x: auto; border-radius: 0 0 12px 12px; }
+
+  .price-table { min-width: 700px; border-collapse: collapse; width: 100%; }
+
+  .price-table thead th {
+    background: #1a2a6c; color: #fff;
+    padding: 11px 16px; white-space: nowrap;
+    font-size: 0.82rem; font-weight: 700; letter-spacing: .3px;
+    position: sticky; top: 0; z-index: 2;
+    border-right: 1px solid rgba(255,255,255,.15);
+  }
+  .price-table thead th:first-child {
+    position: sticky; left: 0; z-index: 3;
+    background: #111d52; min-width: 230px;
+  }
+
+  .price-table tbody td {
+    padding: 9px 14px; border: 1px solid #e3e6f0;
+    font-size: 0.83rem; vertical-align: middle;
+    transition: background .15s;
+  }
+  .price-table tbody td:first-child {
+    position: sticky; left: 0; background: #f8f9fc;
+    font-weight: 600; z-index: 1;
+    border-right: 2px solid #cdd3e8;
+  }
+  .price-table tbody tr:hover td { filter: brightness(.96); }
+
+  /* colour cells */
+  .cell-cheapest  { background: #d4edda !important; color: #145a2b !important; font-weight: 700; }
+  .cell-costliest { background: #f8d7da !important; color: #6f1520 !important; font-weight: 700; }
+  .cell-mid       { background: #fff9e6 !important; color: #6b5800; }
+  .cell-empty     { background: #f4f4f4; color: #bbb; text-align: center; font-size: .8rem; }
+
+  .price-amount { font-size: .95rem; display: block; }
+  .vendor-sub   { font-size: .7rem; opacity: .65; display: block; margin-top: 2px; }
+  .icon-flag    { font-size: .75rem; margin-right: 3px; }
+
+  /* legend pills */
+  .legend-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 14px; border-radius: 20px; font-size: .78rem;
+    font-weight: 700; margin-right: 6px; margin-bottom: 6px;
+  }
+  .pill-green { background: #d4edda; color: #145a2b; }
+  .pill-red   { background: #f8d7da; color: #6f1520; }
+  .pill-mid   { background: #fff9e6; color: #6b5800; }
+
+  /* category tabs */
+  .cat-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .cat-tab {
+    padding: 5px 16px; border-radius: 20px; font-size: .78rem; font-weight: 700;
+    border: 2px solid #1a2a6c; text-decoration: none;
+    color: #1a2a6c; background: #fff; transition: all .2s ease;
+  }
+  .cat-tab.active, .cat-tab:hover { background: #1a2a6c; color: #fff; text-decoration: none; }
+</style>
+
 <div class="container-fluid">
-  <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Vendors Price Compare</h1>
-    <div class="btn-group" role="group" aria-label="Category filter">
-      <a class="btn btn-sm {% if category == 'HYDRAULICS' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="?category=HYDRAULICS">
-        Hydraulics
+
+  <!-- Page Header -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-3">
+    <h1 class="h3 mb-0 text-gray-800">
+      <i class="fas fa-balance-scale text-primary"></i> City-wise Vendor Price Comparison
+    </h1>
+    <div>
+      <a href="{% url 'VendorList' %}" class="btn btn-sm btn-outline-primary mr-2">
+        <i class="fas fa-truck"></i> Manage Vendors
       </a>
-      <a class="btn btn-sm {% if category == 'ALL' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="?category=ALL">
-        All JCB Parts
+      <a href="{% url 'VendorPriceAdd' %}" class="btn btn-sm btn-success">
+        <i class="fas fa-plus"></i> Add Price Entry
       </a>
     </div>
   </div>
 
-  <p class="mb-4">
-    Cheapest vendor/city is marked <span class="text-success font-weight-bold"><i class="fas fa-check-circle"></i> green</span>
-    and the most expensive is marked <span class="text-danger font-weight-bold"><i class="fas fa-times-circle"></i> red</span>.
-  </p>
-
-  <div id="vendors-data">
-    {% include "data/vendors_partial.html" %}
+  <!-- Legend -->
+  <div class="mb-3">
+    <span class="legend-pill pill-green"><i class="fas fa-arrow-down"></i> Cheapest City</span>
+    <span class="legend-pill pill-red"><i class="fas fa-arrow-up"></i> Costliest City</span>
+    <span class="legend-pill pill-mid"><i class="fas fa-minus"></i> Mid Range</span>
+    <span class="legend-pill" style="background:#f4f4f4;color:#999;">— Not Available</span>
   </div>
-</div>
 
-<script>
-  function refreshVendorsData() {
-    fetch("{% url 'VendorComparison' %}?category={{ category }}&format=json", {
-      headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-      .then(function (response) { return response.json(); })
-      .then(function (data) {
-        const container = document.getElementById('vendors-data');
-        if (container && data.html) {
-          container.innerHTML = data.html;
-        }
-      })
-      .catch(function (error) {
-        console.error('Vendor refresh failed:', error);
-      });
-  }
+  <!-- Category Filter -->
+  <div class="cat-tabs">
+    {% for val, label in category_choices %}
+    <a href="?category={{ val }}" class="cat-tab {% if category == val %}active{% endif %}">{{ label }}</a>
+    {% endfor %}
+  </div>
 
-  // Poll for updates every 5 seconds without a full page reload.
-  setInterval(refreshVendorsData, 5000);
-  refreshVendorsData();
-</script>
+  <!-- Main Card -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-wrap justify-content-between align-items-center">
+      <h6 class="m-0 font-weight-bold text-primary">
+        <i class="fas fa-table"></i>
+        {{ parts_entries|length }} part(s) &nbsp;·&nbsp; {{ all_cities|length }} city/cities
+      </h6>
+      <small class="text-muted">Each cell shows the <strong>best (lowest) price</strong> from that city's vendor</small>
+    </div>
 
+    <div class="card-body p-0">
+
+      {% if parts_entries and all_cities %}
+      <div class="comparison-wrap">
+        <table class="price-table">
+
+          <!-- HEADER ROW: cities -->
+          <thead>
+            <tr>
+              <th><i class="fas fa-cog"></i> &nbsp;Part Details</th>
+              {% for city in all_cities %}
+              <th><i class="fas fa-map-marker-alt icon-flag"></i>{{ city }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+
+          <!-- DATA ROWS -->
+          <tbody>
+            {% for entry in parts_entries %}
+            <tr>
+              <!-- Sticky left column: part info -->
+              <td>
+                <div style="font-weight:700;">{{ entry.part.name }}</div>
+                <small class="text-muted">{{ entry.part.part_number }}</small><br>
+                <small class="text-secondary">{{ entry.part.get_category_display }}</small><br>
+                <small class="text-info">Master ₹{{ entry.part.price }}</small>
+              </td>
+
+              <!-- One cell per city (pre-computed in view) -->
+              {% for cell in entry.cells %}
+                {% if cell %}
+                  <td class="{{ cell.css }}">
+                    <span class="price-amount">₹{{ cell.price }}</span>
+                    <span class="vendor-sub">{{ cell.vendor_name }}</span>
+                  </td>
+                {% else %}
+                  <td class="cell-empty">—</td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+      </div><!-- /comparison-wrap -->
+
+      {% elif not all_cities %}
+      <div class="text-center py-5 text-muted">
+        <i class="fas fa-truck fa-3x mb-3 d-block text-primary"></i>
+        <h5>No vendor prices found yet.</h5>
+        <p class="small">
+          First add vendors via <a href="{% url 'VendorList' %}">Vendor Management</a>,
+          then add part prices via
+          <a href="/admin/data/vendorpartprice/add/" target="_blank">Admin → Vendor Part Prices</a>.
+        </p>
+      </div>
+      {% else %}
+      <div class="text-center py-5 text-muted">
+        <i class="fas fa-filter fa-3x mb-3 d-block"></i>
+        <h5>No parts found for this category.</h5>
+        <p class="small">Select a different category from the tabs above.</p>
+      </div>
+      {% endif %}
+
+    </div><!-- /card-body -->
+  </div><!-- /card -->
+
+</div><!-- /container-fluid -->
 {% endblock %}
-

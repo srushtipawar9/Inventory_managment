@@ -124,6 +124,13 @@
           <i class="fas fa-fw fa-user-check"></i>
           <span>Customer CRM</span></a>
       </li>
+
+      <!-- Vendor Management -->
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'VendorList' %}">
+          <i class="fas fa-fw fa-truck"></i>
+          <span>Vendor Management</span></a>
+      </li>
       {% else %}
       <li class="nav-item">
         <a class="nav-link" href="{% url 'Login' %}">
