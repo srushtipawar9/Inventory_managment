@@ -314,6 +314,18 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Jakarta'
 
 # django_heroku.settings(locals())
+# १. CLOUDINARY_STORAGE डिक्शनरी (ही आवश्यक आहे)
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET')
+}
+
+# २. Default Storage सेट करा
+if os.environ.get('CLOUDINARY_CLOUD_NAME'):
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 if os.environ.get('CLOUDINARY_URL'):
     cloudinary.config(
         cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'), # हे आता गरज नाही, पण ठेवले तरी चालेल
