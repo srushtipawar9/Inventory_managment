@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import logging.config
+import cloudinary
 import dj_database_url
 import collections
 from dotenv import load_dotenv
@@ -313,18 +314,13 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Jakarta'
 
 # django_heroku.settings(locals())
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET')
-}
-
-# मीडिया फाईल्ससाठी क्लाउड स्टोरेज कॉन्फिगरेशन
-if os.environ.get('CLOUDINARY_CLOUD_NAME'):
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-else:
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-
+if os.environ.get('CLOUDINARY_URL'):
+    cloudinary.config(
+        cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'), # हे आता गरज नाही, पण ठेवले तरी चालेल
+        api_key = os.environ.get('CLOUDINARY_API_KEY'),
+        api_secret = os.environ.get('CLOUDINARY_API_SECRET')
+    )
+    
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
