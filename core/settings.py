@@ -60,11 +60,11 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-1234567890")
 # heroku git:remote -a app-name
 
 
-DEBUG = os.environ.get('DEBUG', '0') == '1'
+DEBUG = False
 DEBUG_TAMPLATES = DEBUG
 
 # BASE_URL = "localhost:8000"
-ALLOWED_HOSTS = ['inventory-managment-1-7ylq.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['inventory-managment-1-7ylq.onrender.com', '127.0.0.1','localhost']
 # Session, cache, ssl secure
 
 "Do not forget to uncoment this section below when you deploy to production"
@@ -291,7 +291,7 @@ JET_THEMES = [
     }
 ]
 
-"Menu Compact Changer" #Default = False
+"Menu Compact Changer" #Defareult = False
 JET_SIDE_MENU_COMPACT = True
 
 "Sibling Links" #Default False
